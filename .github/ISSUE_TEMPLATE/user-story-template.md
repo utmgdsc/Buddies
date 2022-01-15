@@ -10,7 +10,7 @@ assignees: ''
 # Story Description
 
 Briefly describe the user story, for example:
-> As a <audience>, I would like to have <feature> so I can accomplish <task>.
+> As a \<audience\>, I would like to have \<feature\> so I can accomplish \<task\>.
 
 # Acceptance Criteria
 
