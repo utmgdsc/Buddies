@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddies.API", "Buddies.API\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buddies.Tests", "Buddies.Tests\Buddies.Tests.csproj", "{5658F86D-3821-428E-8889-258CE6149F1B}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "Buddies.Web", "Buddies.Web\Buddies.Web.njsproj", "{2EBEAB33-CA3D-4908-AF07-4AB2C24D30DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5658F86D-3821-428E-8889-258CE6149F1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5658F86D-3821-428E-8889-258CE6149F1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5658F86D-3821-428E-8889-258CE6149F1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EBEAB33-CA3D-4908-AF07-4AB2C24D30DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBEAB33-CA3D-4908-AF07-4AB2C24D30DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EBEAB33-CA3D-4908-AF07-4AB2C24D30DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EBEAB33-CA3D-4908-AF07-4AB2C24D30DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
