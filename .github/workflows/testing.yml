@@ -24,6 +24,9 @@ jobs:
         
   lint_frontend:
     runs-on: ubuntu-latest
+    defaults: 
+      run: 
+        working-directory: Buddies.Web
     steps:
       - uses: actions/checkout@v2
       
