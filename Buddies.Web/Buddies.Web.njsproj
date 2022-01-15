@@ -25,19 +25,12 @@
     <None Include="tsconfig.json" />
     <Content Include="README.md" />
     <None Include="next-env.d.ts" />
-    <None Include="pages\index.tsx" />
-    <None Include="pages\_app.tsx" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\vercel.svg" />
-    <Content Include="styles\globals.css" />
-    <Content Include="styles\Home.module.css" />
-    <None Include="pages\api\hello.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="pages" />
-    <Folder Include="pages\api" />
     <Folder Include="public" />
-    <Folder Include="styles" />
+    <Folder Include="src" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
