@@ -1,0 +1,42 @@
+name: Testing & Linting
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test_backend:
+    # Windows image because Microsoft decided not to include .NET 6 SDK on Linux images
+    # https://github.com/actions/virtual-environments/issues/4424
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup .NET 6 SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.x'
+      
+      - name: Run API Tests
+        run: dotnet test
+        
+  lint_frontend:
+    runs-on: ubuntu-latest
+    defaults: 
+      run: 
+        working-directory: Buddies.Web
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+          
+      - name: yarn install
+        run: yarn
+        
+      - name: yarn lint
+        run: yarn lint
