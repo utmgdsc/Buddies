@@ -3,6 +3,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+// route matching is always case insensitive, this is just for how routes are displayed in OpenAPI
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+
+// URL versioning
+builder.Services.AddApiVersioning();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
