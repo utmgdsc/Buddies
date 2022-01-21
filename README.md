@@ -8,7 +8,7 @@ The aim of this project is to provide an app that serves as a funneling station 
 - Customizable user profiles
   - Skills/interests/experience
   - Buddy score (reliability metric)
-- Create and post projects
+- Create and share projects
 - Browse and join existing projects
 - Manage projects
   - Accept/Kick members
