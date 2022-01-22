@@ -2,4 +2,6 @@
   db:
     image: postgres
     environment:
-      POSTGRES_PASSWORD: password  
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
