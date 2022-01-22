@@ -21,7 +21,12 @@ namespace Buddies.API.Controllers
         {
             var userData = new User
             {
-                Email = request.Email
+                Email = request.Email,
+                Profile = new Profile
+                {
+                    FirstName = request.FirstName,
+                    LastName = request.LastName
+                }
             };
             
             var newUser = _userManager.CreateAsync(userData, request.Password).Result;

@@ -16,4 +16,6 @@ public class User : IdentityUser<int>
             base.UserName = value;
         }
     }
+
+    public Profile Profile { get; init; }
 }

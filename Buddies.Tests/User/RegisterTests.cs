@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Buddies.API.Database;
 using Buddies.API.IO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,9 +101,10 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
         var scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
         using (var scope = scopeFactory.CreateScope())
         {
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<API.Entities.User>>();
-            var user = userManager.Users.FirstOrDefault(user => user.Email == request.Email);
-            Assert.NotNull(user);
+            var db = scope.ServiceProvider.GetRequiredService<ApiContext>();
+            var user = db.Users.First(user => user.Email == request.Email);
+            Assert.Equal(request.FirstName, user.Profile.FirstName);
+            Assert.Equal(request.LastName, user.Profile.LastName);
         }
     }
 }
