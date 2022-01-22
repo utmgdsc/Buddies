@@ -1,4 +1,5 @@
 using Buddies.API.Database;
+using Buddies.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,12 @@ var connectionString = builder.Configuration.GetConnectionString("ApiContext");
 
 builder.Services.AddDbContext<ApiContext>(options => options.UseNpgsql(connectionString));
 
+// set up authentication
+builder.Services.AddIdentity<User, Role>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+}).AddEntityFrameworkStores<ApiContext>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -34,6 +41,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
