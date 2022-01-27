@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "gen-types": "openapi-generator-cli generate -i ../Buddies.API/swagger.json -g typescript-angular -o src/types --global-property models --additional-properties=stringEnums=true"
+    "gen-types": "openapi-generator-cli generate -i ../Buddies.API/swagger.json -g typescript-angular -o src/api --global-property models --additional-properties=stringEnums=true && next lint --dir src/api --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.7.1",
