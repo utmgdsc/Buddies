@@ -5,7 +5,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen-types": "openapi-generator-cli generate -i ../Buddies.API/swagger.json -g typescript-angular -o src/types --global-property models --additional-properties=stringEnums=true"
   },
   "dependencies": {
     "@emotion/react": "^11.7.1",
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^12.0.8",
+    "@openapitools/openapi-generator-cli": "^2.4.25",
     "@types/node": "17.0.8",
     "@types/react": "17.0.38",
     "@typescript-eslint/eslint-plugin": "5.0.0",
