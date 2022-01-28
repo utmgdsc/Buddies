@@ -75,27 +75,23 @@
   "components": {
     "schemas": {
       "RegisterRequest": {
-        "required": [
-          "email",
-          "firstName",
-          "lastName",
-          "password"
-        ],
         "type": "object",
         "properties": {
           "firstName": {
-            "minLength": 2,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "lastName": {
-            "minLength": 2,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

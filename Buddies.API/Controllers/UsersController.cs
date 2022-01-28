@@ -48,7 +48,7 @@ namespace Buddies.API.Controllers
                 return ValidationProblem(ModelState);
             }
             
-            // todo: for login upon successful registration, send access token here
+            // todo: for login upon successful registration, send access token here (and it change to Created/201)
             return Ok();
         }
     }

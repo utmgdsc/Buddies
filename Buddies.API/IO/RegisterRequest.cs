@@ -2,15 +2,13 @@
 
 namespace Buddies.API.IO;
 
-public record RegisterRequest
-{
-    [Required, MinLength(2)] public string FirstName { get; init; } = default!;
-
-    [Required, MinLength(2)] public string LastName { get; init; } = default!;
-
-    // email address validator not needed, Identity validates it
-    [Required] public string Email { get; init; } = default!;
-    
-    // Identity also validates complexity here
-    [Required] public string Password { get; init; } = default!;
-}
+public record RegisterRequest(
+    [Required(ErrorMessage = "A first name is required."), MinLength(2, ErrorMessage = "Names must be at least 2 characters long.")] 
+    string FirstName,
+    [Required(ErrorMessage = "A last name is required."), MinLength(2, ErrorMessage = "Names must be at least 2 characters long.")]
+    string LastName,
+    [Required(ErrorMessage = "A email is required.")]
+    string Email,
+    [Required(ErrorMessage = "A password is required.")]
+    string Password
+);
