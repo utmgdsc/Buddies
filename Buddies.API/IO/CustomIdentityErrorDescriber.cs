@@ -20,8 +20,15 @@ public class CustomIdentityErrorDescriber : IdentityErrorDescriber
             Description = "Email is invalid."
         };
     }
-    
-    // todo: test duplicate email msg
+
+    public override IdentityError DuplicateEmail(string email)
+    {
+        return new IdentityError
+        {
+            Code = base.DuplicateEmail(email).Code,
+            Description = "Email is taken."
+        };
+    }
 
     public override IdentityError PasswordTooShort(int length)
     {
