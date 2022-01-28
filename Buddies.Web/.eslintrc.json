@@ -16,6 +16,9 @@
     "react/function-component-definition": ["error", {
       "namedComponents": "arrow-function"
     }],
-    "arrow-body-style": "off"
+    "arrow-body-style": "off",
+    "react/prop-types": ["error", {
+      "skipUndeclared": true
+    }]
   }
 }

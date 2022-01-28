@@ -17,6 +17,8 @@ namespace Buddies.API.Controllers
         }
         
         [HttpPost("[action]")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public ActionResult Register([FromBody] RegisterRequest request)
         {
             var userData = new User

@@ -1,12 +1,15 @@
 using Buddies.API.Database;
 using Buddies.API.Entities;
+using Buddies.API.IO;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    // workaround for unreleased fix https://github.com/dotnet/aspnetcore/issues/17999
+    .AddNewtonsoftJson(options => options.UseCamelCasing(true));
 
 // route matching is always case insensitive, this is just for how routes are displayed in OpenAPI
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
@@ -21,10 +24,9 @@ var connectionString = builder.Configuration.GetConnectionString("ApiContext");
 builder.Services.AddDbContext<ApiContext>(options => options.UseNpgsql(connectionString));
 
 // set up authentication
-builder.Services.AddIdentity<User, Role>(options =>
-{
-    options.User.RequireUniqueEmail = true;
-}).AddEntityFrameworkStores<ApiContext>();
+builder.Services.AddIdentity<User, Role>(options => options.User.RequireUniqueEmail = true)
+    .AddEntityFrameworkStores<ApiContext>()
+    .AddErrorDescriber<CustomIdentityErrorDescriber>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
