@@ -3,12 +3,10 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { Controller, SubmitHandler, UseFormReturn } from 'react-hook-form';
 import * as EmailValidator from 'email-validator';
 import PasswordValidator from 'password-validator';
-import axios from 'axios';
 import { RegisterRequest } from '../api/model/registerRequest';
-import { ValidationProblemDetails } from '../api/model/validationProblemDetails';
 
 const passwordSchema = new PasswordValidator();
 /* eslint-disable newline-per-chained-call */
@@ -21,46 +19,18 @@ passwordSchema
 
 interface Props {
   onSubmit: SubmitHandler<RegisterRequest>
+  formMethods: UseFormReturn<RegisterRequest>
 }
 
-const RegisterForm: React.VFC<Props> = ({ onSubmit }) => {
-  const {
-    handleSubmit, control, setError, formState: { isSubmitting },
-  } = useForm<RegisterRequest>({
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-    },
-  });
-
-  const processValidationProblems = (problems: ValidationProblemDetails) => {
-    if (problems.errors) {
-      Object.keys(problems.errors).forEach((errorField) => {
-        if (errorField === 'firstName'
-            || errorField === 'lastName'
-            || errorField === 'email'
-            || errorField === 'password') {
-          const errorMsg = problems.errors![errorField].join('\n');
-          setError(errorField, { message: errorMsg });
-        }
-      });
-    }
-  };
-
+const RegisterForm: React.VFC<Props> = ({
+  onSubmit,
+  formMethods: { handleSubmit, control, formState: { isSubmitting } },
+}) => {
   return (
     <Box
       component="form"
       sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-      onSubmit={(event: any) => handleSubmit(onSubmit)(event)
-        .then() // todo: complete this once login backend is functional
-        .catch((error) => {
-          if (axios.isAxiosError(error) && error.response) {
-            const response = error.response.data as ValidationProblemDetails;
-            processValidationProblems(response);
-          }
-        })}
+      onSubmit={handleSubmit(onSubmit)}
       noValidate // for consistency, we disable native validation UI for MUI validation UI
     >
       <Typography variant="h3" sx={{ marginBottom: 6 }}>Project Buddies</Typography>
