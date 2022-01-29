@@ -5,6 +5,9 @@ import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import NextLink from 'next/link';
 
+/**
+ * Navbar component.
+ */
 const Navbar: React.VFC = () => (
   <AppBar position="static">
     <Toolbar>

@@ -18,10 +18,19 @@ passwordSchema
   .is().min(6, 'Password must be at least 6 characters long.');
 
 interface Props {
+  /**
+   * Method to execute upon submission of form.
+   */
   onSubmit: SubmitHandler<RegisterRequest>
+  /**
+   * React Hook Forms context.
+   */
   formMethods: UseFormReturn<RegisterRequest>
 }
 
+/**
+ * Register form component.
+ */
 const RegisterForm: React.VFC<Props> = ({
   onSubmit,
   formMethods: { handleSubmit, control, formState: { isSubmitting } },

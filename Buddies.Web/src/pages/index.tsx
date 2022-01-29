@@ -2,6 +2,9 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import Typography from '@mui/material/Typography';
 
+/**
+ * Home page.
+ */
 const Home: NextPage = () => (
   <>
     <Head>
