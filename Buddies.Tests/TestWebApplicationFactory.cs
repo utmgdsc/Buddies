@@ -7,6 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Buddies.Tests;
 
+/// <summary>
+/// Factory for initializing API in tests.
+/// </summary>
+/// <typeparam name="TStartup">API application.</typeparam>
 public class TestWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)

@@ -3,10 +3,17 @@ using Microsoft.Extensions.Options;
 
 namespace Buddies.API.IO;
 
+/// <summary>
+/// Class defining customized ASP.NET Core Identity error messages.
+/// </summary>
 public class CustomIdentityErrorDescriber : IdentityErrorDescriber
 {
     private readonly IdentityOptions _options;
     
+    /// <summary>
+    /// Initializes a new CustomIdentityErrorDescriber.
+    /// </summary>
+    /// <param name="options">ASP.NET Core Identity options object.</param>
     public CustomIdentityErrorDescriber(IOptions<IdentityOptions> options)
     {
         _options = options.Value;

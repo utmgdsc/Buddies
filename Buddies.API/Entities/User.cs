@@ -2,8 +2,15 @@
 
 namespace Buddies.API.Entities;
 
+/// <summary>
+/// User within ASP.NET Core Identity.
+/// </summary>
 public class User : IdentityUser<int>
 {
+    /// <summary>
+    /// Initializes a new user.
+    /// </summary>
+    /// <param name="email">Email address of the user.</param>
     public User(string email)
     {
         Email = email;
@@ -20,6 +27,9 @@ public class User : IdentityUser<int>
             base.UserName = value;
         }
     }
-
+    
+    /// <summary>
+    /// Profile of the user.
+    /// </summary>
     public Profile Profile { get; init; } = null!; // populated by EF
 }

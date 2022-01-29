@@ -5,17 +5,28 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Buddies.API.Controllers
 {
+    /// <summary>
+    /// Controller containing all user related endpoints.
+    /// </summary>
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-
+        
+        /// <summary>
+        /// Initializes a new UsersController.
+        /// </summary>
+        /// <param name="userManager">UserManager from ASP.NET Core Identity.</param>
         public UsersController(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
         
+        /// <summary>
+        /// Endpoint for registering a new user.
+        /// </summary>
+        /// <param name="request">A registration request.</param>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
