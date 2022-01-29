@@ -77,9 +77,11 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
         using (var scope = scopeFactory.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<ApiContext>();
-            var user = db.Users.First(user => user.Email == request.Email);
-            Assert.Equal(request.FirstName, user.Profile.FirstName);
-            Assert.Equal(request.LastName, user.Profile.LastName);
+            var user = db.Users.FirstOrDefault(user => user.Email == request.Email);
+            Assert.NotNull(user);
+            var profile = db.Profiles.First(profile => profile.UserId == user!.Id);
+            Assert.Equal(request.FirstName, profile.FirstName);
+            Assert.Equal(request.LastName, profile.LastName);
         }
     }
 }

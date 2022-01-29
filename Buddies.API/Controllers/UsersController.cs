@@ -21,16 +21,11 @@ namespace Buddies.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public ActionResult Register([FromBody] RegisterRequest request)
         {
-            var userData = new User
+            var userData = new User(request.Email)
             {
-                Email = request.Email,
-                Profile = new Profile
-                {
-                    FirstName = request.FirstName,
-                    LastName = request.LastName
-                }
+                Profile = new Profile(request.FirstName, request.LastName)
             };
-            
+
             var newUser = _userManager.CreateAsync(userData, request.Password).Result;
             if (!newUser.Succeeded)
             {

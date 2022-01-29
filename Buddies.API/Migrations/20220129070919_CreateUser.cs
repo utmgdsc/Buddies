@@ -158,7 +158,7 @@ namespace Buddies.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Profile",
+                name: "Profiles",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "integer", nullable: false),
@@ -167,9 +167,9 @@ namespace Buddies.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Profile", x => x.UserId);
+                    table.PrimaryKey("PK_Profiles", x => x.UserId);
                     table.ForeignKey(
-                        name: "FK_Profile_AspNetUsers_UserId",
+                        name: "FK_Profiles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -232,7 +232,7 @@ namespace Buddies.API.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Profile");
+                name: "Profiles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -9,4 +9,6 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     public ApiContext(DbContextOptions<ApiContext> options) : base(options)
     {
     }
+
+    public DbSet<Profile> Profiles { get; set; } = null!;
 }

@@ -22,6 +22,24 @@ namespace Buddies.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Buddies.API.Entities.Profile", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Profiles");
+                });
+
             modelBuilder.Entity("Buddies.API.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -222,31 +240,15 @@ namespace Buddies.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Buddies.API.Entities.User", b =>
+            modelBuilder.Entity("Buddies.API.Entities.Profile", b =>
                 {
-                    b.OwnsOne("Buddies.API.Entities.Profile", "Profile", b1 =>
-                        {
-                            b1.Property<int>("UserId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("FirstName")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("LastName")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("UserId");
-
-                            b1.ToTable("Profile");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserId");
-                        });
-
-                    b.Navigation("Profile")
+                    b.HasOne("Buddies.API.Entities.User", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("Buddies.API.Entities.Profile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -297,6 +299,12 @@ namespace Buddies.API.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Buddies.API.Entities.User", b =>
+                {
+                    b.Navigation("Profile")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

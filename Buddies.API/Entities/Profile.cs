@@ -1,11 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Buddies.API.Entities;
 
-[Owned, Table(nameof(Profile))]
 public class Profile
 {
+    public Profile(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+    }
+    
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    
+    [Key]
+    public int UserId { get; init; }
+    public User User { get; init; } = null!; // populated by EF 
 }

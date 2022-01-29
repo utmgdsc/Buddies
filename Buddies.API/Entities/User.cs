@@ -1,11 +1,15 @@
-﻿
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Buddies.API.Entities;
 
 public class User : IdentityUser<int>
 {
-    public override string Email
+    public User(string email)
+    {
+        Email = email;
+    }
+    
+    public sealed override string Email
     {
         get => base.Email;
         set
@@ -17,5 +21,5 @@ public class User : IdentityUser<int>
         }
     }
 
-    public Profile Profile { get; init; }
+    public Profile Profile { get; init; } = null!; // populated by EF
 }
