@@ -139,6 +139,9 @@ const RegisterForm: React.VFC<Props> = ({ onSubmit }) => {
               fullWidth
               error={fieldState.invalid}
               helperText={fieldState.error?.message}
+              FormHelperTextProps={{
+                sx: { whiteSpace: 'pre-wrap' },
+              }}
             />
           );
         }}
