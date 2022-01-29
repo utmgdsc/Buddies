@@ -1,7 +1,7 @@
 import React from 'react';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import * as EmailValidator from 'email-validator';
@@ -25,7 +25,7 @@ interface Props {
 
 const RegisterForm: React.VFC<Props> = ({ onSubmit }) => {
   const {
-    handleSubmit, control, setError,
+    handleSubmit, control, setError, formState: { isSubmitting },
   } = useForm<RegisterRequest>({
     defaultValues: {
       firstName: '',
@@ -53,12 +53,14 @@ const RegisterForm: React.VFC<Props> = ({ onSubmit }) => {
     <Box
       component="form"
       sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-      onSubmit={(event: any) => handleSubmit(onSubmit)(event).catch((error) => {
-        if (axios.isAxiosError(error) && error.response) {
-          const response = error.response.data as ValidationProblemDetails;
-          processValidationProblems(response);
-        }
-      })}
+      onSubmit={(event: any) => handleSubmit(onSubmit)(event)
+        .then() // todo: complete this once login backend is functional
+        .catch((error) => {
+          if (axios.isAxiosError(error) && error.response) {
+            const response = error.response.data as ValidationProblemDetails;
+            processValidationProblems(response);
+          }
+        })}
       noValidate // for consistency, we disable native validation UI for MUI validation UI
     >
       <Typography variant="h3" sx={{ marginBottom: 6 }}>Project Buddies</Typography>
@@ -163,7 +165,14 @@ const RegisterForm: React.VFC<Props> = ({ onSubmit }) => {
           },
         }}
       />
-      <Button type="submit" variant="contained" sx={{ marginTop: 4 }}>Register</Button>
+      <LoadingButton
+        type="submit"
+        variant="contained"
+        sx={{ marginTop: 4 }}
+        loading={isSubmitting}
+      >
+        Register
+      </LoadingButton>
     </Box>
   );
 };

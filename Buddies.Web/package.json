@@ -12,6 +12,7 @@
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@fontsource/roboto": "^4.5.1",
+    "@mui/lab": "^5.0.0-alpha.66",
     "@mui/material": "^5.2.8",
     "axios": "^0.25.0",
     "email-validator": "^2.0.4",
