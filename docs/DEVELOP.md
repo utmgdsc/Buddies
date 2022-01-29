@@ -9,6 +9,8 @@
 - PostgreSQL 14
     - You can choose to host it on your OS or through Docker (a `docker-compose.yml`
     has been provided for convenience).
+- JRE 8+
+    - For [OpenAPI Generator](https://openapi-generator.tech/).
 
 ### IDE
 
