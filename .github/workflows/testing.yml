@@ -19,7 +19,10 @@ jobs:
         with:
           dotnet-version: '6.x'
       
-      - name: Run API Tests
+      - name: dotnet tool restore
+        run: dotnet tool restore
+      
+      - name: dotnet test
         run: dotnet test
         
   lint_frontend:
