@@ -5,6 +5,7 @@ import axios from 'axios';
 import RegisterForm from '../components/RegisterForm';
 import { RegisterRequest } from '../api/model/registerRequest';
 import { ValidationProblemDetails } from '../api/model/validationProblemDetails';
+import { registerUser } from '../api';
 
 /**
  * Registration page.
@@ -21,7 +22,7 @@ const Register: React.VFC = () => {
 
   const onSubmit: SubmitHandler<RegisterRequest> = async (data) => {
     try {
-      await axios.post('/api/v1/users/register', data);
+      await registerUser(data);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const problems = error.response as ValidationProblemDetails;
