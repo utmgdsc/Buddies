@@ -84,4 +84,20 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
             Assert.Equal(request.LastName, profile.LastName);
         }
     }
+
+    [Fact]
+    public void TestDuplicateEmail()
+    {
+        var request = new RegisterRequest("Akari", "Akaza", "kyoko@toshino.moe", "Pwd^123");
+        
+        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var dupRequest = new RegisterRequest("Kyoko", "Toshino", request.Email, "321^dwP");
+        response = _client.PostAsJsonAsync("/api/v1/users/register", dupRequest).Result;
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        
+        var responseBody = response.Content.ReadFromJsonAsync<JsonDocument>().Result;
+        Assert.True(responseBody?.RootElement.GetProperty("errors").TryGetProperty("email", out _));
+    }
 }
