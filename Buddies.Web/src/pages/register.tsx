@@ -7,9 +7,6 @@ import { RegisterRequest } from '../api/model/registerRequest';
 import { ValidationProblemDetails } from '../api/model/validationProblemDetails';
 import { registerUser } from '../api';
 
-/**
- * Registration page.
- */
 const Register: React.VFC = () => {
   const formMethods = useForm<RegisterRequest>({
     defaultValues: {
