@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
  
 const Aboutme = ({desc}) => {  
     return (
-        <Box p = {2} boxShadow={12} sx={{ width: '100%', height: 100, backgroundColor: 'white', border: 1, alignItems: "center"}}>
+        <Box p = {2} boxShadow={12} sx={{ width: '100%', overflow: 'auto', backgroundColor: 'white', border: 1}}>
             <Grid container > 
                 <Grid item>
                     <Typography variant="h6" gutterBottom>

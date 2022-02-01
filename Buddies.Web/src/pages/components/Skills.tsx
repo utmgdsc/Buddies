@@ -12,7 +12,7 @@ these in place of the dots.
 
 const Skills = () => {
     return (
-        <Box p = {2} boxShadow={12} sx={{ width: '75%', height: 100, backgroundColor: 'white', border: 1, alignItems: "center"}}>
+        <Box p = {2} boxShadow={12} sx={{ width: '100%', height: 98, backgroundColor: 'white', border: 1, alignItems: "center"}}>
             <Grid container > 
                 <Grid item>
                     <Typography variant="h6" gutterBottom>

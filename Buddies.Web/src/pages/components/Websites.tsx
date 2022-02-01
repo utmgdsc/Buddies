@@ -7,7 +7,7 @@ import Button from '@material-ui/core/Button'
 
 const Websites = () => {
     return (
-        <Box p = {2} boxShadow={12} sx={{ width: '75%', height: 207, backgroundColor: 'white', border: 1, alignItems: "center"}}>
+        <Box p = {2} boxShadow={12} sx={{ width: '100%', height: 207, backgroundColor: 'white', border: 1, alignItems: "center"}}>
             <Grid container > 
                 <Grid item>
                     <Typography variant="h6" gutterBottom>

@@ -14,31 +14,27 @@ const Header = ({name, email, occupation}) => {  {/* In the profile page, we're 
                             (John doe..etc)
                         */}
     return (
-        <Grid container spacing={2}> 
-          
-          <Grid item xs={12}>
-            <Box p = {2} sx={{ width: '100%', height: '90%', backgroundColor: 'black'}}>
-                <Grid container spacing={2}>
-                    <Grid item>
-                        <Avatar alt="Remy Sharp" src="profile.png" sx={{ width: 64, height: 64 }}/>
+        <Grid container> 
+            <Box p = {2} sx={{ paddingLeft: 3, width: '100%', height: '90%', backgroundColor: 'black', marginBottom: 1}}>
+                <Grid container>
+                    <Grid container item xs={1} justifyContent= 'center'>
+                        <Avatar alt="Remy Sharp" src="profile.png" sx={{ width: 74, height: 74 }}/>
                     </Grid>
-                    <Grid item xs={10}>
-                    <br />
-                    <Typography style={{color: 'white'}} variant="subtitle2" gutterBottom>
-                        {name} | {email} | {occupation} {/* User's name + email + occupation */}
-                    </Typography> 
+                    <Grid container item xs={9}>
+                        <Typography sx={{ marginTop: 5, marginLeft: 2}} style={{color: 'white'}} variant="subtitle2" gutterBottom>
+                            {name} | {email} | {occupation} {/* User's name + email + occupation */}
+                        </Typography> 
                     </Grid>
-                    <Grid item> 
-                        <br />
+                    <Grid container item xs={2} justify="flex-end"> 
+                        
                         <CopyToClipboard text={'www.testurl.com'}>
-                            <Button startIcon={<FileCopyIcon />} variant="contained">
+                            <Button startIcon={<FileCopyIcon />} variant="contained" style={{marginTop: 10, height: 50}}>
                                 Share
                             </Button>
                         </CopyToClipboard>
                     </Grid>
                 </Grid>
             </Box>
-          </Grid>
         </Grid>
         
        
