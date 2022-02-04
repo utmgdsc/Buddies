@@ -12,9 +12,12 @@ namespace Buddies.API.Controllers
         /// </summary>
         Entities.Profile[] profiles =
             {
-                new() {id = 1, name = "bob", email="bob@gmail.com", occup="Student"},
-                new() {id = 2, name = "Jack", email="jack@gmail.com", occup="CS@UOFT"},
-                new() {id = 3, name = "Suf", email="suf@gmail.com", occup="CEO@Amazon"}
+                new() {id = 1, name = "bob", bio="bob@gmail.com",
+                    aboutme="Hello, my name is bob and I'm currently a student at the university of Toronto. I am also looking to expand my network and work with new people."},
+                new() {id = 2, name = "Jack", bio="jack@gmail.com",
+                    aboutme="Hey, I'm jack, I want to improve my resume with some cool new projects"},
+                new() {id = 3, name = "Suf", bio="suf@gmail.com",
+                    aboutme="Hello my Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.dsaadsdjddsklfjklfdaskjlfdasfddfkladsfkjfsdkjldfsklajfdslkfdjskldskdfljdfskjlfdjfdfdffdfdfffffff" }
             };
 
         /// <summary>
