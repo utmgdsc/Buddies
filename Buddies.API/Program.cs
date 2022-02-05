@@ -1,6 +1,7 @@
 using Buddies.API.Database;
 using Buddies.API.Entities;
 using Buddies.API.IO;
+using Buddies.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +31,8 @@ builder.Services.AddDbContext<ApiContext>(options => options.UseNpgsql(connectio
 builder.Services.AddIdentity<User, Role>(options => options.User.RequireUniqueEmail = true)
     .AddEntityFrameworkStores<ApiContext>()
     .AddErrorDescriber<CustomIdentityErrorDescriber>();
+// set up services
+builder.Services.AddScoped<TokenService>();
 
 // set up JWT 
 

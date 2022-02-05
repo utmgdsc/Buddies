@@ -37,7 +37,7 @@ namespace Buddies.API.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Profiles");
+                    b.ToTable("Profiles", (string)null);
                 });
 
             modelBuilder.Entity("Buddies.API.Entities.Role", b =>
