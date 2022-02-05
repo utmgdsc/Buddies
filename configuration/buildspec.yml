@@ -13,8 +13,7 @@ phases:
       - yarn install
       - yarn run lint -- --fix
       - cd ..
-      - dotnet new tool-manifest --force
-      - dotnet tool install Swashbuckle.AspNetCore.Cli
+      - dotnet tool restore
       - dotnet restore Buddies.API/Buddies.API.csproj
   build:
     commands:
