@@ -41,7 +41,7 @@ type UpdateProf = {
 
 const Profile = () =>  {
 
-  const [userProfile, setProfile] = useState([{"id": 0, "name": "joe", "bio": "n/a", "aboutme": "n/a", "skills": [{"id": 1, "name": "Data Structures", "delete": false}, {"id": 2, "name": "C++", "delete": false}, {"id": 3, "name": "Python", "delete": false}]}]);
+  const [userProfile, setProfile] = useState<UpdateProf>({"id": 0, "name": "joe", "bio": "n/a", "aboutme": "n/a", "skills": [{"id": 1, "name": "Data Structures", "delete": false}, {"id": 2, "name": "C++", "delete": false}, {"id": 3, "name": "Python", "delete": false}]});
 
   let loggedin: boolean = true; {/* Since the log in feature has not been created yet, I use a boolean to toggle
      on and off the functionality for a user thats logged in and logged out. (The logged in functionality only
@@ -82,13 +82,15 @@ const Profile = () =>  {
       console.log(error);
       alert(error);
     });
-    console.log(res);
-    console.log(profileToUpdate);
-    res.data.skills = profileToUpdate.skills;
-    console.log(res.data);
-    setProfile(res.data);
+    if (true && res) {
+      console.log(res);
+      console.log(profileToUpdate);
+      res.data.skills = profileToUpdate.skills;
+      console.log(res.data);
+      setProfile(res.data);
+      console.log(userProfile);
+    }
 
-    console.log(userProfile);
   }
 
 
@@ -120,4 +122,4 @@ const Profile = () =>  {
 };
 
 export default Profile;
-export type { UpdateProf };
+export type { UpdateProf, Skillobject };

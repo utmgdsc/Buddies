@@ -1,11 +1,11 @@
 import SkillList from './SkillList';
 import { useRef, useState, useEffect } from 'react';
-import type {UpdateProf} from './Profile';
+import type {UpdateProf, Skillobject} from './Profile';
 import Button from '@material-ui/core/Button'
 {/* Skill Form. Allows the user to update his skills*/}
 function Skillform({submitFunc, profileData}: {submitFunc: VoidFunction, profileData: UpdateProf}) {
-  const [skills, setSkills] = useState([])
-  const skillNameRef = useRef()
+  const [skills, setSkills] = useState<Skillobject[]>([])
+  const skillNameRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     setSkills(profileData.skills);
@@ -14,12 +14,15 @@ function Skillform({submitFunc, profileData}: {submitFunc: VoidFunction, profile
   function toggleSkill(id: number) {
     const newSkills = [...skills]
     const skill = newSkills.find(skill => skill.id === id)
-    skill.delete = !skill.delete
-    setSkills(newSkills)
+    if (true && skill) {  //checks if skill is undefined
+      skill.delete = !skill.delete
+      setSkills(newSkills)
+    }
   }
 
-  function handleAddSkill(e: React.ChangeEvent<HTMLInputElement>) {
-    const name = skillNameRef.current.value
+  function handleAddSkill(e) {
+    
+    const name = skillNameRef?.current?.value
     if (name === '' ){
         return
     } 

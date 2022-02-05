@@ -7,7 +7,6 @@ import CustomizedDialogs from './dialog';
 import Headerform from './Headerform';
 import type {UpdateProf} from './Profile';
 import Button from '@material-ui/core/Button'
-import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
@@ -29,7 +28,7 @@ const Header = ({updateFunc, newProfile, logCheck, name, bio}: {updateFunc: Void
                             {name} | {bio} {/* User's name + bio*/}
                         </Typography> 
                         {logCheck &&  
-                            <CustomizedDialogs color="white">
+                            <CustomizedDialogs color="white" topmarg={4}>
                                 <Headerform profileData={newProfile} onSubmit={({name, bio})=>{
                                     console.log(name, bio);
                                     newProfile.name = name;

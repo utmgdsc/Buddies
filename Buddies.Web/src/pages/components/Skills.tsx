@@ -21,7 +21,7 @@ const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, n
                 </Grid> 
                 <Grid item xs={1}>
                     {logCheck &&
-                        <CustomizedDialogs color="black">
+                        <CustomizedDialogs color="black" topmarg={0}>
                             <Skillform submitFunc={updateFunc} profileData={newProfile}/>
                             
                         </CustomizedDialogs>
@@ -32,7 +32,7 @@ const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, n
             <Typography variant="subtitle2" gutterBottom>
                 <Grid container > 
                     {newProfile.skills.map(skill => {
-                        return <div className="skills">
+                        return <div className="skills" key={skill.id}>
                                     <Box p = {2} m = {1} sx={{border: 1, borderRadius: 8, height: '10%', paddingTop: 0, marginBottom: -2, marginRight: 0}} >
                                         <Typography variant="h6" gutterBottom fontSize={12}>
                                             {skill.name}

@@ -1,9 +1,9 @@
 import React from "react";
-
+import type {Skillobject} from './Profile';
 import Box from '@mui/material/Box';
 
 {/* Each individual skill */}
-export default function Skill({ skill, toggleSkill }) {
+export default function Skill({ skill, toggleSkill }: {skill: Skillobject, toggleSkill: (id: number) => void}) {
     function handleSkillClick () {
         toggleSkill(skill.id)
     }

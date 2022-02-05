@@ -17,7 +17,7 @@ const Websites = ({logCheck}:{logCheck: boolean}) => {
                 </Grid> 
                 <Grid item xs={1}>
                     {logCheck &&
-                        <CustomizedDialogs color="black">
+                        <CustomizedDialogs color="black" topmarg={0}>
                             
                         </CustomizedDialogs>
                     }

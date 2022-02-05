@@ -20,7 +20,7 @@ const Aboutme = ({updateFunc, newProfile, logCheck, desc}: {updateFunc: VoidFunc
                 </Grid> 
                 <Grid item xs={1}>
                     {logCheck &&
-                        <CustomizedDialogs color="black">
+                        <CustomizedDialogs color="black" topmarg={0}>
                             <Aboutmeform profileData={newProfile} onSubmit={({aboutme})=>{
                                 console.log(aboutme);
                                 newProfile.aboutme = aboutme;
