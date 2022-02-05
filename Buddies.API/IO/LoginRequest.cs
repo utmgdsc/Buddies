@@ -3,15 +3,13 @@
 namespace Buddies.API.IO;
 
 /// <summary>
-/// A registration request.
+/// A login request.
 /// </summary>
-/// <param name="FirstName">First name of user.</param>
-/// <param name="LastName">Last name of user.</param>
-/// <param name="Email">Email of user.</param>
-/// <param name="Password">Password of user.</param>
-public record LoginRequest(
+public record LoginRequest
+{
     [Required(ErrorMessage = "A email is required.")]
-    string Email,
+    public string Email { get; init; } = default!;
+
     [Required(ErrorMessage = "A password is required.")]
-    string Password
-);
+    public string Password { get; init; } = default!;
+}
