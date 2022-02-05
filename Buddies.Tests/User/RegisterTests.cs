@@ -24,7 +24,14 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
     [Fact]
     public void TestEmptyRequest()
     {
-        var request = new RegisterRequest("", "", "", "");
+        var request = new RegisterRequest
+        {
+            FirstName = "",
+            LastName = "",
+            Email = "",
+            Password = ""
+        };
+        
         var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var responseBody = response.Content.ReadFromJsonAsync<JsonDocument>().Result;
@@ -34,7 +41,13 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
     [Fact]
     public void TestInvalidEmail()
     {
-        var request = new RegisterRequest("Akari", "Akaza", "not an email", "Pwd^123");
+        var request = new RegisterRequest
+        {
+            FirstName = "Akari", 
+            LastName = "Akaza", 
+            Email = "not an email", 
+            Password = "Pwd^123"
+        };
         
         var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -45,7 +58,13 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
     [Fact]
     public void TestUnsafePassword()
     {
-        var request = new RegisterRequest("Akari", "Akaza", "akari@akaza.moe", "12345");
+        var request = new RegisterRequest
+        {
+            FirstName = "Akari", 
+            LastName = "Akaza", 
+            Email = "akari@akaza.moe", 
+            Password = "12345"
+        };
 
         var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -56,7 +75,13 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
     [Fact]
     public void TestShortName()
     {
-        var request = new RegisterRequest("A", "A", "akari@akaza.moe", "Pwd^123");
+        var request = new RegisterRequest
+        {
+            FirstName = "A", 
+            LastName = "A", 
+            Email = "akari@akaza.moe", 
+            Password = "Pwd^123"
+        };
         
         var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -68,7 +93,13 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
     [Fact]
     public void TestUserRegistered()
     {
-        var request = new RegisterRequest("Akari", "Akaza", "akari@akaza.moe", "Pwd^123");
+        var request = new RegisterRequest
+        {
+            FirstName = "Akari", 
+            LastName = "Akaza", 
+            Email = "akari@akaza.moe", 
+            Password = "Pwd^123"
+        };
         
         var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -88,12 +119,25 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
     [Fact]
     public void TestDuplicateEmail()
     {
-        var request = new RegisterRequest("Akari", "Akaza", "kyoko@toshino.moe", "Pwd^123");
+        var request = new RegisterRequest
+        {
+            FirstName = "Akari", 
+            LastName = "Akaza", 
+            Email = "kyoko@toshino.moe", 
+            Password = "Pwd^123"
+        };
         
         var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var dupRequest = new RegisterRequest("Kyoko", "Toshino", request.Email, "321^dwP");
+        var dupRequest = new RegisterRequest
+        {
+            FirstName = "Kyoko", 
+            LastName = "Toshino", 
+            Email = request.Email, 
+            Password = "321^dwP"
+        };
+        
         response = _client.PostAsJsonAsync("/api/v1/users/register", dupRequest).Result;
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         
