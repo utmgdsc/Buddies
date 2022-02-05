@@ -5,6 +5,28 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/v{version}/profiles": {
+      "post": {
+        "tags": [
+          "Profiles"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/v{version}/users/register": {
       "post": {
         "tags": [
@@ -138,7 +160,7 @@
       }
     },
     "/api/v{version}/users/refresh": {
-      "post": {
+      "get": {
         "tags": [
           "Users"
         ],
@@ -152,30 +174,6 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RefreshRequest"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RefreshRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RefreshRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RefreshRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Success"
@@ -187,26 +185,16 @@
   "components": {
     "schemas": {
       "LoginRequest": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "password": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "RefreshRequest": {
         "required": [
-          "refreshToken"
+          "email",
+          "password"
         ],
         "type": "object",
         "properties": {
-          "refreshToken": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
             "type": "string"
           }
         },

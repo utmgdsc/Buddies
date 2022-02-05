@@ -3,7 +3,6 @@
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Buddies.API.Services
@@ -11,11 +10,11 @@ namespace Buddies.API.Services
     public class TokenService
     {
         private readonly IConfiguration _config;
+        
         public TokenService(IConfiguration config)
         {
             _config = config;
         }
-
 
         public string GenerateAccessToken(User user)
         {
@@ -24,7 +23,7 @@ namespace Buddies.API.Services
 
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
 /*                new Claim(ClaimTypes.GivenName, user.Profile.FirstName),
                 new Claim(ClaimTypes.Surname, user.Profile.LastName),*/
             };
@@ -37,29 +36,7 @@ namespace Buddies.API.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-
-        public string GenerateRefreshToken(User user)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            };
-
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-              _config["Jwt:Audience"],
-              claims,
-              expires: DateTime.UtcNow.AddDays(7),
-              signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
         
-
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters

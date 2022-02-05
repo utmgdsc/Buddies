@@ -9,6 +9,9 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Buddies.API.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace Buddies.API.Controllers
 {
@@ -22,11 +25,13 @@ namespace Buddies.API.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly TokenService _tokenService;
-
+        
         /// <summary>
         /// Initializes a new UsersController.
         /// </summary>
         /// <param name="userManager">UserManager from ASP.NET Core Identity.</param>
+        /// <param name="signInManager">SignInManager from ASP.NET Core Identity.</param>
+        /// <param name="tokenService">TokenService for generating JWT tokens.</param>
         public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, TokenService tokenService)
         {
             _userManager = userManager;
@@ -41,7 +46,7 @@ namespace Buddies.API.Controllers
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        public ActionResult Register([FromBody] RegisterRequest request)
+        public async Task<ActionResult> Register([FromBody] RegisterRequest request)
         {
             var userData = new User(request.Email)
             {
@@ -65,10 +70,16 @@ namespace Buddies.API.Controllers
                 return ValidationProblem(ModelState);
             }
 
-            User user = _userManager.FindByEmailAsync(request.Email).Result;
-           
-            setTokenCookie(_tokenService.GenerateRefreshToken(user)); // append cookie with refresh token to the http response
-            return Created("", _tokenService.GenerateAccessToken(user));
+            var user = _userManager.FindByEmailAsync(request.Email).Result;
+            var claims = _signInManager.CreateUserPrincipalAsync(user).Result;
+            
+            await HttpContext.SignInAsync(claims, new AuthenticationProperties
+            {
+                ExpiresUtc = DateTimeOffset.Now.AddDays(7),
+                IsPersistent = true
+            });
+            
+            return StatusCode(StatusCodes.Status201Created);
         }
 
 
@@ -77,12 +88,11 @@ namespace Buddies.API.Controllers
         /// </summary>
         /// /// <param name="request">A login request.</param>
         [HttpPost("[action]")]
-        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        public ActionResult Login([FromBody] LoginRequest request)
+        public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
-            User user =  _userManager.FindByEmailAsync(request.Email).Result;
+            var user =  _userManager.FindByEmailAsync(request.Email).Result;
 
             if (user == null)
             {
@@ -96,44 +106,29 @@ namespace Buddies.API.Controllers
                 return Unauthorized("Wrong email or password!"); // todo: change to Model Error 
             }
 
-            setTokenCookie(_tokenService.GenerateRefreshToken(user)); // append cookie with refresh token to the http response
-            return Created("", _tokenService.GenerateAccessToken(user));
+            var claims = _signInManager.CreateUserPrincipalAsync(user).Result;
 
+            await HttpContext.SignInAsync(claims, new AuthenticationProperties
+            {
+                ExpiresUtc = DateTimeOffset.Now.AddDays(7),
+                IsPersistent = true // maybe add a "remember me" option in the future
+            });
+
+            return Ok();
         }
 
-        [HttpPost("[action]")]
-        public ActionResult Refresh(RefreshRequest request)
+        [HttpGet("[action]")]
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        public ActionResult Refresh()
         {
-            if (request is null)
-            {
-                return BadRequest("Invalid client request1");
-            }
+            var userEntity = _userManager.GetUserAsync(User).Result;
 
-            // find user by request token, then send back a new access cookie. 
-            ClaimsPrincipal principal = _tokenService.GetPrincipalFromExpiredToken(request.RefreshToken);
-            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            User user = _userManager.FindByIdAsync(userId).Result;
-            
-            if (user == null)
+            var responseBody = new TokenResponse
             {
-                return BadRequest("Invalid Token");
-            }
-            
-            var newAccessToken = _tokenService.GenerateAccessToken(user);
-            return Ok(newAccessToken);
-        }
-
-        // append cookie with refresh token to the http response
-        private void setTokenCookie(string token)
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(7)
+                AccessToken = _tokenService.GenerateAccessToken(userEntity)
             };
-            Response.Cookies.Append("BuddiesRefreshToken", token, cookieOptions);
-
+            
+            return Ok(responseBody);
         }
-
     }
 }
