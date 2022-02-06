@@ -3,7 +3,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Button from '@mui/material/Button';
-import { AuthState } from '../contexts/authContext';
+import { AuthState } from '../stores/authStore';
 
 interface Props {
   authState: AuthState

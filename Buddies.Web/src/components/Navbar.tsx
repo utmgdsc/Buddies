@@ -1,16 +1,17 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import NextLink from 'next/link';
 import Stack from '@mui/material/Stack';
-import { AuthContext } from '../contexts/authContext';
 import AccountTab from './AccountTab';
 import { logoutUser } from '../api';
+import { authStore } from '../stores/authStore';
 
 const Navbar: React.VFC = () => {
-  const [authState, dispatch] = useContext(AuthContext);
+  // const [authState, dispatch] = useContext(AuthContext);
+  const authState = authStore((state) => state.authState);
 
   return (
     <AppBar position="static">
@@ -29,9 +30,7 @@ const Navbar: React.VFC = () => {
           {authState ? (
             <AccountTab
               authState={authState}
-              logout={() => {
-                logoutUser().then(() => dispatch({ type: 'LOGOUT', data: null }));
-              }}
+              logout={() => logoutUser()}
             />
           )
             : (

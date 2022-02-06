@@ -23,7 +23,8 @@
     "password-validator": "^5.2.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-hook-form": "^7.25.1"
+    "react-hook-form": "^7.25.1",
+    "zustand": "^3.6.9"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^12.0.8",
