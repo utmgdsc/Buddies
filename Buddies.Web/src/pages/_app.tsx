@@ -30,7 +30,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
-        {loaded
+      {loaded
           && (
           <Layout>
             <Component {...pageProps} />
