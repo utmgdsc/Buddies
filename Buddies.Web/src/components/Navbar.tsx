@@ -16,6 +16,9 @@ const Navbar: React.VFC = () => (
       <NextLink href="/register" passHref>
         <Button color="inherit" sx={{ marginLeft: 'auto' }}>Register</Button>
       </NextLink>
+      <NextLink href="/login" passHref>
+        <Button color="inherit" sx={{ marginLeft: 1 }}>Login</Button>
+      </NextLink>
     </Toolbar>
   </AppBar>
 );
