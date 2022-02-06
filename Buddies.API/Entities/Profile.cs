@@ -26,12 +26,10 @@ public class Profile
     /// First name on the profile.
     /// </summary>
     public string FirstName { get; set; }
-
     /// <summary>
     /// Last name on the profile.
     /// </summary>
     public string LastName { get; set; }
-
     /// <summary>
     /// ID of the user the profile belongs to.
     /// </summary>
@@ -54,4 +52,9 @@ public class Profile
     /// Users skills on the profile
     /// </summary>
     public List<Skills> Skills { get; set; }
+    
+    /// <summary>
+    /// User the profile belongs to.
+    /// </summary>
+    public User User { get; init; } = null!; // populated by EF 
 }
