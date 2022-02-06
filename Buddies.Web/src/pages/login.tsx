@@ -16,14 +16,13 @@ const Login: React.VFC = () => {
     },
   });
 
-  const [state, dispatch] = useContext(AuthContext);
+  const [, dispatch] = useContext(AuthContext);
 
   const onSubmit: SubmitHandler<LoginRequest> = async (data) => {
     try {
       await loginUser(data);
 
-      const res = await fetchToken();
-      dispatch({ type: 'LOGIN', data: res.data.accessToken });
+      fetchToken().then((res) => dispatch({ type: 'LOGIN', data: res }));
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === StatusCodes.UNAUTHORIZED) {
         formMethods.setError('email', { message: 'Email or password incorrect.' });
