@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Buddies.API.Entities;
+using Buddies.API.Database;
 
 namespace Buddies.API.Controllers
 {
