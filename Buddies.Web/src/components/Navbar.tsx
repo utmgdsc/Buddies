@@ -5,17 +5,17 @@ import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import NextLink from 'next/link';
 import Stack from '@mui/material/Stack';
+import { useRouter } from 'next/router';
 import AccountTab from './AccountTab';
 import { logoutUser } from '../api';
 import { authStore } from '../stores/authStore';
-import { useRouter } from 'next/router';
 
 const Navbar: React.VFC = () => {
   // const [authState, dispatch] = useContext(AuthContext);
   const authState = authStore((state) => state.authState);
-  
+
   const router = useRouter();
-  
+
   return (
     <AppBar position="static">
       <Toolbar>
