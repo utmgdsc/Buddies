@@ -1,13 +1,7 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
-using Buddies.API.Database;
-using Buddies.API.Entities;
 using Buddies.API.IO;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Buddies.Tests.User;
@@ -59,7 +53,7 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
             Password = "WRONGPASSWORD"
         };
 
-        var loginResponse = _client.PostAsJsonAsync("/api/v1/users/login", request).Result;
+        var loginResponse = _client.PostAsJsonAsync("/api/v1/users/login", loginRequest).Result;
         Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);
     }
 
@@ -94,7 +88,7 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
         {
             FirstName = "John",
             LastName = "Doe",
-            Email = "1234@email.com",
+            Email = "12345@email.com",
             Password = "Abc123."
         };
 
@@ -103,7 +97,7 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
 
         var loginRequest = new LoginRequest
         {
-            Email = "1234@email.com",
+            Email = "12345@email.com",
             Password = "Abc123."
         };
         var loginResponse = _client.PostAsJsonAsync("/api/v1/users/login", loginRequest).Result;
@@ -111,8 +105,8 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
 
         var tokenresponse = _client.GetAsync("/api/v1/users/refresh").Result;   
         Assert.True(tokenresponse.IsSuccessStatusCode);
-        var body = tokenresponse.Content.ReadAsStringAsync().Result;
-        Assert.Contains("accessToken", body);
+        var responseBody = tokenresponse.Content.ReadAsStringAsync().Result;
+        Assert.Contains("accessToken", responseBody);
     }
 
     [Fact]
