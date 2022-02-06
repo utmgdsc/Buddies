@@ -102,7 +102,7 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
         };
         
         var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
         using (var scope = scopeFactory.CreateScope())
@@ -128,7 +128,7 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
         };
         
         var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var dupRequest = new RegisterRequest
         {

@@ -90,14 +90,14 @@ namespace Buddies.API.Controllers
 
             if (user == null)
             {
-                return Unauthorized("Wrong email or password"); // todo: change to Model Error 
+                return Unauthorized("Wrong email or password"); 
             }
 
             var signInResult =  _signInManager.CheckPasswordSignInAsync(user, request.Password, false).Result;
 
             if (!signInResult.Succeeded)
             {
-                return Unauthorized("Wrong email or password!"); // todo: change to Model Error 
+                return Unauthorized("Wrong email or password!"); 
             }
 
             var claims = _signInManager.CreateUserPrincipalAsync(user).Result;
@@ -116,7 +116,7 @@ namespace Buddies.API.Controllers
         public ActionResult<TokenResponse> Refresh()
         {
             var userEntity = _userManager.GetUserAsync(User).Result;
-
+            
             var responseBody = new TokenResponse
             {
                 AccessToken = _tokenService.GenerateAccessToken(userEntity)
