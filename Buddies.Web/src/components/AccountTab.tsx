@@ -17,7 +17,7 @@ const AccountTab: React.VFC<Props> = ({ authState, logout }) => {
     <>
       <Button
         onClick={(e) => setAnchorElement(e.currentTarget)}
-        endIcon={<AccountCircle />}
+        endIcon={<AccountCircle />} // when profile pictures are implemented, include here
         color="inherit"
       >
         {`${authState.given_name} ${authState.family_name}`}
@@ -26,6 +26,14 @@ const AccountTab: React.VFC<Props> = ({ authState, logout }) => {
         open={!!anchorElement}
         anchorEl={anchorElement}
         onClose={() => setAnchorElement(null)}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
       >
         <MenuItem onClick={logout}>
           Logout
