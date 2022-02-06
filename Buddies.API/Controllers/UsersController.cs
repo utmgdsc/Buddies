@@ -119,7 +119,7 @@ namespace Buddies.API.Controllers
 
         [HttpGet("[action]")]
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-        public ActionResult Refresh()
+        public ActionResult<TokenResponse> Refresh()
         {
             var userEntity = _userManager.GetUserAsync(User).Result;
 
@@ -127,8 +127,8 @@ namespace Buddies.API.Controllers
             {
                 AccessToken = _tokenService.GenerateAccessToken(userEntity)
             };
-            
-            return Ok(responseBody);
+
+            return responseBody;
         }
     }
 }
