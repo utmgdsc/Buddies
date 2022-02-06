@@ -4,61 +4,45 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Buddies.API.Database;
 
 namespace Buddies.API.Services
 {
     public class TokenService
     {
         private readonly IConfiguration _config;
+        private readonly ApiContext _apiContext;
+        private readonly JwtSecurityTokenHandler _jwtHandler;
         
-        public TokenService(IConfiguration config)
+        public TokenService(IConfiguration config, ApiContext apiContext)
         {
             _config = config;
+            _apiContext = apiContext;
+            _jwtHandler = new JwtSecurityTokenHandler();
         }
 
         public string GenerateAccessToken(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            List<Claim> claims = new List<Claim>
-            {
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-/*                new Claim(ClaimTypes.GivenName, user.Profile.FirstName),
-                new Claim(ClaimTypes.Surname, user.Profile.LastName),*/
-            };
-
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-              _config["Jwt:Audience"],
-              claims,
-              expires: DateTime.UtcNow.AddMinutes(15),
-              signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
         
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
-        {
-            var tokenValidationParameters = new TokenValidationParameters
+            _apiContext.Entry(user).Reference(u => u.Profile).Load();
+
+            var descriptor = new SecurityTokenDescriptor
             {
-                ValidateAudience = true,
-                ValidateIssuer = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = _config["Jwt:Issuer"],
-                ValidAudience = _config["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:key"])),
-
+                Issuer = _config["Jwt:Issuer"],
+                Audience = _config["Jwt:Audience"],
+                Claims = new Dictionary<string, object>
+                {
+                    [ClaimTypes.NameIdentifier] = user.Id.ToString(),
+                    [ClaimTypes.GivenName] = user.Profile.FirstName,
+                    [ClaimTypes.Surname] = user.Profile.LastName
+                },
+                Expires = DateTime.UtcNow.AddMinutes(15),
+                SigningCredentials = credentials
             };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
-            var jwtSecurityToken = (JwtSecurityToken)securityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Invalid Access token");
-
-            return principal;
-
+            
+            return _jwtHandler.WriteToken(_jwtHandler.CreateToken(descriptor));
         }
     }
 }
