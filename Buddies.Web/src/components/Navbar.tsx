@@ -8,11 +8,14 @@ import Stack from '@mui/material/Stack';
 import AccountTab from './AccountTab';
 import { logoutUser } from '../api';
 import { authStore } from '../stores/authStore';
+import { useRouter } from 'next/router';
 
 const Navbar: React.VFC = () => {
   // const [authState, dispatch] = useContext(AuthContext);
   const authState = authStore((state) => state.authState);
-
+  
+  const router = useRouter();
+  
   return (
     <AppBar position="static">
       <Toolbar>
@@ -30,7 +33,9 @@ const Navbar: React.VFC = () => {
           {authState ? (
             <AccountTab
               authState={authState}
-              logout={() => logoutUser()}
+              logout={() => {
+                logoutUser().then(() => router.push('/'));
+              }}
             />
           )
             : (
