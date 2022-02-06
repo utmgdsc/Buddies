@@ -1,11 +1,12 @@
-﻿import React from 'react';
+﻿import React, { useContext } from 'react';
 import Box from '@mui/material/Box';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { StatusCodes } from 'http-status-codes';
 import { LoginRequest } from '../api/model/loginRequest';
-import { loginUser } from '../api';
+import { loginUser, fetchToken } from '../api';
 import LoginForm from '../components/LoginForm';
+import { AuthContext } from '../contexts/authContext';
 
 const Login: React.VFC = () => {
   const formMethods = useForm<LoginRequest>({
@@ -15,9 +16,14 @@ const Login: React.VFC = () => {
     },
   });
 
+  const [state, dispatch] = useContext(AuthContext);
+
   const onSubmit: SubmitHandler<LoginRequest> = async (data) => {
     try {
       await loginUser(data);
+
+      const res = await fetchToken();
+      dispatch({ type: 'LOGIN', data: res.data.accessToken });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === StatusCodes.UNAUTHORIZED) {
         formMethods.setError('email', { message: 'Email or password incorrect.' });
