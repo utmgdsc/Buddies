@@ -2,10 +2,12 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
+import { StatusCodes } from 'http-status-codes';
+import { useRouter } from 'next/router';
 import RegisterForm from '../components/RegisterForm';
 import { RegisterRequest } from '../api/model/registerRequest';
 import { ValidationProblemDetails } from '../api/model/validationProblemDetails';
-import { registerUser } from '../api';
+import { registerUser, fetchToken } from '../api';
 
 const Register: React.VFC = () => {
   const formMethods = useForm<RegisterRequest>({
@@ -17,11 +19,16 @@ const Register: React.VFC = () => {
     },
   });
 
+  const router = useRouter();
+
   const onSubmit: SubmitHandler<RegisterRequest> = async (data) => {
     try {
       await registerUser(data);
+      await fetchToken();
+      router.push('/').then();
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
+      if (axios.isAxiosError(error) && error.response
+          && error.response.status === StatusCodes.BAD_REQUEST) {
         const problems = error.response as ValidationProblemDetails;
         if (problems.errors) {
           Object.keys(problems.errors).forEach((errorField) => {
