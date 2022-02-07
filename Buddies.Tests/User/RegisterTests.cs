@@ -34,6 +34,7 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
         };
         
         var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var responseBody = await response.Content.ReadFromJsonAsync<JsonDocument>();
         Assert.Equal(4, responseBody?.RootElement.GetProperty("errors").EnumerateObject().Count());
@@ -140,6 +141,7 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
         };
         
         response = await _client.PostAsJsonAsync("/api/v1/users/register", dupRequest);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         
         var responseBody = await response.Content.ReadFromJsonAsync<JsonDocument>();
