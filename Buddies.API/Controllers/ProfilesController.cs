@@ -41,6 +41,7 @@ namespace Buddies.API.Controllers
             var profileResponse = new UserProfileResponse();
             profileResponse.FirstName = profile.FirstName;
             profileResponse.LastName = profile.LastName;
+            profileResponse.UserId = profile.UserId;
             profileResponse.AboutMe = profile.AboutMe;
             profileResponse.Headline = profile.Headline;
             profileResponse.Skills = profile.Skills;
@@ -56,7 +57,6 @@ namespace Buddies.API.Controllers
         }
 
         [HttpPut]
-        [Authorize]
         public async Task<ActionResult> UpdateProfile(UpdateProfileRequest profile)
         {
             var dbProfile = await _context.Profiles.FindAsync(profile.UserId);

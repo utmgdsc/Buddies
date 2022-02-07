@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Buddies.API.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    [Migration("20220129070919_CreateUser")]
-    partial class CreateUser
+    [Migration("20220207124122_NewSnapshot")]
+    partial class NewSnapshot
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,9 +29,19 @@ namespace Buddies.API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("AboutMe")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("Headline")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -69,6 +79,31 @@ namespace Buddies.API.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Buddies.API.Entities.Skills", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Delete")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ProfileUserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfileUserId");
+
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("Buddies.API.Entities.User", b =>
@@ -253,6 +288,13 @@ namespace Buddies.API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Buddies.API.Entities.Skills", b =>
+                {
+                    b.HasOne("Buddies.API.Entities.Profile", null)
+                        .WithMany("Skills")
+                        .HasForeignKey("ProfileUserId");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Buddies.API.Entities.Role", null)
@@ -302,6 +344,11 @@ namespace Buddies.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Buddies.API.Entities.Profile", b =>
+                {
+                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("Buddies.API.Entities.User", b =>
