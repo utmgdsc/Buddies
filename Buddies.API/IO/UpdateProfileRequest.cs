@@ -8,20 +8,24 @@ namespace Buddies.API.IO;
 /// </summary>
 public record UpdateProfileRequest
 {
+  
     [Required(ErrorMessage = "")]
-    public int id { get; init; } = default!;
+    public string FirstName { get; init; } = default!;
 
     [Required(ErrorMessage = "")]
-    public string name { get; init; } = default!;
+    public string LastName { get; init; } = default!;
 
     [Required(ErrorMessage = "")]
-    public string headline { get; init; } = default!;
+    public int UserId { get; init; } = default!;
 
     [Required(ErrorMessage = "")]
-    public string aboutme { get; init; } = default!;
+    public string Headline { get; init; } = default!;
 
     [Required(ErrorMessage = "")]
-    public List<Skills> skills { get; init; } = default!;
+    public string AboutMe { get; init; } = default!;
+
+    [Required(ErrorMessage = "")]
+    public List<Skills> Skills { get; init; } = default!;
 }
 
 //{"id": 0, "name": "joe", "headline": "n/a", "aboutme": "n/a",

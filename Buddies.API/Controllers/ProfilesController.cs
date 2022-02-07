@@ -40,10 +40,17 @@ namespace Buddies.API.Controllers
 
             var profileResponse = new UserProfileResponse();
             profileResponse.FirstName = profile.FirstName;
-            profileResponse.LasttName = profile.LastName;
-            profileResponse.AboutMe = profile.aboutMe;
-            profileResponse.Headline = profile.bio;
+            profileResponse.LastName = profile.LastName;
+            profileResponse.AboutMe = profile.AboutMe;
+            profileResponse.Headline = profile.Headline;
             profileResponse.Skills = profile.Skills;
+
+            var userEntity = _userManager.GetUserAsync(User).Result;
+            if (userEntity == null || userEntity.Id != id)
+            {
+                profileResponse.Success = 0;
+            }
+            profileResponse.Success = 1;
 
             return Ok(profileResponse);
         }
@@ -52,16 +59,16 @@ namespace Buddies.API.Controllers
         [Authorize]
         public async Task<ActionResult> UpdateProfile(UpdateProfileRequest profile)
         {
-            var dbProfile = await _context.Profiles.FindAsync(profile.id);
+            var dbProfile = await _context.Profiles.FindAsync(profile.UserId);
             if (dbProfile == null)
             {
                 return NotFound("PROFILE NOT FOUND");
             }
-            dbProfile.FirstName = profile.name;
-            dbProfile.LastName = profile.name;
-            dbProfile.bio = profile.headline;
-            dbProfile.aboutMe = profile.aboutme;
-            dbProfile.Skills = profile.skills;
+            dbProfile.FirstName = profile.FirstName;
+            dbProfile.LastName = profile.LastName;
+            dbProfile.Headline = profile.Headline;
+            dbProfile.AboutMe = profile.AboutMe;
+            dbProfile.Skills = profile.Skills;
             _context.SaveChanges();
            
             return Ok();

@@ -351,25 +351,29 @@
       },
       "UpdateProfileRequest": {
         "required": [
-          "aboutme",
+          "aboutMe",
+          "firstName",
           "headline",
-          "id",
-          "name",
-          "skills"
+          "lastName",
+          "skills",
+          "userId"
         ],
         "type": "object",
         "properties": {
-          "id": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "userId": {
             "type": "integer",
             "format": "int32"
-          },
-          "name": {
-            "type": "string"
           },
           "headline": {
             "type": "string"
           },
-          "aboutme": {
+          "aboutMe": {
             "type": "string"
           },
           "skills": {

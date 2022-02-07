@@ -16,8 +16,8 @@ public class Profile
     {
         FirstName = firstName;
         LastName = lastName;
-        bio = "Project Enthusiast";
-        aboutMe = "Hi, welcome to my profile.";
+        Headline = "Project Enthusiast";
+        AboutMe = "Hi, welcome to my profile.";
         Skills = new List<Skills>();
         Skills.Add(new Entities.Skills("Project"));
     }
@@ -40,13 +40,13 @@ public class Profile
     /// headline on the profile
     /// </summary>
     [MaxLength(50)]
-    public string bio { get; set; }
+    public string Headline { get; set; }
 
     /// <summary>
     /// about me section on the profile
     /// </summary>
     [MaxLength(500)]
-    public string aboutMe { get; set; }
+    public string AboutMe { get; set; }
 
     /// <summary>
     /// Users skills on the profile

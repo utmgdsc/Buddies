@@ -11,10 +11,10 @@ public record UserProfileResponse
     public string FirstName { get; set; } = default!;
 
     [Required]
-    public string LasttName { get; set; } = default!;
+    public string LastName { get; set; } = default!;
 
     [Required]
-    public int userId { get; set; } = default!;
+    public int UserId { get; set; } = default!;
 
     [Required]
     public string Headline { get; set; } = default!;
@@ -24,5 +24,8 @@ public record UserProfileResponse
 
     [Required]
     public List<Skills> Skills { get; set; } = default!;
+
+    [Required]
+    public int Success { get; set; } = default!;
 
 }
