@@ -78,7 +78,7 @@ namespace Buddies.API.Controllers
 
 
         /// <summary>
-        /// Endpoint for login in a new user.
+        /// Endpoint for logging in a user.
         /// </summary>
         /// /// <param name="request">A login request.</param>
         [HttpPost("[action]")]
@@ -110,7 +110,10 @@ namespace Buddies.API.Controllers
 
             return Ok();
         }
-
+    
+        /// <summary>
+        /// Endpoint for renewing access tokens.
+        /// </summary>
         [HttpGet("[action]")]
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         public ActionResult<TokenResponse> Refresh()
@@ -124,7 +127,7 @@ namespace Buddies.API.Controllers
 
             return responseBody;
         }
-
+        
         [HttpGet("[action]")]
         [Authorize]
         public async Task<ActionResult> Logout()

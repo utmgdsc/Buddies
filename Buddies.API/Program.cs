@@ -44,12 +44,14 @@ builder.Services.AddAuthentication(options =>
         options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
+    // long term refresh token
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
         options.Cookie.HttpOnly = true;
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // DEV = HTTP, PROD = HTTPS
         options.Cookie.SameSite = SameSiteMode.Strict;
     })
+    // short term access token
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
         options.TokenValidationParameters = new TokenValidationParameters
         {
