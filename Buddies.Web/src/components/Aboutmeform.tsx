@@ -24,7 +24,7 @@ const Aboutmeform = ({onSubmit, profileData}: {onSubmit: (values: Values) => voi
                     <Form>
                         <br />
                         <div>
-                            <TextField fullWidth label="About me" placeholder={profileData.AboutMe} name="aboutme" value={values.aboutme} onChange={handleChange} onBlur={handleBlur}/>
+                            <TextField fullWidth label="About me" placeholder={profileData.aboutMe} name="aboutme" value={values.aboutme} onChange={handleChange} onBlur={handleBlur}/>
                         </div>
                         <br />                        
                         <Button type="submit"> Save Changes </Button>

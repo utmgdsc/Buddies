@@ -9,14 +9,19 @@ function Skillform({submitFunc, profileData}: {submitFunc: VoidFunction, profile
   const skillNameRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    setSkills(profileData.Skills);
+    setSkills(profileData.skills);
   }, [])
   
+  function getRandomInt(min: number, max: number): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
   function toggleSkill(id: number) {
     const newSkills = [...skills]
-    const skill = newSkills.find(skill => skill.Id === id)
+    const skill = newSkills.find(skill => skill.id === id)
     if (true && skill) {  //checks if skill is undefined
-      skill.Delete = !skill.Delete
+      skill.delete = !skill.delete
       setSkills(newSkills)
     }
   }
@@ -29,19 +34,22 @@ function Skillform({submitFunc, profileData}: {submitFunc: VoidFunction, profile
     } 
     console.log(name)
     setSkills(prevSkills => {
-      return [...prevSkills, { id: Math.random(), name: name, delete: false}]
+      return [...prevSkills, { id: getRandomInt(0, 100000), name: name, delete: false}]
     })
     skillNameRef.current.value = null
   }
 
   function handleClearSkills() {
-    const newSkills = skills.filter(skill => !skill.Delete)
+    const newSkills = skills.filter(skill => !skill.delete)
     setSkills(newSkills)
   }
 
 
   function handleSave() {
-    profileData.Skills = skills;
+    for (var i: number=0; i < skills.length; i++) {
+      skills[i].id = i;
+    }
+    profileData.skills = skills;
     console.log(profileData);
     submitFunc();
   }

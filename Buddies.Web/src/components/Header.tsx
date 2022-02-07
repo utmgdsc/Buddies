@@ -32,15 +32,15 @@ const Header = ({updateFunc, newProfile, logCheck, firstName, lastName, headline
                                 <Headerform profileData={newProfile} onSubmit={({firstName, lastName, headline})=>{
                                     console.log(firstName, lastName, headline);
                                     if (!(firstName === '')) {
-                                        newProfile.FirstName = firstName;
+                                        newProfile.firstName = firstName;
                                     }
                                     console.log("I AM HERE");
                                     console.log(lastName)
                                     if (!(lastName === '')) {
-                                        newProfile.LastName = lastName;
+                                        newProfile.lastName = lastName;
                                     }
                                     if (!(headline === '')) {
-                                        newProfile.Headline = headline;
+                                        newProfile.headline = headline;
                                     }
                                     console.log(newProfile);
                                     updateFunc();

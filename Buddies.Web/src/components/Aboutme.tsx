@@ -24,7 +24,7 @@ const Aboutme = ({updateFunc, newProfile, logCheck, desc}: {updateFunc: VoidFunc
                             <Aboutmeform profileData={newProfile} onSubmit={({aboutme})=>{
                                 console.log(aboutme);
                                 if (!(aboutme === '')) {
-                                    newProfile.AboutMe = aboutme;
+                                    newProfile.aboutMe = aboutme;
                                     console.log(newProfile);
                                     updateFunc();
                                 }

@@ -26,15 +26,15 @@ const Headerform = ({onSubmit, profileData}: {onSubmit: (values: Values) => void
                     <Form>
                         <br />
                         <div>
-                            <TextField label="First name" placeholder={profileData.FirstName} name="firstName" value={values.firstName} onChange={handleChange} onBlur={handleBlur}/>
+                            <TextField label="First name" placeholder={profileData.firstName} name="firstName" value={values.firstName} onChange={handleChange} onBlur={handleBlur}/>
                         </div>
                         <br />
                         <div>
-                            <TextField label="Last name" placeholder={profileData.LastName} name="lastName" value={values.lastName} onChange={handleChange} onBlur={handleBlur}/>
+                            <TextField label="Last name" placeholder={profileData.lastName} name="lastName" value={values.lastName} onChange={handleChange} onBlur={handleBlur}/>
                         </div>
                         <br />
                         <div>
-                            <TextField label="Headline" placeholder={profileData.Headline} name="headline" value={values.headline} onChange={handleChange} onBlur={handleBlur}/>
+                            <TextField label="Headline" placeholder={profileData.headline} name="headline" value={values.headline} onChange={handleChange} onBlur={handleBlur}/>
                         </div>
                         
                         <Button type="submit"> Save Changes </Button>
