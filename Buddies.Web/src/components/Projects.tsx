@@ -2,8 +2,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
-import CustomizedDialogs from './dialog';
-import Headerform from './Headerform';
+
  
 const Projects = () => {  
     return (

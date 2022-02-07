@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
 import Button from '@material-ui/core/Button'
 import CustomizedDialogs from './dialog';
-import type {UpdateProf} from './Profile';
+import type {UpdateProf} from '../pages/Profiles/[pid]';
 import Skillform from './Skillform';
 
 {/* Skills component.
@@ -12,7 +12,7 @@ import Skillform from './Skillform';
 
 const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, newProfile: UpdateProf, logCheck: boolean}) => {
     return (
-        <Box p = {2} boxShadow={12} sx={{ width: '100%', height: '100%', backgroundColor: 'white', border: 1, alignItems: "center"}}>
+        <Box p = {2} boxShadow={12} sx={{ width: '100%', height: '30%', backgroundColor: 'white', border: 1, alignItems: "center"}}>
             <Grid container > 
                 <Grid item xs={11}>
                     <Typography variant="h6" gutterBottom>
@@ -31,11 +31,11 @@ const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, n
             </Grid>
             <Typography variant="subtitle2" gutterBottom>
                 <Grid container > 
-                    {newProfile.skills.map(skill => {
-                        return <div className="skills" key={skill.id}>
+                    {newProfile.Skills.map(skill => {
+                        return <div className="skills" key={skill.Id}>
                                     <Box p = {2} m = {1} sx={{border: 1, borderRadius: 8, height: '10%', paddingTop: 0, marginBottom: -2, marginRight: 0}} >
                                         <Typography variant="h6" gutterBottom fontSize={12}>
-                                            {skill.name}
+                                            {skill.Name}
                                         </Typography> 
                                     </Box>
                                 </div>  

@@ -3,11 +3,12 @@ import React from 'react';
 import { Formik, Form } from 'formik';
 import { Button } from "@material-ui/core";
 import Box from '@mui/material/Box';
-import type {UpdateProf} from './Profile';
+import type {UpdateProf} from '../pages/Profiles/[pid]';
 
 interface Values {
-    name: string
-    bio: string
+    firstName: string
+    lastName: string
+    headline: string
 }
 
 interface Props {
@@ -16,7 +17,7 @@ interface Props {
 
 const Headerform = ({onSubmit, profileData}: {onSubmit: (values: Values) => void, profileData: UpdateProf}) => {
     return (
-        <Formik initialValues={{name: '', bio: ''}} onSubmit={(values) => {
+        <Formik initialValues={{firstName: '', lastName: '', headline: ''}} onSubmit={(values) => {
             onSubmit(values);
         }}>
             
@@ -25,11 +26,15 @@ const Headerform = ({onSubmit, profileData}: {onSubmit: (values: Values) => void
                     <Form>
                         <br />
                         <div>
-                            <TextField label="Name" placeholder={profileData.name} name="name" value={values.name} onChange={handleChange} onBlur={handleBlur}/>
+                            <TextField label="First name" placeholder={profileData.FirstName} name="firstName" value={values.firstName} onChange={handleChange} onBlur={handleBlur}/>
                         </div>
                         <br />
                         <div>
-                            <TextField label="Bio" placeholder={profileData.bio} name="bio" value={values.bio} onChange={handleChange} onBlur={handleBlur}/>
+                            <TextField label="Last name" placeholder={profileData.LastName} name="lastName" value={values.lastName} onChange={handleChange} onBlur={handleBlur}/>
+                        </div>
+                        <br />
+                        <div>
+                            <TextField label="Headline" placeholder={profileData.Headline} name="headline" value={values.headline} onChange={handleChange} onBlur={handleBlur}/>
                         </div>
                         
                         <Button type="submit"> Save Changes </Button>

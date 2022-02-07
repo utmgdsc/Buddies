@@ -3,7 +3,7 @@ import React from 'react';
 import { Formik, Form } from 'formik';
 import { Button } from "@material-ui/core";
 import Box from '@mui/material/Box';
-import type {UpdateProf} from './Profile';
+import type {UpdateProf} from '../pages/Profiles/[pid]';
 
 interface Values {
     aboutme: string
@@ -24,7 +24,7 @@ const Aboutmeform = ({onSubmit, profileData}: {onSubmit: (values: Values) => voi
                     <Form>
                         <br />
                         <div>
-                            <TextField fullWidth label="About me" placeholder={profileData.aboutme} name="aboutme" value={values.aboutme} onChange={handleChange} onBlur={handleBlur}/>
+                            <TextField fullWidth label="About me" placeholder={profileData.AboutMe} name="aboutme" value={values.aboutme} onChange={handleChange} onBlur={handleBlur}/>
                         </div>
                         <br />                        
                         <Button type="submit"> Save Changes </Button>

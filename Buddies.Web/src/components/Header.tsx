@@ -5,14 +5,14 @@ import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 import Headerform from './Headerform';
-import type {UpdateProf} from './Profile';
+import type {UpdateProf} from '../pages/Profiles/[pid]';
 import Button from '@material-ui/core/Button'
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 
 {/* Header component of the profile page. */} 
-const Header = ({updateFunc, newProfile, logCheck, name, bio}: {updateFunc: VoidFunction, newProfile: UpdateProf, logCheck:boolean, name:string, bio:string}) => { 
+const Header = ({updateFunc, newProfile, logCheck, firstName, lastName, headline}: {updateFunc: VoidFunction, newProfile: UpdateProf, logCheck:boolean, firstName:string, lastName:string, headline:string}) => { 
     return (
         <>
         
@@ -25,14 +25,23 @@ const Header = ({updateFunc, newProfile, logCheck, name, bio}: {updateFunc: Void
                     </Grid>
                     <Grid container item xs={9}>
                         <Typography sx={{ marginTop: 5, marginLeft: 2}} style={{color: 'white'}} variant="subtitle2" gutterBottom>
-                            {name} | {bio} {/* User's name + bio*/}
+                            {firstName} {lastName} | {headline} {/* User's name + bio*/}
                         </Typography> 
                         {logCheck &&  
                             <CustomizedDialogs color="white" topmarg={4}>
-                                <Headerform profileData={newProfile} onSubmit={({name, bio})=>{
-                                    console.log(name, bio);
-                                    newProfile.name = name;
-                                    newProfile.bio = bio;
+                                <Headerform profileData={newProfile} onSubmit={({firstName, lastName, headline})=>{
+                                    console.log(firstName, lastName, headline);
+                                    if (!(firstName === '')) {
+                                        newProfile.FirstName = firstName;
+                                    }
+                                    console.log("I AM HERE");
+                                    console.log(lastName)
+                                    if (!(lastName === '')) {
+                                        newProfile.LastName = lastName;
+                                    }
+                                    if (!(headline === '')) {
+                                        newProfile.Headline = headline;
+                                    }
                                     console.log(newProfile);
                                     updateFunc();
                                 }}/>
