@@ -19,7 +19,7 @@ interface Props {
 }
 
 /**
- * Register form component.
+ * Login form component.
  */
 const LoginForm: React.VFC<Props> = ({
   onSubmit,
