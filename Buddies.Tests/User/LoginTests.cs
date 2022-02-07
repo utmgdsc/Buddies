@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 using Buddies.API.IO;
 using Xunit;
 
@@ -20,7 +21,7 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
     }
 
     [Fact]
-    public void TestEmptyRequest()
+    public async Task TestEmptyRequest()
     {
         var request = new LoginRequest
         {
@@ -28,13 +29,13 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
             Password = ""
         };
 
-        var response = _client.PostAsJsonAsync("/api/v1/users/login", request).Result;
+        var response = await _client.PostAsJsonAsync("/api/v1/users/login", request);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
     }
 
     [Fact]
-    public void TestUnauthorizedLogin()
+    public async Task TestUnauthorizedLogin()
     {
         var request = new RegisterRequest
         {
@@ -44,7 +45,7 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
             Password = "Abc123."
         };
 
-        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
+        var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var loginRequest = new LoginRequest
@@ -53,13 +54,13 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
             Password = "WRONGPASSWORD"
         };
 
-        var loginResponse = _client.PostAsJsonAsync("/api/v1/users/login", loginRequest).Result;
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/users/login", loginRequest);
         Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);
     }
 
 
     [Fact]
-    public void TestAuthorizedLogin()
+    public async Task TestAuthorizedLogin()
     {
         var request = new RegisterRequest
         {
@@ -69,7 +70,7 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
             Password = "Abc123."
         };
 
-        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
+        var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var loginRequest = new LoginRequest
@@ -77,12 +78,12 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
             Email = "1234@email.com",
             Password = "Abc123."
         };
-        var loginResponse = _client.PostAsJsonAsync("/api/v1/users/login", loginRequest).Result;
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/users/login", loginRequest);
         Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
     }
 
     [Fact]
-    public void TestRefreshToken()
+    public async Task TestRefreshToken()
     {
         var request = new RegisterRequest
         {
@@ -92,7 +93,7 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
             Password = "Abc123."
         };
 
-        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
+        var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var loginRequest = new LoginRequest
@@ -100,19 +101,19 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
             Email = "12345@email.com",
             Password = "Abc123."
         };
-        var loginResponse = _client.PostAsJsonAsync("/api/v1/users/login", loginRequest).Result;
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/users/login", loginRequest);
         Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
-        var tokenresponse = _client.GetAsync("/api/v1/users/refresh").Result;   
+        var tokenresponse = await _client.GetAsync("/api/v1/users/refresh");   
         Assert.True(tokenresponse.IsSuccessStatusCode);
         var responseBody = tokenresponse.Content.ReadAsStringAsync().Result;
         Assert.Contains("accessToken", responseBody);
     }
 
     [Fact]
-    public void TestUnvalidRefreshToken()
+    public async Task TestUnvalidRefreshToken()
     {
-        var tokenresponse = _client.GetAsync("/api/v1/users/refresh").Result;
+        var tokenresponse = await _client.GetAsync("/api/v1/users/refresh");
         Assert.True(!tokenresponse.IsSuccessStatusCode);
     }
 
