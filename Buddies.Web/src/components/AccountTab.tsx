@@ -6,10 +6,19 @@ import Button from '@mui/material/Button';
 import { AuthState } from '../stores/authStore';
 
 interface Props {
+  /**
+   * Authentication info from global state.
+   */
   authState: AuthState
+  /**
+   * Function to execute in order to logout.
+   */
   logout: () => void
 }
 
+/**
+ * Account tab component containing menus for logout etc.
+ */
 const AccountTab: React.VFC<Props> = ({ authState, logout }) => {
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
 
