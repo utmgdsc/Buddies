@@ -11,7 +11,6 @@ import { logoutUser } from '../api';
 import { authStore } from '../stores/authStore';
 
 const Navbar: React.VFC = () => {
-  // const [authState, dispatch] = useContext(AuthContext);
   const authState = authStore((state) => state.authState);
 
   const router = useRouter();

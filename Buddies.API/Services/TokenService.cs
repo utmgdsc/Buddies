@@ -18,7 +18,6 @@ public class TokenService
     private readonly JwtSecurityTokenHandler _jwtHandler;
     
     /// <summary>
-    /// Initializes a new TokenService.
     /// </summary>
     /// <param name="config">Environment configuration object.</param>
     /// <param name="apiContext">Database context.</param>
