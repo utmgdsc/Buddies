@@ -320,16 +320,15 @@
         },
         "additionalProperties": false
       },
-      "Skills": {
+      "SkillResponse": {
+        "required": [
+          "delete",
+          "name"
+        ],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
           "name": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "delete": {
             "type": "boolean"
@@ -379,7 +378,7 @@
           "skills": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Skills"
+              "$ref": "#/components/schemas/SkillResponse"
             }
           }
         },

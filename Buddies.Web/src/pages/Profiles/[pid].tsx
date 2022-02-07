@@ -10,9 +10,11 @@ import Grid from '@material-ui/core/grid';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router'
+import '../../api/index';
+import { authStore } from '../../stores/authStore';
 
 const api = axios.create({
-  baseURL: "http://localhost:5128/api/v1/Profiles/",
+  baseURL: '/api/v1/Profiles/',
   headers: {
     'Accept': 'application/json',
     'Content-type': 'application/json'
@@ -48,7 +50,7 @@ type UpdateProf = {
 const Profile = () =>  {
 
   const [userProfile, setProfile] = useState<UpdateProf>({"FirstName": "Default", "LastName": "User", "UserId": -1, "Headline": "n/a", "AboutMe": "n/a", "Skills": [{"id": 1, "name": "Data Structures", "delete": false}, {"id": 2, "name": "C++", "delete": false}, {"id": 3, "name": "Python", "delete": false}], "success": 0});
-  
+  const authState = authStore((state) => state.authState);
   const router = useRouter(); {/* When the page loads, a get request is made to populate the profile page accordingly */}
   useEffect(()=>{
       if(!router.isReady) return;
@@ -74,11 +76,11 @@ const Profile = () =>  {
     on and off the functionality for a user thats logged in and logged out. (The logged in functionality only
      allows for edit access)
     */}
-  if (userProfile.success === 0) {
-    loggedin = false;
-  }else {
-    loggedin = true;
-  }
+    if (authState && parseInt(authState.nameid) === userProfile.userId) {
+      loggedin = true;
+    }else {
+      loggedin = false;
+    }
     {/* Get and Put Requests. I will later modify this to use a specific id,
     to get the id of the user profile being accessed. For testing,
     I am just using hard coded values.

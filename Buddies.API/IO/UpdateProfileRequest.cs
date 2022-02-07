@@ -25,10 +25,5 @@ public record UpdateProfileRequest
     public string AboutMe { get; init; } = default!;
 
     [Required(ErrorMessage = "")]
-    public List<Skills> Skills { get; init; } = default!;
+    public List<SkillResponse> Skills { get; init; } = default!;
 }
-
-//{"id": 0, "name": "joe", "headline": "n/a", "aboutme": "n/a",
-//"skills": [{"id": 1, "name": "Data Structures", "delete": false},
-//{"id": 2, "name": "C++", "delete": false},
-//{"id": 3, "name": "Python", "delete": false}]}
