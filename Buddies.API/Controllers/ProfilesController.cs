@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Buddies.API.Entities;
 using Buddies.API.Database;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Buddies.API.IO;
 
 namespace Buddies.API.Controllers
 {
@@ -11,9 +14,16 @@ namespace Buddies.API.Controllers
     {
 
         private readonly ApiContext _context; //dbcontext after merging
-        public ProfilesController(ApiContext context)
+        private readonly UserManager<User> _userManager;
+
+        /// <summary>
+        /// Initializes a new UsersController.
+        /// </summary>
+        /// <param name="userManager">UserManager from ASP.NET Core Identity.</param>
+        public ProfilesController(ApiContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -27,22 +37,33 @@ namespace Buddies.API.Controllers
             {
                 return NotFound("PROFILE NOT FOUND");
             }
-            return Ok(profile);
+
+            var profileResponse = new UserProfileResponse();
+            profileResponse.FirstName = profile.FirstName;
+            profileResponse.LasttName = profile.LastName;
+            profileResponse.AboutMe = profile.aboutMe;
+            profileResponse.Headline = profile.bio;
+            profileResponse.Skills = profile.Skills;
+
+            return Ok(profileResponse);
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateProfile(Profile profile)
+        [Authorize]
+        public async Task<ActionResult> UpdateProfile(UpdateProfileRequest profile)
         {
-            var dbProfile = await _context.Profiles.FindAsync(profile.UserId);
+            var dbProfile = await _context.Profiles.FindAsync(profile.id);
             if (dbProfile == null)
             {
                 return NotFound("PROFILE NOT FOUND");
             }
-            dbProfile.FirstName = profile.FirstName;
-            dbProfile.LastName = profile.LastName;
-            dbProfile.bio = profile.bio;
-            dbProfile.aboutMe = profile.aboutMe;
-            dbProfile.Skills = profile.Skills;
+            dbProfile.FirstName = profile.name;
+            dbProfile.LastName = profile.name;
+            dbProfile.bio = profile.headline;
+            dbProfile.aboutMe = profile.aboutme;
+            dbProfile.Skills = profile.skills;
+            _context.SaveChanges();
+           
             return Ok();
         }
 
