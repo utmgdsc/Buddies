@@ -20,14 +20,14 @@
 | SSH          | 22         |  Port for SSH into server                   |
 | HTTP         | 80         |  Port for HTTP requests to web server       |
 | HTTPS        | 443        |  Port for HTTPS requests to web server      |
-| Custom TCP   | 5000       |  Port for api                               |
+| Custom TCP   | 5000       |  Port for API                               |
 
   - Finally, launch the instance and create a new key pair and store it in a secure and accessible location. (This will generate a .pem key which is used for SSH)
 
 ### Install Packages in EC2 Instance
 
   - Locate your EC2 Instance under Instances on the EC2 page.
-  - Locate your Public IPv4 DNS, and SSH into it using ur .pem key (ssh -i "file.pem" ec2-user@xxxxxxxx.compute-1.amazonaws.com
+  - Locate your Public IPv4 DNS, and SSH into it using your .pem key (ssh -i "file.pem" ec2-user@xxxxxxxx.compute-1.amazonaws.com
 
 After ssh, run the following commands:
 
@@ -96,7 +96,7 @@ Install pm2
   - Choose *AWS CodeBuild* for Build provider
       - Create a new build project
       - Choose *Managed image* for Environment image and *Amazon Linux 2* for Operating System.
-      - Select *Standar* Runtime and *aws/codebuild/amazonlinux2-x86_64-standard:3.0* for image.
+      - Select *Standard* Runtime and *aws/codebuild/amazonlinux2-x86_64-standard:3.0* for image.
       - Choose *aws/codebuild/amazonlinux2-x86_64-standard:3.0-21.10.15* for image version and *Linux* for Environment type.
       - Select *New service role* for Service role.
       - Create and add **buildspec.yml** to github repo and put its path for the Build specifications name.

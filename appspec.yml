@@ -5,8 +5,6 @@ files:
    destination: /var/www/html/
  - source: /Buddies.API/bin/Release/net6.0/linux-x64/publish/
    destination: /home/ec2-user/dotnetapi/
-#  - source: nginx/react.conf
-#    destination: /etc/nginx/conf.d/
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
