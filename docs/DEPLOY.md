@@ -80,12 +80,24 @@ Install pm2
   $ sudo npm install -g pm2
 ```
 
+Add Nginx conf file
+
+```bash
+  $ sudo nano /etc/nginx/conf.d/react.conf
+```
+
+Then copy paste nginx/react.conf contents onto the editor. Press Esc and type :wq to save and exit.
+
 ### Configure CodeDeploy
 
   - [Create an application](https://docs.aws.amazon.com/codedeploy/latest/userguide/applications-create-in-place.html)
   - [Create a deployment group](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-groups-create-in-place.html)
   - For the environment configuration, choose *Amazon EC2 instances*, and choose the tag for your EC2 instance.
   - Create and add **appspec.yml** to github repo to manage deployment
+
+### Create an Application Load Balancer
+
+  - [Step by step guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-application-load-balancer.html)
 
 ### Configure CodePipeline
   
