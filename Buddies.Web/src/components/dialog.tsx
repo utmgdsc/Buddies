@@ -7,6 +7,9 @@ import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
+
+{/* Pop up component. Copied from material ui's website
+*/}
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),

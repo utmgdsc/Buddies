@@ -26,17 +26,18 @@ function Skillform({submitFunc, profileData}: {submitFunc: VoidFunction, profile
     }
   }
 
-  function handleAddSkill(e) {
+  function handleAddSkill(e: React.ChangeEvent<any>) {
     
-    const name = skillNameRef?.current?.value
+    const name = skillNameRef?.current?.value || ''
     if (name === '' ){
         return
     } 
-    console.log(name)
-    setSkills(prevSkills => {
-      return [...prevSkills, { id: getRandomInt(0, 100000), name: name, delete: false}]
-    })
-    skillNameRef.current.value = null
+
+    setSkills([...skills, { "id": getRandomInt(0, 100000), "name": name, "delete": false}])
+
+    if (skillNameRef != null && skillNameRef.current != null && skillNameRef.current.value != null) { //to fix typescript errors
+      skillNameRef.current.value = ""
+    }
   }
 
   function handleClearSkills() {

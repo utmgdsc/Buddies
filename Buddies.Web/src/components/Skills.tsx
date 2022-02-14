@@ -10,18 +10,18 @@ import Skillform from './Skillform';
 {/* Skills component.
 */}
 
-const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, newProfile: UpdateProf, logCheck: boolean}) => {
+const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, newProfile: UpdateProf, logCheck: boolean|null}) => {
     return (
-        <Box p = {2} boxShadow={12} sx={{ width: '100%', height: '30%', backgroundColor: 'white', border: 1, alignItems: "center"}}>
+        <Box p = {2} boxShadow={12} bgcolor="primary.light" sx={{ width: '100%', height: '30%', border: 1, alignItems: "center"}}>
             <Grid container > 
                 <Grid item xs={11}>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography color="inherit" variant="h6" gutterBottom>
                         Skills
                     </Typography> 
                 </Grid> 
                 <Grid item xs={1}>
                     {logCheck &&
-                        <CustomizedDialogs color="black" topmarg={0}>
+                        <CustomizedDialogs color="inherit" topmarg={0}>
                             <Skillform submitFunc={updateFunc} profileData={newProfile}/>
                             
                         </CustomizedDialogs>
@@ -32,8 +32,10 @@ const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, n
             <Typography variant="subtitle2" gutterBottom>
                 <Grid container > 
                     {newProfile.skills?.map(skill => {
-                        return <div className="skills" key={skill.id}>
-                                    <Box p = {2} m = {1} sx={{border: 1, borderRadius: 8, height: '10%', paddingTop: 0, marginBottom: -2, marginRight: 0}} >
+                        return <div className="skills" key={skill.id + 1}> {/* We have another list that is being rendered in the skilllist 
+                        component. So to make the keys different for this list, we can just add one to each id.  */}
+                                    <Box p = {2} m = {1} sx={{border: 1, borderRadius: 8, height: '10%', paddingTop: 0, marginBottom: -2,
+                                     marginRight: 0}} >
                                         <Typography variant="h6" gutterBottom fontSize={12}>
                                             {skill.name}
                                         </Typography> 

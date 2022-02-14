@@ -9,10 +9,11 @@ import type {UpdateProf} from '../pages/Profiles/[pid]';
 
 
 {/* About me component.*/}
-const Aboutme = ({updateFunc, newProfile, logCheck, desc}: {updateFunc: VoidFunction, newProfile: UpdateProf, logCheck: boolean, desc: string}) => {  
+const Aboutme = ({updateFunc, newProfile, logCheck, desc}: {updateFunc: VoidFunction, newProfile: UpdateProf,
+     logCheck: boolean|null, desc: string}) => {  
     return (
-        <Box p = {2} boxShadow={12} sx={{ width: '100%', overflow: 'auto', backgroundColor: 'white', border: 1}}>
-            <Grid container > 
+        <Box p = {2} boxShadow={12} sx={{ width: '100%', backgroundColor: 'primary.light', border: 1}}>
+            <Grid container> 
                 <Grid item xs={11}>
                     <Typography variant="h6" gutterBottom>
                         About me
@@ -20,22 +21,20 @@ const Aboutme = ({updateFunc, newProfile, logCheck, desc}: {updateFunc: VoidFunc
                 </Grid> 
                 <Grid item xs={1}>
                     {logCheck &&
-                        <CustomizedDialogs color="black" topmarg={0}>
+                        <CustomizedDialogs color="inherit" topmarg={0}>
                             <Aboutmeform profileData={newProfile} onSubmit={({aboutme})=>{
-                                console.log(aboutme);
-                                if (!(aboutme === '')) {
-                                    newProfile.aboutMe = aboutme;
-                                    console.log(newProfile);
-                                    updateFunc();
-                                }
+                                newProfile.aboutMe = aboutme;
+                                updateFunc();
                             }}/>
                         </CustomizedDialogs>
-                    }
+                    } {/* if the user isn't logged in, then edit option dissappears */}
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography variant="subtitle2" gutterBottom style={{ wordWrap: "break-word" }}>
+                        {desc}
+                    </Typography> 
                 </Grid>
             </Grid>
-            <Typography variant="subtitle2" gutterBottom>
-                    {desc}
-            </Typography> 
         </Box>     
     )
 }

@@ -11,38 +11,34 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 
-{/* Header component of the profile page. */} 
-const Header = ({updateFunc, newProfile, logCheck, firstName, lastName, headline}: {updateFunc: VoidFunction, newProfile: UpdateProf, logCheck:boolean, firstName:string, lastName:string, headline:string}) => { 
+{/* Header component of the profile page. Includes the profile pic, name and headline */} 
+const Header = ({updateFunc, newProfile, logCheck, firstName, lastName, headline}: {updateFunc: VoidFunction,
+     newProfile: UpdateProf, logCheck:boolean|null, firstName:string, lastName:string, headline:string}) => { 
     return (
-        <>
-        
         <Grid container> 
-            
-            <Box p = {2} sx={{ paddingLeft: 3, width: '100%', height: '90%', backgroundColor: 'black', marginBottom: 1}}>
+            <Box p = {2} bgcolor="primary.dark" sx={{ paddingLeft: 3, width: '100%', height: '90%', marginBottom: 1}}>
                 <Grid container>
                     <Grid container item xs={1} justifyContent= 'center'>
                         <Avatar alt="Remy Sharp" src="profile.png" sx={{ width: 74, height: 74 }}/>
                     </Grid>
                     <Grid container item xs={9}>
-                        <Typography sx={{ marginTop: 5, marginLeft: 2}} style={{color: 'white'}} variant="subtitle2" gutterBottom>
+                        <Typography sx={{ marginTop: 5, marginLeft: 2}} color="inherit" variant="subtitle2" gutterBottom>
                             {firstName} {lastName} | {headline} {/* User's name + bio*/}
                         </Typography> 
                         {logCheck &&  
-                            <CustomizedDialogs color="white" topmarg={4}>
+                            <CustomizedDialogs color="inherit" topmarg={4}>
                                 <Headerform profileData={newProfile} onSubmit={({firstName, lastName, headline})=>{
-                                    console.log(firstName, lastName, headline);
-                                    if (!(firstName === '')) {
+                                    if (!(firstName === '')) {  
                                         newProfile.firstName = firstName;
-                                    }
-                                    console.log("I AM HERE");
-                                    console.log(lastName)
+                                    }{/* I could've added a required field on the textfield instead
+                                 of checking for an empty string. But If I did that, the user would have to enter text into
+                                 all three input when he may just want to update one attribute.*/}
                                     if (!(lastName === '')) {
                                         newProfile.lastName = lastName;
                                     }
                                     if (!(headline === '')) {
                                         newProfile.headline = headline;
                                     }
-                                    console.log(newProfile);
                                     updateFunc();
                                 }}/>
                             </CustomizedDialogs> 
@@ -59,10 +55,7 @@ const Header = ({updateFunc, newProfile, logCheck, firstName, lastName, headline
                 </Grid>
             </Box>
         </Grid>
-        </>
-        
-       
-    )
-}
+    );
+};
 export default Header;
 

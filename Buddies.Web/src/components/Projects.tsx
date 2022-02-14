@@ -3,13 +3,15 @@ import Box from '@mui/material/Box';
 import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
 
- 
+ {/* Projects section
+*/}
 const Projects = () => {  
     return (
-        <Box p = {2} boxShadow={12} sx={{ width: '100%', height: 300, maxHeight:"300px", backgroundColor: 'white', border: 1, alignItems: "center", overflowY:'auto'}}>
+        <Box p = {2} boxShadow={12} bgcolor="primary.light" sx={{ width: '100%', height: 300, maxHeight:"300px", border: 1,
+         alignItems: "center", overflowY:'auto'}}>
             <Grid container > 
                 <Grid item xs={12}>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography color="inherit" variant="h6" gutterBottom>
                         Projects
                     </Typography> 
                 </Grid> 

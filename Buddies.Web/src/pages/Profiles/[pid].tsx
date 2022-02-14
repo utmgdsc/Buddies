@@ -47,16 +47,16 @@ type UpdateProf = {
   PUT request, to update a user's profile, if he makes any changes. 
 */}
 
-const Profile = () =>  {
+const Profile: React.VFC = () =>  {
 
-  const [userProfile, setProfile] = useState<UpdateProf>({"FirstName": "Default", "LastName": "User", "UserId": -1, "Headline": "n/a", "AboutMe": "n/a", "Skills": [{"id": 1, "name": "Data Structures", "delete": false}, {"id": 2, "name": "C++", "delete": false}, {"id": 3, "name": "Python", "delete": false}], "success": 0});
+  const [userProfile, setProfile] = useState<UpdateProf>({"firstName": "Default", "lastName": "User", "userId": -1, "headline": "n/a", "aboutMe": "n/a", "skills": [{"id": 1, "name": "Data Structures", "delete": false}, {"id": 2, "name": "C++", "delete": false}, {"id": 3, "name": "Python", "delete": false}], "success": 0});
   const authState = authStore((state) => state.authState);
-  const router = useRouter(); {/* When the page loads, a get request is made to populate the profile page accordingly */}
+  const router = useRouter(); 
   useEffect(()=>{
       if(!router.isReady) return;
       const { pid } = router.query;
-      profileId = pid;
-      getProfile();
+      profileId = pid;  {/* id of user */}
+      getProfile();  {/* When the page loads, a get request is made to populate the profile page accordingly */}
   
   }, [router.isReady]);
 
@@ -72,26 +72,16 @@ const Profile = () =>  {
     "success": userProfile.success
   }
 
-  let loggedin: boolean; {/* Since the log in feature has not been created yet, I use a boolean to toggle
-    on and off the functionality for a user thats logged in and logged out. (The logged in functionality only
-     allows for edit access)
-    */}
-    if (authState && parseInt(authState.nameid) === userProfile.userId) {
-      loggedin = true;
-    }else {
-      loggedin = false;
-    }
-    {/* Get and Put Requests. I will later modify this to use a specific id,
-    to get the id of the user profile being accessed. For testing,
-    I am just using hard coded values.
-  */}
+  const loggedin: boolean|null =  (authState && parseInt(authState.nameid) === userProfile.userId);
+ 
+  
   function getProfile() {
     if (!(typeof profileId == "string")){
-      return alert('error')
+      return alert('error');
     }
     console.log(profileId)
     api.get(profileId).then(res => {
-      console.log(res.data)
+      console.log(res.data);
       setProfile(res.data);
       console.log(userProfile.firstName);
     }).catch((error) => {
@@ -104,29 +94,24 @@ const Profile = () =>  {
 
   let updateProfile: VoidFunction = async () => {
     if (!(typeof profileId == "string")){
-      return alert('error')
+      return alert('error');
     }
     let res = await api.put('/', profileToUpdate).catch((error) => {
-      console.log(error);
       alert(error);
     });
     if (true && res) {
-      console.log(res);
-      console.log(profileToUpdate);
-      console.log(res.data);
       setProfile(profileToUpdate);
-      console.log(userProfile);
     }
 
   }
 
 
   return (
-  <>
     <Box p = {5} >
       <Container>
         <Grid container spacing={5} >
-          <Header updateFunc={updateProfile} newProfile={profileToUpdate} logCheck={loggedin} firstName={userProfile.firstName} lastName={userProfile.lastName} headline={userProfile.headline}/>
+          <Header updateFunc={updateProfile} newProfile={profileToUpdate} logCheck={loggedin} firstName={userProfile.firstName}
+           lastName={userProfile.lastName} headline={userProfile.headline}/>
           <Grid item xs={12} sm={12} md={3} lg={3} xl={3} style={{marginBottom: 75}}> 
             <BScore score={0} />  
             <br />
@@ -143,7 +128,6 @@ const Profile = () =>  {
         </Grid> 
       </Container>   
     </Box>
-  </>
   );
 };
 

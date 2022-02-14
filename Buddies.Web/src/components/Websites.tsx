@@ -5,18 +5,18 @@ import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 
 
-const Websites = ({logCheck}:{logCheck: boolean}) => {
+const Websites = ({logCheck}:{logCheck: boolean|null}) => {
     return (
-        <Box p = {2} boxShadow={12} sx={{ width: '100%', height: 207, backgroundColor: 'white', border: 1, alignItems: "center"}}>
+        <Box p = {2} bgcolor="primary.light" boxShadow={12} sx={{ width: '100%', height: 207, border: 1, alignItems: "center"}}>
             <Grid container > 
                 <Grid item xs={11}>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography color="inherit" variant="h6" gutterBottom>
                     Websites
                     </Typography> 
                 </Grid> 
                 <Grid item xs={1}>
                     {logCheck &&
-                        <CustomizedDialogs color="black" topmarg={0}>
+                        <CustomizedDialogs color="inherit" topmarg={0}>
                             
                         </CustomizedDialogs>
                     }
