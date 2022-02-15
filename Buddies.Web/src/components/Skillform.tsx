@@ -5,45 +5,45 @@ import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/grid';
 {/* Skill Form. Allows the user to update his skills*/}
 function Skillform({submitFunc, profileData}: {submitFunc: VoidFunction, profileData: UpdateProf}) {
-  const [skills, setSkills] = useState<Skillobject[]>([])
-  const skillNameRef = useRef<HTMLInputElement | null>(null)
+  const [skills, setSkills] = useState<Skillobject[]>([]);
+  const skillNameRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setSkills(profileData.skills);
-  }, [])
+  }, []);
   
   function getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+  };
   function toggleSkill(id: number) {
-    const newSkills = [...skills]
-    const skill = newSkills.find(skill => skill.id === id)
+    const newSkills = [...skills];
+    const skill = newSkills.find(skill => skill.id === id);
     if (true && skill) {  //checks if skill is undefined
-      skill.delete = !skill.delete
-      setSkills(newSkills)
+      skill.delete = !skill.delete;
+      setSkills(newSkills);
     }
-  }
+  };
 
   function handleAddSkill(e: React.ChangeEvent<any>) {
     
-    const name = skillNameRef?.current?.value || ''
+    const name = skillNameRef?.current?.value || '';
     if (name === '' ){
-        return
+        return;
     } 
 
-    setSkills([...skills, { "id": getRandomInt(0, 100000), "name": name, "delete": false}])
+    setSkills([...skills, { "id": getRandomInt(0, 100000), "name": name, "delete": false}]);
 
     if (skillNameRef != null && skillNameRef.current != null && skillNameRef.current.value != null) { //to fix typescript errors
-      skillNameRef.current.value = ""
+      skillNameRef.current.value = "";
     }
-  }
+  };
 
   function handleClearSkills() {
-    const newSkills = skills.filter(skill => !skill.delete)
-    setSkills(newSkills)
-  }
+    const newSkills = skills.filter(skill => !skill.delete);
+    setSkills(newSkills);
+  };
 
 
   function handleSave() {
@@ -51,9 +51,8 @@ function Skillform({submitFunc, profileData}: {submitFunc: VoidFunction, profile
       skills[i].id = i;
     }
     profileData.skills = skills;
-    console.log(profileData);
     submitFunc();
-  }
+  };
   return (
     <>
       <SkillList skills={skills} toggleSkill={toggleSkill}/>
@@ -73,6 +72,6 @@ function Skillform({submitFunc, profileData}: {submitFunc: VoidFunction, profile
       </Grid>
     </>
   );
-}
+};
 
 export default Skillform;

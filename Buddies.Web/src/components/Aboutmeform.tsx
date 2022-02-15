@@ -35,7 +35,7 @@ const Aboutmeform = ({onSubmit, profileData}: {onSubmit: (values: Values) => voi
                 </Card>
             )}
         </Formik>
-    )
+    );
 };
 
 export default Aboutmeform;

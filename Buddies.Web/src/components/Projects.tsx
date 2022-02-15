@@ -29,7 +29,7 @@ const Projects = () => {
                 </Grid>
             </Grid>
         </Card>     
-    )
-}
+    );
+};
 export default Projects;
 

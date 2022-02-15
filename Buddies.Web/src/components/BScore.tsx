@@ -24,7 +24,7 @@ const BScore = ( {score}: {score: number} ) => {
                 </Grid>
             </Grid>
         </Card>     
-    )
-}
+    );
+};
 export default BScore;
 

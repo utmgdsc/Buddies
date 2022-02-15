@@ -49,7 +49,11 @@ type UpdateProf = {
 
 const Profile: React.VFC = () =>  {
 
-  const [userProfile, setProfile] = useState<UpdateProf>({"firstName": "Default", "lastName": "User", "userId": -1, "headline": "n/a", "aboutMe": "n/a", "skills": [{"id": 1, "name": "Data Structures", "delete": false}, {"id": 2, "name": "C++", "delete": false}, {"id": 3, "name": "Python", "delete": false}], "success": 0});
+  const [userProfile, setProfile] = useState<UpdateProf>({"firstName": "Default", "lastName": "User", "userId": -1,
+   "headline": "n/a", "aboutMe": "n/a", "skills": [{"id": 1, "name": "Data Structures", "delete": false},
+    {"id": 2, "name": "C++", "delete": false}, {"id": 3, "name": "Python", "delete": false}], "success": 0}); //default user profile
+    //it's used when someone tries to access a profile that does not exist
+
   const authState = authStore((state) => state.authState);
   const router = useRouter(); 
   useEffect(()=>{
@@ -59,7 +63,6 @@ const Profile: React.VFC = () =>  {
       getProfile();  {/* When the page loads, a get request is made to populate the profile page accordingly */}
   
   }, [router.isReady]);
-
 
   
   const profileToUpdate: UpdateProf = {  
@@ -73,19 +76,17 @@ const Profile: React.VFC = () =>  {
   }
 
   const loggedin: boolean|null =  (authState && parseInt(authState.nameid) === userProfile.userId);
- 
+  // this boolean toggles the edit functionality on and off for a user. (If someone is logged in
+  // and viewing their profile then they can edit their profile. But if someone is logged out, 
+  // or is not viewing their profile, the user won't be able to edit the profile)
   
   function getProfile() {
     if (!(typeof profileId == "string")){
       return alert('error');
     }
-    console.log(profileId)
     api.get(profileId).then(res => {
-      console.log(res.data);
       setProfile(res.data);
-      console.log(userProfile.firstName);
     }).catch((error) => {
-      console.log(error);
       alert(error);
     });
 
@@ -112,7 +113,7 @@ const Profile: React.VFC = () =>  {
         <Grid container spacing={5} >
           <Header updateFunc={updateProfile} newProfile={profileToUpdate} logCheck={loggedin} firstName={userProfile.firstName}
            lastName={userProfile.lastName} headline={userProfile.headline}/>
-          <Grid item xs={12} sm={12} md={3} lg={3} xl={3} style={{marginBottom: 75}}> 
+          <Grid item xs={12} sm={12} md={3} lg={3} xl={3}> 
             <BScore score={0} />  
             <br />
             <Skills updateFunc={updateProfile} newProfile={profileToUpdate} logCheck={loggedin} />
@@ -124,7 +125,6 @@ const Profile: React.VFC = () =>  {
             <br />
             <Projects /> 
           </Grid>
-         
         </Grid> 
       </Container>   
     </Box>

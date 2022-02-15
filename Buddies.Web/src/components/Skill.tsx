@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 {/* Each individual skill */}
 export default function Skill({ skill, toggleSkill }: {skill: Skillobject, toggleSkill: (id: number) => void}) {
     function handleSkillClick () {
-        toggleSkill(skill.id)
+        toggleSkill(skill.id);
     }
     return(
         <div className="skills">
@@ -14,5 +14,5 @@ export default function Skill({ skill, toggleSkill }: {skill: Skillobject, toggl
                 {skill.name}
             </Box>
         </div>
-    )
-}
+    );
+};

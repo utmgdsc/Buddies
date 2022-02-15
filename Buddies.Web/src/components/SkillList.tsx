@@ -9,8 +9,8 @@ export default function SkillList({ skills, toggleSkill }: {skills: Skillobject[
     return(
         <Grid container > 
             {skills.map(skill => {
-                return <Skill key={skill.id} toggleSkill={toggleSkill} skill={skill} />
+                return <Skill key={skill.id} toggleSkill={toggleSkill} skill={skill} />;
             })}
         </ Grid> 
-    )
-}
+    );
+};

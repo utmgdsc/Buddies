@@ -27,8 +27,8 @@ const Websites = ({logCheck}:{logCheck: boolean|null}) => {
                 ...
             </Typography>
         </Card>     
-    )
-}
+    );
+};
 
 export default Websites;
 

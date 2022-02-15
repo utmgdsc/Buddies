@@ -45,8 +45,8 @@ const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, n
                 </ Grid> 
             </Typography>
         </Card>     
-    )
-}
+    );
+};
 
 export default Skills;
 

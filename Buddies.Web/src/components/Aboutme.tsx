@@ -36,7 +36,7 @@ const Aboutme = ({updateFunc, newProfile, logCheck, desc}: {updateFunc: VoidFunc
                 </Grid>
             </Grid>
         </Card>     
-    )
-}
+    );
+};
 export default Aboutme;
 

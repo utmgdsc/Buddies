@@ -47,7 +47,7 @@ const Headerform = ({onSubmit, profileData}: {onSubmit: (values: Values) => void
                 </Card>
             )}
         </Formik>
-    )
+    );
 };
 
 export default Headerform;
