@@ -1,5 +1,5 @@
 import React from 'react';
-import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
 
@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 */}
 const Projects = () => {  
     return (
-        <Box p = {2} boxShadow={12} bgcolor="primary.light" sx={{ width: '100%', height: 300, maxHeight:"300px", border: 1,
+        <Card sx={{ width: '100%', height: 300, maxHeight:"300px", border: 1, padding: 2, boxShadow: 12,
          alignItems: "center", overflowY:'auto'}}>
             <Grid container > 
                 <Grid item xs={12}>
@@ -28,7 +28,7 @@ const Projects = () => {
                     
                 </Grid>
             </Grid>
-        </Box>     
+        </Card>     
     )
 }
 export default Projects;

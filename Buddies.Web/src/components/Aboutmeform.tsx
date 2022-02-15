@@ -2,7 +2,7 @@ import { TextField } from '@mui/material';
 import React from 'react';
 import { Formik, Form } from 'formik';
 import { Button } from "@material-ui/core";
-import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import type {UpdateProf} from '../pages/Profiles/[pid]';
 
 interface Values {
@@ -21,7 +21,7 @@ const Aboutmeform = ({onSubmit, profileData}: {onSubmit: (values: Values) => voi
         }}>
             
             {({values, handleChange, handleBlur}) => (
-                <Box p = {2} boxShadow={12} sx={{width: '500px', backgroundColor: 'white', border: 1}}>
+                <Card sx={{width: '500px', border: 1, boxShadow: 12, padding: 2}}>
                     <Form>
                         <br />
                         <div>
@@ -32,7 +32,7 @@ const Aboutmeform = ({onSubmit, profileData}: {onSubmit: (values: Values) => voi
                         <Button type="submit"> Save Changes </Button>
                         
                     </Form>
-                </Box>
+                </Card>
             )}
         </Formik>
     )

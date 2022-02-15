@@ -1,5 +1,5 @@
 import React from 'react';
-import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
 import Button from '@material-ui/core/Button'
@@ -8,8 +8,8 @@ import Button from '@material-ui/core/Button'
 */}
 const BScore = ( {score}: {score: number} ) => {  
     return (
-        <Box p = {2} bgcolor="primary.light" boxShadow={12} sx={{ width: '100%', height: 60, border: 1, alignItems: "center",
-         paddingRight: 3}}>
+        <Card sx={{ padding: 2, width: '100%', height: 60, border: 1, alignItems: "center",
+         paddingRight: 3, boxShadow: 12}}>
             <Grid container > 
                 <Grid item xs={11}>
                     <Typography color="inherit" variant="h6" gutterBottom>
@@ -23,7 +23,7 @@ const BScore = ( {score}: {score: number} ) => {
                     </Button>
                 </Grid>
             </Grid>
-        </Box>     
+        </Card>     
     )
 }
 export default BScore;

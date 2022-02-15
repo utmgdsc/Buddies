@@ -1,8 +1,8 @@
 import React from 'react';
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
-import Button from '@material-ui/core/Button'
 import CustomizedDialogs from './dialog';
 import type {UpdateProf} from '../pages/Profiles/[pid]';
 import Skillform from './Skillform';
@@ -12,7 +12,7 @@ import Skillform from './Skillform';
 
 const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, newProfile: UpdateProf, logCheck: boolean|null}) => {
     return (
-        <Box p = {2} boxShadow={12} bgcolor="primary.light" sx={{ width: '100%', height: '30%', border: 1, alignItems: "center"}}>
+        <Card sx={{ width: '100%', height: '30%', border: 1, alignItems: "center", padding: 2, boxShadow: 12}}>
             <Grid container > 
                 <Grid item xs={11}>
                     <Typography color="inherit" variant="h6" gutterBottom>
@@ -44,7 +44,7 @@ const Skills = ({updateFunc, newProfile, logCheck}: {updateFunc: VoidFunction, n
                     })}
                 </ Grid> 
             </Typography>
-        </Box>     
+        </Card>     
     )
 }
 

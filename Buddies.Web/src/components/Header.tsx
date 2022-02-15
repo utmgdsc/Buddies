@@ -1,5 +1,5 @@
 import React from 'react';
-import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
@@ -15,8 +15,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 const Header = ({updateFunc, newProfile, logCheck, firstName, lastName, headline}: {updateFunc: VoidFunction,
      newProfile: UpdateProf, logCheck:boolean|null, firstName:string, lastName:string, headline:string}) => { 
     return (
-        <Grid container> 
-            <Box p = {2} bgcolor="primary.dark" sx={{ paddingLeft: 3, width: '100%', height: '90%', marginBottom: 1}}>
+            <Card sx={{ padding: 2, paddingLeft: 3, width: '100%', height: '90%', marginBottom: 1, backgroundColor: 'primary.dark'}}>
                 <Grid container>
                     <Grid container item xs={1} justifyContent= 'center'>
                         <Avatar alt="Remy Sharp" src="profile.png" sx={{ width: 74, height: 74 }}/>
@@ -47,14 +46,14 @@ const Header = ({updateFunc, newProfile, logCheck, firstName, lastName, headline
                     <Grid container item xs={2} justifyContent="flex-end"> 
                         
                         <CopyToClipboard text={'www.testurl.com'}>
-                            <Button startIcon={<FileCopyIcon />} variant="contained" style={{marginTop: 10, height: 50}}>
+                            <Button startIcon={<FileCopyIcon />} color="inherit" variant="contained" 
+                            style={{marginTop: 10, height: 50, wordWrap: "break-word"}}>
                                 Share
                             </Button>
                         </CopyToClipboard>
                     </Grid>
                 </Grid>
-            </Box>
-        </Grid>
+            </Card>
     );
 };
 export default Header;

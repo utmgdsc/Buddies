@@ -1,5 +1,5 @@
 import React from 'react';
-import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
@@ -12,7 +12,7 @@ import type {UpdateProf} from '../pages/Profiles/[pid]';
 const Aboutme = ({updateFunc, newProfile, logCheck, desc}: {updateFunc: VoidFunction, newProfile: UpdateProf,
      logCheck: boolean|null, desc: string}) => {  
     return (
-        <Box p = {2} boxShadow={12} sx={{ width: '100%', backgroundColor: 'primary.light', border: 1}}>
+        <Card sx={{ width: '100%', border: 1, padding: 2, boxShadow: 12}}>
             <Grid container> 
                 <Grid item xs={11}>
                     <Typography variant="h6" gutterBottom>
@@ -35,7 +35,7 @@ const Aboutme = ({updateFunc, newProfile, logCheck, desc}: {updateFunc: VoidFunc
                     </Typography> 
                 </Grid>
             </Grid>
-        </Box>     
+        </Card>     
     )
 }
 export default Aboutme;
