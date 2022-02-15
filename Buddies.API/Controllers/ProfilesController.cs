@@ -47,16 +47,17 @@ namespace Buddies.API.Controllers
             profileResponse.AboutMe = profile.AboutMe;
             profileResponse.Headline = profile.Headline;
 
-            for (int i = 0; i < profile.Skills.Count; i++)
+            int i = 0;
+            foreach (string name in profile.Skills)
             {
                 var skill = new SkillResponse();
-                skill.Name = profile.Skills[i].Name;
-                skill.Delete = profile.Skills[i].Delete;
-                if (!skill.Delete)
-                {
-                    profileResponse.Skills.Add(skill);
-                }
+                skill.Id = i;
+                skill.Name = name;
+                skill.Delete = false;
+                profileResponse.Skills.Add(skill);
+                i++;
             }
+         
 
             var userEntity = _userManager.GetUserAsync(User).Result;
             if (userEntity == null || userEntity.Id != id)
@@ -83,12 +84,11 @@ namespace Buddies.API.Controllers
             dbProfile.LastName = profile.LastName;
             dbProfile.Headline = profile.Headline;
             dbProfile.AboutMe = profile.AboutMe;
-            dbProfile.Skills = new List<Skills>();
+            dbProfile.Skills = new List<string>();
             for (int i = 0; i < profile.Skills.Count; i++)
             {
-                var skill = new Skills(profile.Skills[i].Name);
-                skill.Delete = profile.Skills[i].Delete;
-                dbProfile.Skills.Add(skill);
+
+                dbProfile.Skills.Add(profile.Skills[i].Name);
             }
             _context.SaveChanges();
            

@@ -8,7 +8,8 @@ namespace Buddies.API.IO;
 /// </summary>
 public record SkillResponse
 {
-
+    [Required(ErrorMessage = "")]
+    public int Id { get; set; } = default!;
     [Required(ErrorMessage = "")]
     public string Name { get; set; } = default!;
 

@@ -18,8 +18,8 @@ public class Profile
         LastName = lastName;
         Headline = "Project Enthusiast";
         AboutMe = "Hi, welcome to my profile.";
-        Skills = new List<Skills>();
-        Skills.Add(new Entities.Skills("Project"));
+        Skills = new List<string>();
+        Skills.Add("Teamwork");
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public class Profile
     /// <summary>
     /// Users skills on the profile
     /// </summary>
-    public List<Skills> Skills { get; set; }
+    public List<string> Skills { get; set; } 
     
     /// <summary>
     /// User the profile belongs to.

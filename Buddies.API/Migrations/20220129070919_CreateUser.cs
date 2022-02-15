@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Buddies.API.Migrations
 {
-    public partial class NewSnapshot : Migration
+    public partial class CreateUser : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -163,9 +163,7 @@ namespace Buddies.API.Migrations
                 {
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    Headline = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    AboutMe = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
+                    LastName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -176,26 +174,6 @@ namespace Buddies.API.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Skills",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Delete = table.Column<bool>(type: "boolean", nullable: false),
-                    ProfileUserId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Skills", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Skills_Profiles_ProfileUserId",
-                        column: x => x.ProfileUserId,
-                        principalTable: "Profiles",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -234,11 +212,6 @@ namespace Buddies.API.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Skills_ProfileUserId",
-                table: "Skills",
-                column: "ProfileUserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -259,13 +232,10 @@ namespace Buddies.API.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Skills");
+                name: "Profiles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Profiles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
