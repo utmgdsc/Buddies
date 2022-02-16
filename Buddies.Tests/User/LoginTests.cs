@@ -111,7 +111,7 @@ public class LoginTests : IClassFixture<TestWebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task TestUnvalidRefreshToken()
+    public async Task TestInvalidRefreshToken()
     {
         var tokenresponse = await _client.GetAsync("/api/v1/users/refresh");
         Assert.True(!tokenresponse.IsSuccessStatusCode);

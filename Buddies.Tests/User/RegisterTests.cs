@@ -140,6 +140,7 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
         };
         
         response = await _client.PostAsJsonAsync("/api/v1/users/register", dupRequest);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         
         var responseBody = await response.Content.ReadFromJsonAsync<JsonDocument>();

@@ -19,10 +19,12 @@ We recommend using **Visual Studio 2022** for the backend and **VS Code** for th
 ### Getting Started
 
 1. Run `dotnet tool restore` to install any necessary CLI tools.
-2. Open `Buddies.sln` using Visual Studio.
-3. Use Debug > Start Debugging or Debug > Start Without Debugging to start the backend.
-4. Open the `Buddies.Web` folder using VS Code.
-5. Run `yarn dev` in the integrated terminal to start the frontend.
+2. If your development PostgreSQL server does not have an up to date schema, use 
+`dotnet ef database update` to migrate to the latest schema.
+3. Open `Buddies.sln` using Visual Studio.
+4. Use Debug > Start Debugging or Debug > Start Without Debugging to start the backend.
+5. Open the `Buddies.Web` folder using VS Code.
+6. Run `yarn dev` in the integrated terminal to start the frontend.
 
 
 ### Migrations
