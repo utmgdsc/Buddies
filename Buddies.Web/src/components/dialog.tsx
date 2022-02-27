@@ -8,8 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 
-{/* Pop up component. Copied from material ui's website
-*/}
+/* Pop up component. Copied from material ui's website */
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -29,11 +28,11 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
   const { children, onClose, ...other } = props;
 
   return (
-    <Grid container >
+    <Grid container>
       <Grid item xs={10}>
         <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
           {children}
-        
+
         </DialogTitle>
       </Grid>
       {onClose ? (
@@ -43,7 +42,7 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
           sx={{
             position: 'absolute',
             top: 4,
-            left: 10, 
+            left: 10,
             color: (theme) => theme.palette.grey[500],
           }}
         >
@@ -54,7 +53,8 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
   );
 };
 
-export default function CustomizedDialogs({children, color, topmarg}: {children: React.ReactNode, color: string, topmarg: number}) {
+const CustomizedDialogs = ({ children, color, topmarg }: { children: React.ReactNode,
+  color: string, topmarg: number }) => {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -66,7 +66,9 @@ export default function CustomizedDialogs({children, color, topmarg}: {children:
 
   return (
     <div>
-      <ModeEditOutlinedIcon sx={{marginTop: topmarg, color: {color}, '&:hover': { color: '#add8e6', cursor: 'pointer' } }} onClick={handleClickOpen}/> {/* onClick={} pop up */}
+      <ModeEditOutlinedIcon sx={{ marginTop: topmarg, color: { color }, '&:hover': { color: '#add8e6', cursor: 'pointer' } }} onClick={handleClickOpen} />
+      {' '}
+      {/* onClick={} pop up */}
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -76,9 +78,11 @@ export default function CustomizedDialogs({children, color, topmarg}: {children:
           Make Changes
         </BootstrapDialogTitle>
         <DialogContent dividers>
-            {children}
+          {children}
         </DialogContent>
       </BootstrapDialog>
     </div>
   );
-}
+};
+
+export default CustomizedDialogs;

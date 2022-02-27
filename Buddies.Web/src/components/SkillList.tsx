@@ -1,16 +1,19 @@
-import React from "react";
-import Skill from "./Skill"
+import React from 'react';
 import Grid from '@material-ui/core/grid';
-import type {Skillobject} from '../pages/Profiles/[pid]';
+import Skill from './Skill';
+import type { Skillobject } from '../pages/Profiles/[pid]';
 
-{/* returns a list of all the skills in a grid*/}
+/* returns a list of all the skills in a grid */
 
-export default function SkillList({ skills, toggleSkill }: {skills: Skillobject[], toggleSkill: (id: number) => void}) {
-    return(
-        <Grid container > 
-            {skills.map(skill => {
-                return <Skill key={skill.id} toggleSkill={toggleSkill} skill={skill} />;
-            })}
-        </ Grid> 
-    );
+const SkillList = ({ skills, toggleSkill }: { skills: Skillobject[],
+  toggleSkill: (id: number) => void }) => {
+  return (
+    <Grid container>
+      {skills.map((skill) => {
+        return <Skill key={skill.id} toggleSkill={toggleSkill} skill={skill} />;
+      })}
+    </Grid>
+  );
 };
+
+export default SkillList;

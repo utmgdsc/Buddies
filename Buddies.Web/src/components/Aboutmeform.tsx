@@ -1,41 +1,53 @@
 import { TextField } from '@mui/material';
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { Button } from "@material-ui/core";
+import { Button } from '@material-ui/core';
 import Card from '@mui/material/Card';
-import type {UpdateProf} from '../pages/Profiles/[pid]';
+import type { UpdateProf } from '../pages/Profiles/[pid]';
 
 interface Values {
-    aboutme: string
+  aboutme: string
 }
 
-interface Props {
-    onSubmit: (values: Values) => void;
-}
+/* Form that opens up when editting aboutme section */
+const Aboutmeform = ({ onSubmit, profileData }: { onSubmit: (values: Values) => void,
+  profileData: UpdateProf }) => {
+  return (
+    <Formik
+      initialValues={{ aboutme: '' }}
+      onSubmit={(values) => {
+        onSubmit(values);
+      }}
+    >
 
-{/* Form that opens up when editting aboutme section */} 
-const Aboutmeform = ({onSubmit, profileData}: {onSubmit: (values: Values) => void, profileData: UpdateProf}) => {
-    return (
-        <Formik initialValues={{aboutme: ''}} onSubmit={(values) => {
-            onSubmit(values);
-        }}>
-            
-            {({values, handleChange, handleBlur}) => (
-                <Card sx={{width: '500px', border: 1, boxShadow: 12, padding: 2}}>
-                    <Form>
-                        <br />
-                        <div>
-                            <TextField inputProps={{ maxLength: 250 }} fullWidth label="About me" placeholder={profileData.aboutMe}
-                             name="aboutme" value={values.aboutme} onChange={handleChange} onBlur={handleBlur} required/>
-                        </div>
-                        <br />                        
-                        <Button type="submit"> Save Changes </Button>
-                        
-                    </Form>
-                </Card>
-            )}
-        </Formik>
-    );
+      {({ values, handleChange, handleBlur }) => (
+        <Card sx={{
+          width: '500px', border: 1, boxShadow: 12, padding: 2,
+        }}
+        >
+          <Form>
+            <br />
+            <div>
+              <TextField
+                inputProps={{ maxLength: 250 }}
+                fullWidth
+                label="About me"
+                placeholder={profileData.aboutMe}
+                name="aboutme"
+                value={values.aboutme}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+              />
+            </div>
+            <br />
+            <Button type="submit"> Save Changes </Button>
+
+          </Form>
+        </Card>
+      )}
+    </Formik>
+  );
 };
 
 export default Aboutmeform;
