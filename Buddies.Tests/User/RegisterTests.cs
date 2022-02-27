@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Buddies.API.Database;
 using Buddies.API.IO;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,56 +23,88 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
     }
     
     [Fact]
-    public void TestEmptyRequest()
+    public async Task TestEmptyRequest()
     {
-        var request = new RegisterRequest("", "", "", "");
-        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
+        var request = new RegisterRequest
+        {
+            FirstName = "",
+            LastName = "",
+            Email = "",
+            Password = ""
+        };
+        
+        var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var responseBody = response.Content.ReadFromJsonAsync<JsonDocument>().Result;
+        var responseBody = await response.Content.ReadFromJsonAsync<JsonDocument>();
         Assert.Equal(4, responseBody?.RootElement.GetProperty("errors").EnumerateObject().Count());
     }
 
     [Fact]
-    public void TestInvalidEmail()
+    public async Task TestInvalidEmail()
     {
-        var request = new RegisterRequest("Akari", "Akaza", "not an email", "Pwd^123");
+        var request = new RegisterRequest
+        {
+            FirstName = "Akari", 
+            LastName = "Akaza", 
+            Email = "not an email", 
+            Password = "Pwd^123"
+        };
         
-        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
+        var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var responseBody = response.Content.ReadFromJsonAsync<JsonDocument>().Result;
+        var responseBody = await response.Content.ReadFromJsonAsync<JsonDocument>();
         Assert.True(responseBody?.RootElement.GetProperty("errors").TryGetProperty("email", out _));
     }
 
     [Fact]
-    public void TestUnsafePassword()
+    public async Task TestUnsafePassword()
     {
-        var request = new RegisterRequest("Akari", "Akaza", "akari@akaza.moe", "12345");
+        var request = new RegisterRequest
+        {
+            FirstName = "Akari", 
+            LastName = "Akaza", 
+            Email = "akari@akaza.moe", 
+            Password = "12345"
+        };
 
-        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
+        var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var responseBody = response.Content.ReadFromJsonAsync<JsonDocument>().Result;
+        var responseBody = await response.Content.ReadFromJsonAsync<JsonDocument>();
         Assert.True(responseBody?.RootElement.GetProperty("errors").TryGetProperty("password", out _));
     }
 
     [Fact]
-    public void TestShortName()
+    public async Task TestShortName()
     {
-        var request = new RegisterRequest("A", "A", "akari@akaza.moe", "Pwd^123");
+        var request = new RegisterRequest
+        {
+            FirstName = "A", 
+            LastName = "A", 
+            Email = "akari@akaza.moe", 
+            Password = "Pwd^123"
+        };
         
-        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
+        var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var responseBody = response.Content.ReadFromJsonAsync<JsonDocument>().Result;
+        var responseBody = await response.Content.ReadFromJsonAsync<JsonDocument>();
         Assert.True(responseBody?.RootElement.GetProperty("errors").TryGetProperty("firstName", out _));
         Assert.True(responseBody?.RootElement.GetProperty("errors").TryGetProperty("lastName", out _));
     }
 
     [Fact]
-    public void TestUserRegistered()
+    public async Task TestUserRegistered()
     {
-        var request = new RegisterRequest("Akari", "Akaza", "akari@akaza.moe", "Pwd^123");
+        var request = new RegisterRequest
+        {
+            FirstName = "Akari", 
+            LastName = "Akaza", 
+            Email = "akari@akaza.moe", 
+            Password = "Pwd^123"
+        };
         
-        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
         using (var scope = scopeFactory.CreateScope())
@@ -86,18 +119,32 @@ public class RegisterTests : IClassFixture<TestWebApplicationFactory<Program>>
     }
 
     [Fact]
-    public void TestDuplicateEmail()
+    public async Task TestDuplicateEmail()
     {
-        var request = new RegisterRequest("Akari", "Akaza", "kyoko@toshino.moe", "Pwd^123");
+        var request = new RegisterRequest
+        {
+            FirstName = "Akari", 
+            LastName = "Akaza", 
+            Email = "kyoko@toshino.moe", 
+            Password = "Pwd^123"
+        };
         
-        var response = _client.PostAsJsonAsync("/api/v1/users/register", request).Result;
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var response = await _client.PostAsJsonAsync("/api/v1/users/register", request);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-        var dupRequest = new RegisterRequest("Kyoko", "Toshino", request.Email, "321^dwP");
-        response = _client.PostAsJsonAsync("/api/v1/users/register", dupRequest).Result;
+        var dupRequest = new RegisterRequest
+        {
+            FirstName = "Kyoko", 
+            LastName = "Toshino", 
+            Email = request.Email, 
+            Password = "321^dwP"
+        };
+        
+        response = await _client.PostAsJsonAsync("/api/v1/users/register", dupRequest);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         
-        var responseBody = response.Content.ReadFromJsonAsync<JsonDocument>().Result;
+        var responseBody = await response.Content.ReadFromJsonAsync<JsonDocument>();
         Assert.True(responseBody?.RootElement.GetProperty("errors").TryGetProperty("email", out _));
     }
 }

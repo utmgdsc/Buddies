@@ -4,10 +4,13 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useMemo } from 'react';
+import React, {
+  useEffect, useMemo, useState,
+} from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Layout from '../components/Layout';
+import { fetchToken } from '../api';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -18,12 +21,21 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     },
   }), [prefersDarkMode]);
 
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    fetchToken().catch((err) => err).finally(() => setLoaded(true));
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      {loaded
+          && (
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+          )}
     </ThemeProvider>
   );
 };

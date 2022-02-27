@@ -15,7 +15,6 @@ public class User : IdentityUser<int>
     {
         Email = email;
     }
-    
     public sealed override string Email
     {
         get => base.Email;
