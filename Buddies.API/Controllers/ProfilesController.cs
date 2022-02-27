@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Buddies.API.Entities;
 using Buddies.API.Database;
@@ -39,6 +39,7 @@ namespace Buddies.API.Controllers
             {
                 return NotFound("PROFILE NOT FOUND");
             }
+            var userSkills = await _context.Skills.Where(s => s.ProfileId == profile.UserId).ToListAsync();
 
             var profileResponse = new UserProfileResponse();
             profileResponse.FirstName = profile.FirstName;
@@ -47,17 +48,15 @@ namespace Buddies.API.Controllers
             profileResponse.AboutMe = profile.AboutMe;
             profileResponse.Headline = profile.Headline;
 
-            int i = 0;
-            foreach (string name in profile.Skills)
+            foreach (Skill s in userSkills)
             {
                 var skill = new SkillResponse();
-                skill.Id = i;
-                skill.Name = name;
+                skill.Id = s.Id;
+                skill.Name = s.Name;
                 skill.Delete = false;
                 profileResponse.Skills.Add(skill);
-                i++;
             }
-         
+
 
             var userEntity = _userManager.GetUserAsync(User).Result;
             if (userEntity == null || userEntity.Id != id)
@@ -76,6 +75,8 @@ namespace Buddies.API.Controllers
         public async Task<ActionResult> UpdateProfile(UpdateProfileRequest profile)
         {
             var dbProfile = await _context.Profiles.FindAsync(profile.UserId);
+            var userSkills = await _context.Skills.Where(s => s.ProfileId == profile.UserId).ToListAsync();
+           
             if (dbProfile == null)
             {
                 return NotFound("PROFILE NOT FOUND");
@@ -84,14 +85,21 @@ namespace Buddies.API.Controllers
             dbProfile.LastName = profile.LastName;
             dbProfile.Headline = profile.Headline;
             dbProfile.AboutMe = profile.AboutMe;
-            dbProfile.Skills = new List<string>();
-            for (int i = 0; i < profile.Skills.Count; i++)
-            {
 
-                dbProfile.Skills.Add(profile.Skills[i].Name);
+            foreach (Skill s in userSkills)
+            {
+                _context.Skills.Remove(s);
+
             }
+            foreach (SkillResponse skill in profile.Skills)
+            {
+                var newskill = new Skill(skill.Name);
+                newskill.ProfileId = profile.UserId;
+                _context.Skills.Add(newskill);
+            }
+
             _context.SaveChanges();
-           
+
             return Ok();
         }
 

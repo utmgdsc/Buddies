@@ -18,8 +18,7 @@ public class Profile
         LastName = lastName;
         Headline = "Project Enthusiast";
         AboutMe = "Hi, welcome to my profile.";
-        Skills = new List<string>();
-        Skills.Add("Teamwork");
+        Skills = new List<Skill>();
     }
 
     /// <summary>
@@ -51,8 +50,8 @@ public class Profile
     /// <summary>
     /// Users skills on the profile
     /// </summary>
-    public List<string> Skills { get; set; } 
-    
+    public List<Skill> Skills { get; set; }
+
     /// <summary>
     /// User the profile belongs to.
     /// </summary>

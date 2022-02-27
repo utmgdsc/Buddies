@@ -19,5 +19,5 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     /// Collection of all Skills that belong 
     /// to a User Profile.
     /// </summary>
-    ///public DbSet<Skills> Skills { get; set; } = null!;
+    public DbSet<Skill> Skills { get; set; } = null!;
 }
