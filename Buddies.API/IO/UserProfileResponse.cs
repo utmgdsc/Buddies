@@ -26,8 +26,4 @@ public record UserProfileResponse
 
     [Required]
     public List<SkillResponse> Skills { get; set; } = new List<SkillResponse>();
-
-    [Required]
-    public int Success { get; set; } = default!;
-
 }

@@ -58,12 +58,6 @@ namespace Buddies.API.Controllers
             }
 
 
-            var userEntity = _userManager.GetUserAsync(User).Result;
-            if (userEntity == null || userEntity.Id != id)
-            {
-                profileResponse.Success = 0;
-            }
-            profileResponse.Success = 1;
 
             return Ok(profileResponse);
         }
@@ -95,10 +89,10 @@ namespace Buddies.API.Controllers
             {
                 var newskill = new Skill(skill.Name);
                 newskill.ProfileId = profile.UserId;
-                _context.Skills.Add(newskill);
+                await _context.Skills.AddAsync(newskill);
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return Ok();
         }
