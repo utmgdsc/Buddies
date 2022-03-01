@@ -51,7 +51,7 @@ const Profile: React.VFC = () => {
     headline: 'n/a',
     aboutMe: 'n/a',
     skills: [{ id: 1, name: 'Data Structures', delete: false },
-      { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }]
+      { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }],
   }); // default user profile
     // it's used when someone tries to access a profile that does not exist
 
@@ -73,7 +73,7 @@ const Profile: React.VFC = () => {
     userId: userProfile.userId,
     headline: userProfile.headline,
     aboutMe: userProfile.aboutMe,
-    skills: userProfile.skills
+    skills: userProfile.skills,
   };
 
   const updateProfile: VoidFunction = async () => {
