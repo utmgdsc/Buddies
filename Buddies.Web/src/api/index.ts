@@ -5,6 +5,7 @@ import { RegisterRequest } from './model/registerRequest';
 import { LoginRequest } from './model/loginRequest';
 import { TokenResponse } from './model/tokenResponse';
 import { authStore, AuthState } from '../stores/authStore';
+import { CreateProjectRequest } from './model/createProjectRequest';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -24,6 +25,10 @@ export async function logoutUser() {
   await axios.get('/api/v1/users/logout');
   axios.defaults.headers.common.Authorization = '';
   authStore.setState({ authState: null });
+}
+
+export async function createProject(request: CreateProjectRequest) {
+  return axios.post('/api/v1/projects', request);
 }
 
 axios.interceptors.response.use((res) => res, async (error) => {
