@@ -14,4 +14,9 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     /// Collection of all profiles.
     /// </summary>
     public DbSet<Profile> Profiles { get; set; } = null!;
+
+    /// <summary>
+    /// Collection of all projects
+    /// </summary>
+    public DbSet<Profile> Projects { get; set; } = null!;
 }
