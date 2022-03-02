@@ -13,6 +13,7 @@ namespace Buddies.API.Controllers
     {
         private readonly ApiContext _context;
         private readonly UserManager<User> _userManager;
+        private static readonly HttpClient client = new HttpClient();
 
         /// <summary>
         /// Initializes a new ProjectController.
@@ -23,6 +24,9 @@ namespace Buddies.API.Controllers
         {
             _context = context;
             _userManager = userManager;
+            client.DefaultRequestHeaders.TryAddWithoutValidation("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Referer", "http://www.microsoft.com");
+
         }
 
         /// <summary>
@@ -35,6 +39,14 @@ namespace Buddies.API.Controllers
             if (userEntity == null)
             {
                 return Unauthorized();
+            }
+
+            String url = String.Format("https://nominatim.openstreetmap.org/search/lookup?city={0}&format=json&addressdetails=1", project.Location);
+
+            var responseString = await client.GetStringAsync(url);
+            if (responseString == "[]")
+            {
+                return NotFound("Invalid City");
             }
 
             Project dbProject = new Project(userEntity.Id);
