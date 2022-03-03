@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Buddies.API.Entities;
 using Buddies.API.Database;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +25,6 @@ namespace Buddies.API.Controllers
             _userManager = userManager;
             client.DefaultRequestHeaders.TryAddWithoutValidation("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
             client.DefaultRequestHeaders.TryAddWithoutValidation("Referer", "http://www.microsoft.com");
-
         }
 
         /// <summary>
@@ -70,6 +68,30 @@ namespace Buddies.API.Controllers
 
 
             return Ok();
+        }
+
+        /// <summary>
+        /// API route GET /api/v1/projects/locations for fetching profile.
+        /// </summary>
+        [HttpGet("locations")]
+        public async Task<ActionResult> GetProfile()
+        {
+
+            String url = "https://raw.githubusercontent.com/SyedTahaA/test/main/data.json";
+            var CityResponseString = await client.GetStringAsync(url);
+            return Ok(CityResponseString);
+            List<string> cities = new List<string>();
+            using (StringReader reader = new StringReader(CityResponseString))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    line = line.Split(',').ToList()[0];
+                    cities.Add(line);
+                }
+            }
+
+            return Ok(cities);
         }
 
     }
