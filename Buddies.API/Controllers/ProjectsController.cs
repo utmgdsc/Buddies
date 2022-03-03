@@ -71,7 +71,7 @@ namespace Buddies.API.Controllers
         }
 
         /// <summary>
-        /// API route GET /api/v1/projects/locations for fetching profile.
+        /// API route GET /api/v1/projects/locations for fetching locations.
         /// </summary>
         [HttpGet("locations")]
         public async Task<ActionResult> GetProfile()
@@ -80,18 +80,6 @@ namespace Buddies.API.Controllers
             String url = "https://raw.githubusercontent.com/SyedTahaA/test/main/data.json";
             var CityResponseString = await client.GetStringAsync(url);
             return Ok(CityResponseString);
-            List<string> cities = new List<string>();
-            using (StringReader reader = new StringReader(CityResponseString))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    line = line.Split(',').ToList()[0];
-                    cities.Add(line);
-                }
-            }
-
-            return Ok(cities);
         }
 
     }
