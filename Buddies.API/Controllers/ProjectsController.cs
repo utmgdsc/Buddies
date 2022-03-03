@@ -4,6 +4,7 @@ using Buddies.API.Entities;
 using Buddies.API.Database;
 using Microsoft.AspNetCore.Identity;
 using Buddies.API.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace Buddies.API.Controllers
 {
@@ -26,7 +27,6 @@ namespace Buddies.API.Controllers
             _userManager = userManager;
             client.DefaultRequestHeaders.TryAddWithoutValidation("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
             client.DefaultRequestHeaders.TryAddWithoutValidation("Referer", "http://www.microsoft.com");
-
         }
 
         /// <summary>
@@ -71,6 +71,56 @@ namespace Buddies.API.Controllers
 
             return Ok();
         }
+
+        /// <summary>
+        /// API route GET /api/v1/projects/locations for fetching categories.
+        /// </summary>
+        [HttpGet("category/{search}/{page}/{results}")]
+        public async Task<ActionResult<CategoryResponse>> GetCategory(string search, int page, float results)
+        {
+            if (_context.Categories == null)
+            {
+                return NotFound();
+            }
+            
+            var categoryList = await _context.Categories.ToListAsync();
+            int tolerance = 1; 
+            var matchingCategories = categoryList.Where(p =>
+            {
+                //Check Contains
+                bool contains = p.Name.Contains(search);
+                if (contains) return true;
+
+                //Check LongestCommonSubsequence
+                string output = "";
+                bool subsequenceTolerated = LongestCommonSubsequence(p.Name, search, out output) >= search.Length - tolerance; // if substring matches at least
+                                                                                                                               // this many characters.
+                return subsequenceTolerated;
+            }).ToList();
+
+            if (matchingCategories.Count == 0)
+            {
+                return NotFound("No searches found :(");
+            }
+
+            var pageCount = Math.Ceiling(matchingCategories.Count() / results);
+            var categories = matchingCategories
+                .Skip((page - 1) * (int)results)
+                .Take((int)results)
+                .ToList();
+
+            var response = new CategoryResponse
+            {
+                Categories = categories,
+                TotalPages = (int)pageCount,
+                CurrentPage = page
+            };
+
+            return Ok(categories);
+        }
+
+
+       
 
     }
 }
