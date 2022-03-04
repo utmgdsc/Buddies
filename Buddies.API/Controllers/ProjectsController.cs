@@ -40,7 +40,7 @@ namespace Buddies.API.Controllers
                 return Unauthorized();
             }
 
-            String url = String.Format("https://nominatim.openstreetmap.org/search/lookup?city={0}&format=json&addressdetails=1", project.Location);
+            String url = String.Format("https://nominatim.openstreetmap.org/search/lookup?city={0}&country=Canada&format=json&addressdetails=1", project.Location);
 
             var responseString = await client.GetStringAsync(url);
             if (responseString == "[]")
@@ -48,10 +48,12 @@ namespace Buddies.API.Controllers
                 return NotFound("Invalid City");
             }
 
-            Project dbProject = new Project(userEntity.Id);
+            Project dbProject = new Project();
+            dbProject.OwnerId = userEntity.Id;
             dbProject.Title = project.Title;
             dbProject.Description = project.Description;
             dbProject.Location = project.Location;
+            dbProject.Members.Add(userEntity);
 
             foreach (int invitation in project.InvitedUsers)
             {
@@ -64,7 +66,7 @@ namespace Buddies.API.Controllers
 
             }
 
-            await _context.AddAsync(dbProject);
+            await _context.Projects.AddAsync(dbProject);
             await _context.SaveChangesAsync();
 
 
@@ -74,32 +76,43 @@ namespace Buddies.API.Controllers
         /// <summary>
         /// API route GET /api/v1/projects/locations for fetching categories.
         /// </summary>
+        /// <param name="search">Category to search for</param>
+        /// <param name="page">current page</param>
+        /// <param name="results">number of results per page</param>
         [HttpGet("category/{search}/{page}/{results}")]
-        public async Task<ActionResult<CategoryResponse>> GetCategory(string search, int page, float results)
+        public async Task<ActionResult> GetCategory(string search, int page, float results)
         {
+            SearchResponse badResponse = new SearchResponse
+            {
+                Searches = new List<string>(),
+                TotalPages = 1,
+                CurrentPage = 1
+            };
+
             if (_context.Categories == null)
             {
-                return NotFound();
+                return Ok(badResponse);
             }
             
             var categoryList = await _context.Categories.ToListAsync();
-            int tolerance = 1; 
+            int tolerance = 0; 
             var matchingCategories = categoryList.Where(p =>
             {
                 //Check Contains
-                bool contains = p.Name.Contains(search);
+                bool contains = p.Name.ToLower().Contains(search.ToLower());
                 if (contains) return true;
 
                 //Check LongestCommonSubsequence
                 string output = "";
-                bool subsequenceTolerated = LongestCommonSubsequence(p.Name, search, out output) >= search.Length - tolerance; // if substring matches at least
-                                                                                                                               // this many characters.
+                bool subsequenceTolerated = LongestCommonSubsequence(p.Name.ToLower(), search.ToLower(), out output) >= search.Length - tolerance; 
+                                                                                                                        // if substring matches at least
+                                                                                                                        // this many characters.
                 return subsequenceTolerated;
             }).ToList();
 
             if (matchingCategories.Count == 0)
             {
-                return NotFound("No searches found :(");
+                return Ok(badResponse);
             }
 
             var pageCount = Math.Ceiling(matchingCategories.Count() / results);
@@ -108,23 +121,32 @@ namespace Buddies.API.Controllers
                 .Take((int)results)
                 .ToList();
 
-            var response = new CategoryResponse
+            var matchingSearch = new List<string>();
+            foreach (Category cat in categories)
             {
-                Categories = categories,
+                matchingSearch.Add(cat.Name);
+            }
+
+            var response = new SearchResponse
+            {
+                Searches = matchingSearch,
                 TotalPages = (int)pageCount,
                 CurrentPage = page
             };
 
-            return Ok(categories);
+            return Ok(response);
         }
 
         /// <summary>
         /// API route GET /api/v1/projects/locations for fetching locations.
+        /// valid locations include only Canadian Cities.
         /// </summary>
+        /// <param name="search">Location to search for</param>
+        /// <param name="page">current page</param>
+        /// <param name="size">number of results per page</param>
         [HttpGet("locations/{search}/{page}/{size}")]
         public async Task<ActionResult> GetLocation(string search, int page, float size)
         {
-
             String url = "https://raw.githubusercontent.com/SyedTahaA/test/main/canadacities.csv";
             List<string> cities = new List<string>();
             var CityResponseString = await client.GetStringAsync(url);
@@ -150,7 +172,7 @@ namespace Buddies.API.Controllers
 
                 //Check LongestCommonSubsequence
                 string output = "";
-                bool subsequenceTolerated = LongestCommonSubsequence(p, searchitem, out output) >= searchitem.Length - TOLERANCE;
+                bool subsequenceTolerated = LongestCommonSubsequence(p.ToLower(), searchitem, out output) >= searchitem.Length - TOLERANCE;
 
                 return subsequenceTolerated;
             }).ToList();
@@ -167,27 +189,37 @@ namespace Buddies.API.Controllers
         }
 
         /// <summary>
-        /// API route GET /api/v1/projects/locations for fetching locations.
+        /// API route GET /api/v1/projects/locations for fetching emails.
         /// </summary>
+        /// <param name="search">Category to search for</param>
+        /// <param name="page">current page</param>
+        /// <param name="size">number of results per page</param>
         [HttpGet("email/{search}/{page}/{size}")]
         public async Task<ActionResult> GetUser(string search, int page, float size)
         {
 
+            SearchResponse badResponse = new SearchResponse
+            {
+                Searches = new List<string>(),
+                TotalPages = 1,
+                CurrentPage = 1
+            };
+
             var emailsList = await _context.Users.ToListAsync();
             if (emailsList == null)
             {
-                return NotFound();
+                return Ok(badResponse);
             }
-            const int TOLERANCE = 1;
+            const int TOLERANCE = 0;
             var matchingPeople = emailsList.Where(p =>  
             {
                 //Check Contains
-                bool contains = p.Email.Contains(search);
+                bool contains = p.Email.ToLower().Contains(search.ToLower());
                 if (contains) return true;
 
                 //Check LongestCommonSubsequence
                 string output = "";
-                bool subsequenceTolerated = LongestCommonSubsequence(p.Email, search, out output) >= search.Length - TOLERANCE;
+                bool subsequenceTolerated = LongestCommonSubsequence(p.Email.ToLower(), search.ToLower(), out output) >= search.Length - TOLERANCE;
 
                 return subsequenceTolerated;
             }).ToList();
@@ -210,11 +242,17 @@ namespace Buddies.API.Controllers
             return Ok(emailPage);
         }
 
+        /// <summary>
+        /// Return the larger of a and b.
+        /// </summary>
         private static int MAX(int a, int b)
         {
             return a > b ? a : b;
         }
 
+        /// <summary>
+        /// Finds the length of the longest common subsequence
+        /// </summary>
         // source: https://www.programmingalgorithms.com/algorithm/longest-common-subsequence/
         public static int LongestCommonSubsequence(string s1, string s2, out string output)
         {

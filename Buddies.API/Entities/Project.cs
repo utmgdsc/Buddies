@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Buddies.API.Entities
 {
@@ -8,11 +9,10 @@ namespace Buddies.API.Entities
         /// <summary>
         /// Initializes a new project entity.
         /// </summary>
-        public Project(int id)
+        public Project()
         {
-            Members = new List<int>();
+            Members = new List<User>();
             InvitedUsers = new List<User>();
-            UserId = id;
         }
 
         /// <summary>
@@ -42,22 +42,20 @@ namespace Buddies.API.Entities
         /// <summary>
         /// ID of the user the project belongs to (project owner).
         /// </summary>
-        public int UserId { get; init; }
+        public int OwnerId { get; set; }
 
-        /// <summary>
-        /// User the project belongs to.
-        /// </summary>
-        public User User { get; init; } = null!; // populated by EF 
 
         /// <summary>
         /// Project group members
         /// </summary>
-        public List<int> Members { get; set; }
+        [InverseProperty("Projects")]
+        public List<User> Members { get; set; }
 
         /// <summary>
-        /// Users that have invited
+        /// Users that have been invited
         /// to join the project.
         /// </summary>
+        [InverseProperty("InvitedTo")]
         public List<User> InvitedUsers { get; set; }
     }
 

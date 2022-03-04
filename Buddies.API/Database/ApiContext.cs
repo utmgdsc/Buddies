@@ -12,20 +12,59 @@ public class ApiContext : IdentityDbContext<User, Role, int>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        base.OnModelCreating(builder);
         builder.Entity<Category>().HasData(
-            new Category("Accounting"),
-            new Category("Anthropology"),
-            new Category("Statistics"),
-            new Category("Mathematics"),
-            new Category("Religion"),
-            new Category("Architect"),
-            new Category("Art"),
-            new Category("Computer Science"),
-            new Category("Computer Engineering"),
-            new Category("Physics"),
-            new Category("Chemistry"),
-            new Category("Biology"),
+            new Category("Accounting") { 
+                Id = 1,
+            },
+            new Category("Anthropology")
+            {
+                Id = 2,
+            },
+            new Category("Statistics")
+            {
+                Id = 3,
+            },
+            new Category("Mathematics")
+            {
+                Id = 4,
+            },
+            new Category("Religion")
+            {
+                Id = 5,
+            },
+            new Category("Architect")
+            {
+                Id = 6,
+            },
+            new Category("Art")
+            {
+                Id = 7,
+            },
+            new Category("Computer Science")
+            {
+                Id = 8,
+            },
+            new Category("Computer Engineering")
+            {
+                Id = 9,
+            },
+            new Category("Physics")
+            {
+                Id = 10,
+            },
+            new Category("Chemistry")
+            {
+                Id = 11,
+            },
+            new Category("Biology")
+            {
+                Id = 12,
+            },
             new Category("Language")
+            {
+                Id = 13,
+            }
             );
     }
 
@@ -35,12 +74,12 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     public DbSet<Profile> Profiles { get; set; } = null!;
 
     /// <summary>
-    /// Collection of all projects
+    /// Collection of all projects.
     /// </summary>
-    public DbSet<Profile> Projects { get; set; } = null!;
+    public DbSet<Project> Projects { get; set; } = null!;
 
     /// <summary>
-    /// Collection of all projects
+    /// Collection of all project categories.
     /// </summary>
     public DbSet<Category> Categories { get; set; } = null!;
 }
