@@ -15,7 +15,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
 import { Container, FormControl } from '@material-ui/core';
-import LegendToggleIcon from '@mui/icons-material/LegendToggle';
+import ListIcon from '@mui/icons-material/List';
 import MultipleSelectPlaceholder from '../components/Filter';
 
 type Project = {
@@ -25,20 +25,36 @@ type Project = {
     Username: string,
     BuddyScore: number,
     Members: number
-}
-let PROJECTS: Project[] = []; //fake data
+    Category: string,
+};
+
+type FilterObject = {
+    Location: string,
+    Members: number,
+    Category: string
+};
+
+let filterTracker: FilterObject = {
+    Location: "",
+    Members: 0,
+    Category: ""
+};
+
+let DATA: Project[] = []; //fake data
 for (let i=0; i<14; i++){
-    PROJECTS[i] = {
+    DATA[i] = {
         Title: 'MP3 to JPG Web App ' + i,
         Description: 'Description ' + i,
-        Location: 'Mississauga, ON, CAN',
+        Location: (i%2 == 0) ? ('2') : ('3'),
         Username: 'Jack ' + i,
         BuddyScore: i,
-        Members: 3
+        Members: (i%4 == 0) ? (3) : (2),
+        Category: (i%3 == 0) ? ('2') : ('3')
     }
-}
+};
 
 const memberfilters: string[] = [
+    'Members: 0',
     'Members: 2',
     'Members: 3',
     'Members: 4',
@@ -52,6 +68,7 @@ const memberfilters: string[] = [
   ];
 
   const locations: string[] = [
+    'Location: ',
     'Location: 2',
     'Location: 3',
     'Location: 4',
@@ -65,6 +82,7 @@ const memberfilters: string[] = [
   ];
 
   const categories: string[] = [
+    'Category: ',
     'Category: 2',
     'Category: 3',
     'Category: 4',
@@ -80,7 +98,7 @@ const memberfilters: string[] = [
 const PostingsTable = () => {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(4);
-
+    const [projects, setProjects] = React.useState(DATA)
     
     const handleChangePage = (e: unknown, newPage: number) => {
       setPage(newPage);
@@ -91,21 +109,40 @@ const PostingsTable = () => {
       setPage(0);
     };
 
+    const applyFilter = (filterType: string, filterValue: string | number) => {
+        ///applyFilter...
+        filterTracker = {...filterTracker, [filterType as keyof FilterObject]: filterValue};
+        let newProjects = DATA.slice();
+        for (const fil in filterTracker) {
+            if ((filterTracker[fil as keyof FilterObject] != "") && (filterTracker[fil as keyof FilterObject] != 0)) {
+                newProjects = newProjects.filter((project) => project[fil as keyof Project] == filterTracker[fil as keyof FilterObject]);
+            }
+        }
+        setProjects(newProjects);
+        //applyFilter("", filterValue);
+        console.log(filterTracker);
+        //console.log('filtertype: ' + filterType);
+        //console.log('filterValue: ' + filterValue);
+        //const newProjects = DATA.filter((project) => project[filterType as keyof Project] == filterValue);
+        //console.log(newProjects);
+        //setProjects(newProjects);
+    };
+
     return (
         <Container>
             <Grid container>
                 <Grid item xs={12} style={{marginTop: 20}}>
                     <Grid container>
-                        <Grid item xs={12} sm={12} md={8}>
+                        <Grid item xs={12} sm={12} md={7}>
                             <Typography sx={{marginTop: 4, marginLeft: 1 }} variant="h4">
                                 Recent Postings
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={4}>
-                            <LegendToggleIcon sx={{marginTop: 5}} />
-                            <MultipleSelectPlaceholder placeholder='Category' names={categories}/>
-                            <MultipleSelectPlaceholder placeholder='Members' names={memberfilters} />
-                            <MultipleSelectPlaceholder placeholder='Location' names={locations}/>
+                        <Grid item xs={12} sm={12} md={5}>
+                            <ListIcon sx={{marginTop: 5}} />
+                            <MultipleSelectPlaceholder placeholder='Category' names={categories} filtFunc={applyFilter}/>
+                            <MultipleSelectPlaceholder placeholder='Members' names={memberfilters} filtFunc={applyFilter}/>
+                            <MultipleSelectPlaceholder placeholder='Location' names={locations} filtFunc={applyFilter}/>
                         </Grid>
                     </Grid>
                     <Box sx={{width: '100%', backgroundColor: 'black', height: 10, marginBottom: 5}}/>            
@@ -118,7 +155,7 @@ const PostingsTable = () => {
                             </TableRow>
                             </TableHead>
                             <TableBody>
-                            {PROJECTS.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                            {projects.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                                 <TableRow
                                 key={row.Title}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -173,7 +210,7 @@ const PostingsTable = () => {
                                 <TablePagination
                             rowsPerPageOptions={[5, 10, 15]}
                             component="div"
-                            count={PROJECTS.length}
+                            count={projects.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
@@ -190,3 +227,4 @@ const PostingsTable = () => {
 };
 
 export default PostingsTable;
+export type { Project };

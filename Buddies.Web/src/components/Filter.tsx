@@ -16,7 +16,8 @@ const MenuProps = {
 };
 
 
-export default function MultipleSelectPlaceholder({ placeholder, names }: { placeholder: string, names: string[] }) {
+export default function MultipleSelectPlaceholder({ placeholder, names, filtFunc }:
+   { placeholder: string, names: string[], filtFunc: (filterType: string, filterValue: any) => void}) {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState<string[]>([]);
 
@@ -37,13 +38,25 @@ export default function MultipleSelectPlaceholder({ placeholder, names }: { plac
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
+    //console.log('hi');
+    //console.log(personName[0].slice(placeholder.length+2));
+    //filtFunc(placeholder, personName);
   };
+
+  React.useEffect(() => {
+    if (personName.length != 0) {
+      console.log('hi');
+      const compare: string = personName[0].slice(placeholder.length+2);
+      console.log(compare);
+      filtFunc(placeholder, compare);
+    }
+  }, [personName]);
 
   return (
       <FormControl sx={{ m: 1, mt: 3 }}>
         <Select
           displayEmpty
-          value={personName}
+          value={personName || ""}
           onChange={handleChange}
           input={<OutlinedInput />}
           renderValue={(selected) => {
