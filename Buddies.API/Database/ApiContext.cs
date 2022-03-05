@@ -14,4 +14,10 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     /// Collection of all profiles.
     /// </summary>
     public DbSet<Profile> Profiles { get; set; } = null!;
+
+    /// <summary>
+    /// Collection of all Skills that belong 
+    /// to a User Profile.
+    /// </summary>
+    public DbSet<Skill> Skills { get; set; } = null!;
 }
