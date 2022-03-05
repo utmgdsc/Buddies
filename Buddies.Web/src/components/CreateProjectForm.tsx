@@ -30,6 +30,13 @@ const makeThrottledSearch = (
   }, 1000);
 };
 
+const scrollHandler = (e: React.SyntheticEvent, func: () => void) => {
+  const listboxNode = e.currentTarget;
+  if (listboxNode.scrollTop + listboxNode.clientHeight === listboxNode.scrollHeight) {
+    func();
+  }
+};
+
 interface Props {
   /**
    * Method to execute upon submission of form.
@@ -71,29 +78,41 @@ const CreateProjectForm: React.VFC<Props> = ({
   const [users, setUsers] = useState<string[]>([]);
   const [userSearch, setUserSearch] = useState('');
 
-  const prevCategoriesPage = 0;
-  const prevLocationsPage = 0;
-  const prevUsersPage = 0;
+  const [nextCategoriesPage, setNextCategoriesPage] = useState(1);
+  const [nextLocationsPage, setNextLocationsPage] = useState(1);
+  const [nextUsersPage, setNextUsersPage] = useState(1);
 
   const getMoreCategories = makeThrottledSearch(getCategories, setCategories);
   const getMoreLocations = makeThrottledSearch(getLocations, setLocations);
   const getMoreUsers = makeThrottledSearch(getUsers, setUsers);
 
   useEffect(() => {
+    setNextCategoriesPage(1);
     if (categorySearch !== '') {
-      getMoreCategories(categorySearch, 0);
+      getMoreCategories(categorySearch, nextCategoriesPage);
+      setNextCategoriesPage((prevState) => prevState + 1);
+    } else {
+      setCategories([]);
     }
   }, [categorySearch]);
 
   useEffect(() => {
+    setNextLocationsPage(1);
     if (locationSearch !== '') {
-      getMoreLocations(locationSearch, 0);
+      getMoreLocations(locationSearch, nextLocationsPage);
+      setNextLocationsPage((prevState) => prevState + 1);
+    } else {
+      setLocations([]);
     }
   }, [locationSearch]);
 
   useEffect(() => {
+    setNextUsersPage(1);
     if (userSearch !== '') {
-      getMoreUsers(userSearch, 0);
+      getMoreUsers(userSearch, nextUsersPage);
+      setNextUsersPage((prevState) => prevState + 1);
+    } else {
+      setUsers([]);
     }
   }, [userSearch]);
 
@@ -169,6 +188,15 @@ const CreateProjectForm: React.VFC<Props> = ({
                 value={field.value}
                 onChange={(_, value) => field.onChange(value)}
                 onInputChange={(_, value) => setCategorySearch(value)}
+                ListboxProps={{
+                  onScroll: (e) => scrollHandler(e, () => {
+                    if (categorySearch !== '') {
+                      getMoreCategories(categorySearch, nextCategoriesPage);
+                      setNextCategoriesPage((prevState) => prevState + 1);
+                    }
+                  }),
+                  role: 'list-box',
+                }}
               />
             );
           }}
@@ -198,6 +226,15 @@ const CreateProjectForm: React.VFC<Props> = ({
                 value={field.value}
                 onChange={(_, value) => field.onChange(value)}
                 onInputChange={(_, value) => setLocationSearch(value)}
+                ListboxProps={{
+                  onScroll: (e) => scrollHandler(e, () => {
+                    if (locationSearch !== '') {
+                      getMoreLocations(locationSearch, nextLocationsPage);
+                      setNextLocationsPage(nextLocationsPage + 1);
+                    }
+                  }),
+                  role: 'list-box',
+                }}
               />
             );
           }}
@@ -242,6 +279,15 @@ const CreateProjectForm: React.VFC<Props> = ({
                     />
                   );
                 })}
+                ListboxProps={{
+                  onScroll: (e) => scrollHandler(e, () => {
+                    if (userSearch !== '') {
+                      getMoreUsers(userSearch, nextUsersPage);
+                      setNextUsersPage((prevState) => prevState + 1);
+                    }
+                  }),
+                  role: 'list-box',
+                }}
               />
             );
           }}
