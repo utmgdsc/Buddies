@@ -44,17 +44,19 @@ axios.interceptors.response.use((res) => res, async (error) => {
   return Promise.reject(error);
 });
 
-export async function getLocations(search: string, page: number, count: number) {
+export type SearchFunc = (search: string, page: number, count: number) => Promise<SearchResponse>;
+
+export const getLocations: SearchFunc = async (search, page, count) => {
   const res = await axios.get<SearchResponse>(`/api/v1/projects/locations/${search}/${page}/${count}`);
   return res.data;
-}
+};
 
-export async function getCategories(search: string, page: number, count: number) {
+export const getCategories: SearchFunc = async (search, page, count) => {
   const res = await axios.get<SearchResponse>(`/api/v1/projects/category/${search}/${page}/${count}`);
   return res.data;
-}
+};
 
-export async function getUsers(search: string, page: number, count: number) {
+export const getUsers: SearchFunc = async (search, page, count) => {
   const res = await axios.get<SearchResponse>(`/api/v1/projects/email/${search}/${page}/${count}`);
   return res.data;
-}
+};
