@@ -40,12 +40,12 @@ namespace Buddies.API.Entities
         public string Location { get; set; } = null!;
 
         /// <summary>
-        /// Location project owner specifies
+        /// Type of project
         /// </summary>
         public string Category { get; set; } = null!;
 
         /// <summary>
-        /// Location project owner specifies
+        /// Group capacity
         /// </summary>
         public int MaxMembers { get; set; } = default!;
 

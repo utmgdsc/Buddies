@@ -41,13 +41,20 @@ namespace Buddies.API.Controllers
                 return Unauthorized();
             }
 
-            var requestLocation = project.Location.Split(',').ToList()[0];
-            String url = String.Format("https://nominatim.openstreetmap.org/search/lookup?city={0}&country=Canada&format=json&addressdetails=1", requestLocation);
-
-            var responseString = await client.GetStringAsync(url);
-            if (responseString == "[]")
+            try
             {
-                return NotFound("Invalid City");
+                var lst = project.Location.Split(',').ToList();
+                var city = lst[0];
+                var state = lst[1];
+                String url = String.Format("https://nominatim.openstreetmap.org/search/lookup?city={0}&state={1}&country=Canada&format=json&addressdetails=1", city, state);
+                var responseString = await client.GetStringAsync(url);
+                if (responseString == "[]")
+                {
+                    return NotFound("Invalid Location");
+                }
+            } catch
+            {
+                return NotFound("Invalid Location");
             }
 
             var check = _context.Categories.Where(p => p.Name.Contains(project.Category));
@@ -174,7 +181,7 @@ namespace Buddies.API.Controllers
                     var city = lst[1].Remove(0, 1);
                     city = city.Remove(city.Count()-1, 1);
 
-                    var province = lst[2].Remove(0, 1);
+                    var province = lst[3].Remove(0, 1);
                     province = province.Remove(province.Count() - 1, 1);
                     line = String.Format("{0}, {1}", city, province);
 
@@ -182,7 +189,7 @@ namespace Buddies.API.Controllers
                 }
             }
             string searchitem = search.ToLower();
-            cities.Remove("city_ascii");
+            cities.Remove("city_ascii, province_name");
             int TOLERANCE = 0;
             var matchingCities = cities.Where(p =>
             {
