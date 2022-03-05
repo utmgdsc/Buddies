@@ -38,22 +38,10 @@ namespace Buddies.API.Controllers
 
             foreach (var project in projectList)
             {
-                if (location == "null")
-                {
-                    location == project.Location;
-                }
 
-                if (members == -1)
-                {
-                    members == project.Capacity;
-                }
-
-                if (category == "null")
-                {
-                    category == project.Category;
-                }
-
-                if (project.Location == location && project.Capacity == members && project.Category == category)
+                if ((project.Location == location || location == "null") &&
+                    (project.Capacity == members || members == -1) &&
+                    (project.Category == category || category == "null"))
                 {
                     var owner = await _context.Profiles.FindAsync(project.Owner);
                     var projectResponse = new ProjectResponse
@@ -68,7 +56,6 @@ namespace Buddies.API.Controllers
                     };
                     response.Projects.Add(project);
                 }
-                location = "null"; members = -1; category = "null"; 
             }
 
 
