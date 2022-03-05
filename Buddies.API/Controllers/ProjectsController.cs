@@ -32,43 +32,65 @@ namespace Buddies.API.Controllers
         [HttpGet("postings/{location}/{members}/{category}")]
         public async Task<ActionResult> GetProjectListing(string location, int members, string category)
         {
-            var projectList = await _context.Projects.ToListAsync();
+            var projectList = new List<ProjectResponse>();
 
             var response = new ProjectListingsResponse();
 
+            for (int i = 0; i < 14; i++)
+            {
+                projectList.Add(new ProjectResponse
+                {
+                    Title = "Lol" + i,
+                    Description = "hehehe",
+                    Location = "waterloo",
+                    Username = String.Format("{0} {1}{2}", "Joe", "bob", i),
+                    BuddyScore = 0,
+                    Members = 5,
+                    Category = "Computer Science",
+                });
+
+            }
+            projectList.Add(new ProjectResponse
+            {
+                Title = "Meow 1",
+                Description = "hehehe",
+                Location = "toronto",
+                Username = String.Format("{0} {1}", "Meeku", "bob"),
+                BuddyScore = 0,
+                Members = 3,
+                Category = "Art",
+            });
+
+            projectList.Add(new ProjectResponse
+            {
+                Title = "Meow 2",
+                Description = "hehehe",
+                Location = "Mississauga",
+                Username = String.Format("{0} {1}", "Meeku", "boolean"),
+                BuddyScore = 0,
+                Members = 7,
+                Category = "Computer Engineering",
+            });
+
             foreach (var project in projectList)
             {
-                if (location == "null")
-                {
-                    location == project.Location;
-                }
 
-                if (members == -1)
+                if ((project.Location == location || location == "null") &&
+                    (project.Members == members || members == -1) &&
+                    (project.Category == category || category == "null"))
                 {
-                    members == project.Capacity;
-                }
-
-                if (category == "null")
-                {
-                    category == project.Category;
-                }
-
-                if (project.Location == location && project.Capacity == members && project.Category == category)
-                {
-                    var owner = await _context.Profiles.FindAsync(project.Owner);
                     var projectResponse = new ProjectResponse
                     {
                         Title = project.Title,
                         Description = project.Description,
                         Location = project.Location,
-                        Username = String.Format("{0} {1}", owner.FirstName, owner.LastName),
+                        Username = project.Username,
                         BuddyScore = 0,
-                        Members = project.Capacity,
+                        Members = project.Members,
                         Category = project.Category,
                     };
                     response.Projects.Add(project);
                 }
-                location = "null"; members = -1; category = "null"; 
             }
 
 

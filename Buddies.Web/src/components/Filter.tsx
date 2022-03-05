@@ -53,7 +53,7 @@ export default function MultipleSelectPlaceholder({ placeholder, names, filtFunc
   }, [personName]);
 
   return (
-      <FormControl sx={{ m: 1, mt: 3 }}>
+      <FormControl sx={{ m: 1, mt: 3, float: 'right'}}>
         <Select
           displayEmpty
           value={personName || ""}
@@ -78,7 +78,7 @@ export default function MultipleSelectPlaceholder({ placeholder, names, filtFunc
               value={name}
               style={getStyles(name, personName, theme)}
             >
-              {name}
+              {name.slice(placeholder.length+2) == -1?"Members: N/A" : name}
             </MenuItem>
           ))}
         </Select>

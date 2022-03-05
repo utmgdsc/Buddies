@@ -11,12 +11,15 @@ import Grid from '@material-ui/core/grid';
 import Typography from '@mui/material/Typography';
 import { Box, Button, InputLabel } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import StyleIcon from '@mui/icons-material/Style';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
 import { Container, FormControl } from '@material-ui/core';
 import ListIcon from '@mui/icons-material/List';
 import MultipleSelectPlaceholder from '../components/Filter';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 type Project = {
     Title: string,
@@ -35,71 +38,77 @@ type FilterObject = {
 };
 
 let filterTracker: FilterObject = {
-    Location: "",
-    Members: 0,
-    Category: ""
+    Location: "N/A",
+    Members: -1,
+    Category: "N/A"
 };
 
-let DATA: Project[] = []; //fake data
-for (let i=0; i<14; i++){
-    DATA[i] = {
-        Title: 'MP3 to JPG Web App ' + i,
-        Description: 'Description ' + i,
-        Location: (i%2 == 0) ? ('2') : ('3'),
-        Username: 'Jack ' + i,
-        BuddyScore: i,
-        Members: (i%4 == 0) ? (3) : (2),
-        Category: (i%3 == 0) ? ('2') : ('3')
-    }
-};
+const api = axios.create({
+    baseURL: '/api/v1/projects/postings/',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+  });
 
-const memberfilters: string[] = [
-    'Members: 0',
-    'Members: 2',
-    'Members: 3',
-    'Members: 4',
-    'Members: 5',
-    'Members: 6',
-    'Members: 7',
-    'Members: 8',
-    'Members: 9',
-    'Members: 10',
-    'Members: 11',
-  ];
+let memberfilters: Set<string> = new Set();
+memberfilters.add("Members: -1")
 
-  const locations: string[] = [
-    'Location: ',
-    'Location: 2',
-    'Location: 3',
-    'Location: 4',
-    'Location: 5',
-    'Location: 6',
-    'Location: 7',
-    'Location: 8',
-    'Location: 9',
-    'Location: 10',
-    'Location: 11',
-  ];
+let locations: Set<string> = new Set();
+locations.add("Location: N/A")
 
-  const categories: string[] = [
-    'Category: ',
-    'Category: 2',
-    'Category: 3',
-    'Category: 4',
-    'Category: 5',
-    'Category: 6',
-    'Category: 7',
-    'Category: 8',
-    'Category: 9',
-    'Category: 10',
-    'Category: 11',
-  ];
+let categories: Set<string> = new Set();
+categories.add("Category: N/A")
 
 const PostingsTable = () => {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(4);
-    const [projects, setProjects] = React.useState(DATA)
+    const [projects, setProjects] = React.useState<Project[]>([])
     
+    function getPostings() {
+        let path: string = "";
+        for (const fil in filterTracker) {
+            if (filterTracker[fil as keyof FilterObject] === "N/A") {
+                path += "null" + "/"; //indicates there is no filter to apply
+            } else if (filterTracker[fil as keyof FilterObject] === -1 || filterTracker[fil as keyof FilterObject] === "-1") {
+                path += "-1" + "/"; //indicates there is no filter to apply
+            }
+            else {
+                path += filterTracker[fil as keyof FilterObject] + "/";
+            }
+        }
+        api.get(path).then((res) => {
+            console.log(res.data.projects)
+            let DATA: Project[] = []; 
+            for (let i=0; i<res.data.projects.length; i++){
+                DATA[i] = {
+                    Title: res.data.projects[i].title,
+                    Description: res.data.projects[i].description,
+                    Location: res.data.projects[i].location,
+                    Username: res.data.projects[i].username,
+                    BuddyScore: res.data.projects[i].buddyScore,
+                    Members: res.data.projects[i].members,
+                    Category: res.data.projects[i].category
+                }
+                locations.add("Location: " + res.data.projects[i].location)
+                memberfilters.add("Members: " + res.data.projects[i].members)
+                categories.add("Category: " + res.data.projects[i].category)
+            };
+            console.log("DATA");
+            console.log(DATA);
+            setProjects(DATA);
+        }).catch((error) => {
+            alert(error);
+        });
+    }
+
+    useEffect(() => {
+        getPostings();
+        console.log(projects);
+        
+        
+      }, []);
+      
     const handleChangePage = (e: unknown, newPage: number) => {
       setPage(newPage);
     };
@@ -112,15 +121,15 @@ const PostingsTable = () => {
     const applyFilter = (filterType: string, filterValue: string | number) => {
         ///applyFilter...
         filterTracker = {...filterTracker, [filterType as keyof FilterObject]: filterValue};
-        let newProjects = DATA.slice();
-        for (const fil in filterTracker) {
-            if ((filterTracker[fil as keyof FilterObject] != "") && (filterTracker[fil as keyof FilterObject] != 0)) {
-                newProjects = newProjects.filter((project) => project[fil as keyof Project] == filterTracker[fil as keyof FilterObject]);
-            }
-        }
-        setProjects(newProjects);
-        //applyFilter("", filterValue);
         console.log(filterTracker);
+        getPostings();
+        // for (const fil in filterTracker) {
+        //     if ((filterTracker[fil as keyof FilterObject] != "") && (filterTracker[fil as keyof FilterObject] != 0)) {
+        //         newProjects = newProjects.filter((project) => project[fil as keyof Project] == filterTracker[fil as keyof FilterObject]);
+        //     }
+        // }
+
+        //applyFilter("", filterValue);
         //console.log('filtertype: ' + filterType);
         //console.log('filterValue: ' + filterValue);
         //const newProjects = DATA.filter((project) => project[filterType as keyof Project] == filterValue);
@@ -133,16 +142,16 @@ const PostingsTable = () => {
             <Grid container>
                 <Grid item xs={12} style={{marginTop: 20}}>
                     <Grid container>
-                        <Grid item xs={12} sm={12} md={7}>
+                        <Grid item xs={12} sm={12} md={4}>
                             <Typography sx={{marginTop: 4, marginLeft: 1 }} variant="h4">
                                 Recent Postings
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={5}>
-                            <ListIcon sx={{marginTop: 5}} />
-                            <MultipleSelectPlaceholder placeholder='Category' names={categories} filtFunc={applyFilter}/>
-                            <MultipleSelectPlaceholder placeholder='Members' names={memberfilters} filtFunc={applyFilter}/>
-                            <MultipleSelectPlaceholder placeholder='Location' names={locations} filtFunc={applyFilter}/>
+                        <Grid item xs={12} sm={12} md={8}>
+                            <MultipleSelectPlaceholder placeholder='Location' names={Array.from(locations.values())} filtFunc={applyFilter}/>
+                            <MultipleSelectPlaceholder placeholder='Members' names={Array.from(memberfilters.values())} filtFunc={applyFilter}/>
+                            <MultipleSelectPlaceholder placeholder='Category' names={Array.from(categories.values())} filtFunc={applyFilter}/>
+                            <ListIcon sx={{marginTop: 5, float: 'right'}}/>
                         </Grid>
                     </Grid>
                     <Box sx={{width: '100%', backgroundColor: 'black', height: 10, marginBottom: 5}}/>            
@@ -190,6 +199,10 @@ const PostingsTable = () => {
                                                     <LocationOnIcon sx={{marginTop: 1, marginLeft: 2}} />
                                                     <Typography sx={{marginTop: 2 }} variant="subtitle2">
                                                         {row.Location}
+                                                    </Typography>
+                                                    <StyleIcon sx={{marginTop: 1, marginLeft: 2}} />
+                                                    <Typography sx={{marginTop: 2 }} variant="subtitle2">
+                                                        {row.Category}
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
