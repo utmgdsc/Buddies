@@ -68,7 +68,7 @@ const CustomizedDialogs = ({ children, color, topmarg }: { children: React.React
     <div>
       <ModeEditOutlinedIcon sx={{ marginTop: topmarg, color: { color }, '&:hover': { color: '#add8e6', cursor: 'pointer' } }} onClick={handleClickOpen} />
       {' '}
-      {/* onClick={} pop up */}
+      {/* onClick={} pop up. This pop up opens when the user wants to edit a section */}
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
