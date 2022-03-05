@@ -38,45 +38,9 @@ namespace Buddies.API.Controllers
 
             for (int i = 0; i < 14; i++)
             {
-                projectList.Add(new ProjectResponse
-                {
-                    Title = "Lol" + i,
-                    Description = "hehehe",
-                    Location = "waterloo",
-                    Username = String.Format("{0} {1}{2}", "Joe", "bob", i),
-                    BuddyScore = 0,
-                    Members = 5,
-                    Category = "Computer Science",
-                });
-
-            }
-            projectList.Add(new ProjectResponse
-            {
-                Title = "Meow 1",
-                Description = "hehehe",
-                Location = "toronto",
-                Username = String.Format("{0} {1}", "Meeku", "bob"),
-                BuddyScore = 0,
-                Members = 3,
-                Category = "Art",
-            });
-
-            projectList.Add(new ProjectResponse
-            {
-                Title = "Meow 2",
-                Description = "hehehe",
-                Location = "Mississauga",
-                Username = String.Format("{0} {1}", "Meeku", "boolean"),
-                BuddyScore = 0,
-                Members = 7,
-                Category = "Computer Engineering",
-            });
-
-            foreach (var project in projectList)
-            {
 
                 if ((project.Location == location || location == "null") &&
-                    (project.Members == members || members == -1) &&
+                    (project.Capacity == members || members == -1) &&
                     (project.Category == category || category == "null"))
                 {
                     var projectResponse = new ProjectResponse
