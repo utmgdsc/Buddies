@@ -5,30 +5,12 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Chip from '@mui/material/Chip';
-import throttle from 'lodash/throttle';
 import { CreateProjectRequest } from '../api/model/createProjectRequest';
-import { SearchResponse } from '../api/model/searchResponse';
 import { AuthState } from '../stores/authStore';
-
-type SearchFunc = (search: string, page: number, count: number) => Promise<SearchResponse>;
+import { makeThrottledSearch } from '../api/utils';
+import { SearchFunc } from '../api';
 
 const count = 10;
-
-const makeThrottledSearch = (
-  searchFunc: SearchFunc,
-  setter: React.Dispatch<React.SetStateAction<string[]>>,
-) => {
-  return throttle((search: string, page: number) => {
-    searchFunc(search, page, count)
-      .then((res) => {
-        if (page > 0) {
-          setter((prevState) => prevState.concat(res.searches));
-        } else {
-          setter(res.searches);
-        }
-      });
-  }, 1000);
-};
 
 const scrollHandler = (e: React.SyntheticEvent, func: () => void) => {
   const listboxNode = e.currentTarget;
@@ -82,9 +64,9 @@ const CreateProjectForm: React.VFC<Props> = ({
   const [nextLocationsPage, setNextLocationsPage] = useState(1);
   const [nextUsersPage, setNextUsersPage] = useState(1);
 
-  const getMoreCategories = makeThrottledSearch(getCategories, setCategories);
-  const getMoreLocations = makeThrottledSearch(getLocations, setLocations);
-  const getMoreUsers = makeThrottledSearch(getUsers, setUsers);
+  const getMoreCategories = makeThrottledSearch(getCategories, setCategories, count);
+  const getMoreLocations = makeThrottledSearch(getLocations, setLocations, count);
+  const getMoreUsers = makeThrottledSearch(getUsers, setUsers, count);
 
   useEffect(() => {
     setNextCategoriesPage(1);
