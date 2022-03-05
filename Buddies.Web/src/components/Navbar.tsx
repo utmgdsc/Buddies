@@ -33,7 +33,7 @@ const Navbar: React.VFC = () => {
             <AccountTab
               authState={authState}
               logout={() => {
-                logoutUser().then(() => router.push('/'));
+                router.push('/').then(() => logoutUser());
               }}
             />
           )
