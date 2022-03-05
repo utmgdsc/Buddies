@@ -22,90 +22,6 @@ namespace Buddies.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Buddies.API.Entities.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Accounting"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Anthropology"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Statistics"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Mathematics"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Religion"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Architect"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Art"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Computer Science"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "Computer Engineering"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "Physics"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Chemistry"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "Biology"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "Language"
-                        });
-                });
-
             modelBuilder.Entity("Buddies.API.Entities.Profile", b =>
                 {
                     b.Property<int>("UserId")
@@ -121,38 +37,7 @@ namespace Buddies.API.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Profiles");
-                });
-
-            modelBuilder.Entity("Buddies.API.Entities.Project", b =>
-                {
-                    b.Property<int>("ProjectId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("ProjectId");
-
-                    b.ToTable("Projects");
+                    b.ToTable("Profiles", (string)null);
                 });
 
             modelBuilder.Entity("Buddies.API.Entities.Role", b =>
@@ -355,36 +240,6 @@ namespace Buddies.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ProjectUser", b =>
-                {
-                    b.Property<int>("InvitedToProjectId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("InvitedUsersId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("InvitedToProjectId", "InvitedUsersId");
-
-                    b.HasIndex("InvitedUsersId");
-
-                    b.ToTable("ProjectUser");
-                });
-
-            modelBuilder.Entity("ProjectUser1", b =>
-                {
-                    b.Property<int>("MembersId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProjectsProjectId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("MembersId", "ProjectsProjectId");
-
-                    b.HasIndex("ProjectsProjectId");
-
-                    b.ToTable("ProjectUser1");
-                });
-
             modelBuilder.Entity("Buddies.API.Entities.Profile", b =>
                 {
                     b.HasOne("Buddies.API.Entities.User", "User")
@@ -443,36 +298,6 @@ namespace Buddies.API.Migrations
                     b.HasOne("Buddies.API.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectUser", b =>
-                {
-                    b.HasOne("Buddies.API.Entities.Project", null)
-                        .WithMany()
-                        .HasForeignKey("InvitedToProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Buddies.API.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("InvitedUsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectUser1", b =>
-                {
-                    b.HasOne("Buddies.API.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("MembersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Buddies.API.Entities.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectsProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
