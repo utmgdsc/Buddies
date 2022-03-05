@@ -1,39 +1,102 @@
-﻿import React from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { SubmitHandler, UseFormReturn, Controller } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Chip from '@mui/material/Chip';
+import throttle from 'lodash/throttle';
 import { CreateProjectRequest } from '../api/model/createProjectRequest';
-import {FormHelperText} from "@mui/material";
+import { SearchResponse } from '../api/model/searchResponse';
+import { AuthState } from '../stores/authStore';
 
-// for location autocomplete if necessary
-// import Autocomplete from "@mui/material/Autocomplete";
+type SearchFunc = (search: string, page: number, count: number) => Promise<SearchResponse>;
+
+const count = 10;
+
+const makeThrottledSearch = (
+  searchFunc: SearchFunc,
+  setter: React.Dispatch<React.SetStateAction<string[]>>,
+) => {
+  return throttle((search: string, page: number) => {
+    searchFunc(search, page, count)
+      .then((res) => {
+        if (page > 0) {
+          setter((prevState) => prevState.concat(res.searches));
+        } else {
+          setter(res.searches);
+        }
+      });
+  }, 1000);
+};
 
 interface Props {
   /**
-     * Method to execute upon submission of form.
-     */
+   * Method to execute upon submission of form.
+   */
   onSubmit: SubmitHandler<CreateProjectRequest>
   /**
-     * React Hook Forms context.
-     */
+   * React Hook Forms context.
+   */
   formMethods: UseFormReturn<CreateProjectRequest>
   /**
-   * List of "valid" locations.
+   * Function for getting more categories.
    */
-  locations: string[]
+  getCategories: SearchFunc
+  /**
+   * Function for getting more locations.
+   */
+  getLocations: SearchFunc
+  /**
+   * Function for getting more users.
+   */
+  getUsers: SearchFunc
+  authState: AuthState
 }
 
 const CreateProjectForm: React.VFC<Props> = ({
   onSubmit,
   formMethods: { handleSubmit, control, formState: { isSubmitting } },
-  locations,
+  getCategories,
+  getLocations,
+  getUsers,
+  authState,
 }) => {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [categorySearch, setCategorySearch] = useState('');
+
+  const [locations, setLocations] = useState<string[]>([]);
+  const [locationSearch, setLocationSearch] = useState('');
+
+  const [users, setUsers] = useState<string[]>([]);
+  const [userSearch, setUserSearch] = useState('');
+
+  const prevCategoriesPage = 0;
+  const prevLocationsPage = 0;
+  const prevUsersPage = 0;
+
+  const getMoreCategories = makeThrottledSearch(getCategories, setCategories);
+  const getMoreLocations = makeThrottledSearch(getLocations, setLocations);
+  const getMoreUsers = makeThrottledSearch(getUsers, setUsers);
+
+  useEffect(() => {
+    if (categorySearch !== '') {
+      getMoreCategories(categorySearch, 0);
+    }
+  }, [categorySearch]);
+
+  useEffect(() => {
+    if (locationSearch !== '') {
+      getMoreLocations(locationSearch, 0);
+    }
+  }, [locationSearch]);
+
+  useEffect(() => {
+    if (userSearch !== '') {
+      getMoreUsers(userSearch, 0);
+    }
+  }, [userSearch]);
+
   return (
     <Grid
       container
@@ -66,22 +129,76 @@ const CreateProjectForm: React.VFC<Props> = ({
       <Grid item xs={6}>
         <Controller
           control={control}
+          name="maxMembers"
+          render={({ field, fieldState }) => {
+            return (
+              <TextField
+                {...field}
+                label="Max Members"
+                fullWidth
+                error={fieldState.invalid}
+                helperText={fieldState.error?.message}
+                type="number"
+              />
+            );
+          }}
+          rules={{
+            required: { value: true, message: 'A member limit is required.' },
+            min: { value: 1, message: 'Member limit must be greater than or equal to 1.' },
+          }}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <Controller
+          control={control}
+          name="category"
+          render={({ field, fieldState }) => {
+            return (
+              <Autocomplete
+                options={categories}
+                renderInput={(params) => {
+                  return (
+                    <TextField
+                      {...params}
+                      label="Category"
+                      error={fieldState.invalid}
+                      helperText={fieldState.error?.message}
+                    />
+                  );
+                }}
+                value={field.value}
+                onChange={(_, value) => field.onChange(value)}
+                onInputChange={(_, value) => setCategorySearch(value)}
+              />
+            );
+          }}
+          rules={{
+            required: { value: true, message: 'A category is required.' },
+          }}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <Controller
+          control={control}
           name="location"
           render={({ field, fieldState }) => {
             return (
-              <FormControl fullWidth error={fieldState.invalid}>
-                <InputLabel id="select-location">Location</InputLabel>
-                <Select
-                  {...field}
-                  labelId="select-location"
-                  label="Location"
-                >
-                  {locations.map((value) => {
-                    return <MenuItem value={value}>{value}</MenuItem>;
-                  })}
-                </Select>
-                <FormHelperText>{fieldState.error?.message}</FormHelperText>
-              </FormControl>
+              <Autocomplete
+                options={locations}
+                renderInput={(params) => {
+                  return (
+                    <TextField
+                      {...params}
+                      label="Location"
+                      error={fieldState.invalid}
+                      helperText={fieldState.error?.message}
+                    />
+                  );
+                }}
+                value={field.value}
+                onChange={(_, value) => field.onChange(value)}
+                onInputChange={(_, value) => setLocationSearch(value)}
+              />
             );
           }}
           rules={{
@@ -95,14 +212,42 @@ const CreateProjectForm: React.VFC<Props> = ({
           name="invitedUsers"
           render={({ field, fieldState }) => {
             return (
-              <TextField
-                {...field}
-                label="Buddies"
-                fullWidth
-                error={fieldState.invalid}
-                helperText={fieldState.error?.message}
+              <Autocomplete
+                multiple
+                filterSelectedOptions
+                options={users}
+                renderInput={(params) => {
+                  return (
+                    <TextField
+                      {...params}
+                      label="Buddies"
+                      error={fieldState.invalid}
+                      helperText={fieldState.error?.message}
+                    />
+                  );
+                }}
+                value={field.value}
+                onChange={(_, value) => {
+                  field.onChange(
+                    [authState.email].concat(value.filter((email) => email !== authState.email)),
+                  );
+                }}
+                onInputChange={(_, value) => setUserSearch(value)}
+                renderTags={(tagValue, getTagProps) => tagValue.map((option, index) => {
+                  return (
+                    <Chip
+                      label={option}
+                      {...getTagProps({ index })}
+                      disabled={option === authState.email}
+                    />
+                  );
+                })}
               />
             );
+          }}
+          rules={{
+            required: { value: true, message: 'A list of invited users is required.' },
+            minLength: { value: 1, message: 'A project must have at least 1 member.' },
           }}
         />
       </Grid>

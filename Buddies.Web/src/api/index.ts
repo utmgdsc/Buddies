@@ -6,6 +6,7 @@ import { LoginRequest } from './model/loginRequest';
 import { TokenResponse } from './model/tokenResponse';
 import { authStore, AuthState } from '../stores/authStore';
 import { CreateProjectRequest } from './model/createProjectRequest';
+import { SearchResponse } from './model/searchResponse';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -42,3 +43,18 @@ axios.interceptors.response.use((res) => res, async (error) => {
   }
   return Promise.reject(error);
 });
+
+export async function getLocations(search: string, page: number, count: number) {
+  const res = await axios.get<SearchResponse>(`/api/v1/projects/locations/${search}/${page}/${count}`);
+  return res.data;
+}
+
+export async function getCategories(search: string, page: number, count: number) {
+  const res = await axios.get<SearchResponse>(`/api/v1/projects/category/${search}/${page}/${count}`);
+  return res.data;
+}
+
+export async function getUsers(search: string, page: number, count: number) {
+  const res = await axios.get<SearchResponse>(`/api/v1/projects/email/${search}/${page}/${count}`);
+  return res.data;
+}

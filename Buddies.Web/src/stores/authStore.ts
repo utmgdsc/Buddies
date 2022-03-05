@@ -6,15 +6,16 @@ export interface AuthState extends JwtPayload {
   /**
    * ID of the currently logged in user.
    */
-  nameid: string,
+  nameid: string
   /**
    * First name of the currently logged in user.
    */
-  given_name: string,
+  given_name: string
   /**
    * Last name of the currently logged in user.
    */
   family_name: string
+  email: string
 }
 
 export const authStore = create<{ authState: AuthState | null }>(() => ({ authState: null }));

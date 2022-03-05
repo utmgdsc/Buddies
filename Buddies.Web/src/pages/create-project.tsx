@@ -1,18 +1,25 @@
 ﻿import { NextPage } from 'next';
 import Box from '@mui/material/Box';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
 import CreateProjectForm from '../components/CreateProjectForm';
 import { CreateProjectRequest } from '../api/model/createProjectRequest';
-import { createProject } from '../api';
+import {
+  createProject, getCategories, getLocations, getUsers,
+} from '../api';
+import withAuth from '../components/hocs/withAuth';
+import { authStore } from '../stores/authStore';
 
 const CreateProject: NextPage = () => {
+  const authState = authStore((state) => state.authState);
+
   const formMethods = useForm<CreateProjectRequest>({
     defaultValues: {
       title: '',
       description: '',
-      invitedUsers: [],
+      invitedUsers: [authState!.email],
       location: '',
+      category: '',
+      maxMembers: 1,
     },
   });
 
@@ -21,21 +28,21 @@ const CreateProject: NextPage = () => {
     await createProject(data);
   };
 
-  const [locations, setLocations] = useState<string[]>([]);
-
-  useEffect(() => {
-    // todo: replace placeholder data
-    setLocations(['Temp 1', 'Temp 2', 'Temp 3']);
-  }, []);
-
   return (
     <Box sx={{
       width: 0.75, flexGrow: 1, alignSelf: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center',
     }}
     >
-      <CreateProjectForm onSubmit={onSubmit} formMethods={formMethods} locations={locations} />
+      <CreateProjectForm
+        onSubmit={onSubmit}
+        formMethods={formMethods}
+        getCategories={getCategories}
+        getLocations={getLocations}
+        getUsers={getUsers}
+        authState={authState!}
+      />
     </Box>
   );
 };
 
-export default CreateProject;
+export default withAuth(CreateProject);

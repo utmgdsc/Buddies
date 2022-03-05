@@ -56,9 +56,9 @@ namespace Buddies.API.Controllers
             dbProject.Location = project.Location;
             dbProject.Members.Add(userEntity);
 
-            foreach (int invitation in project.InvitedUsers)
+            foreach (string invitation in project.InvitedUsers)
             {
-                var dbProfile = await _context.Users.FindAsync(invitation);
+                var dbProfile = await _context.Users.FirstOrDefaultAsync(user => user.Email == invitation);
                 if (dbProfile == null)
                 {
                     return NotFound();
@@ -81,7 +81,7 @@ namespace Buddies.API.Controllers
         /// <param name="page">current page</param>
         /// <param name="results">number of results per page</param>
         [HttpGet("category/{search}/{page}/{results}")]
-        public async Task<ActionResult> GetCategory(string search, int page, float results)
+        public async Task<ActionResult<SearchResponse>> GetCategory(string search, int page, float results)
         {
             SearchResponse badResponse = new SearchResponse
             {
@@ -146,14 +146,14 @@ namespace Buddies.API.Controllers
         /// <param name="page">current page</param>
         /// <param name="size">number of results per page</param>
         [HttpGet("locations/{search}/{page}/{size}")]
-        public async Task<ActionResult> GetLocation(string search, int page, float size)
+        public async Task<ActionResult<SearchResponse>> GetLocation(string search, int page, float size)
         {
             String url = "https://raw.githubusercontent.com/SyedTahaA/test/main/canadacities.csv";
             List<string> cities = new List<string>();
             var CityResponseString = await client.GetStringAsync(url);
             using (StringReader reader = new StringReader(CityResponseString))
             {
-                string line;
+                string? line;
                 while ((line = reader.ReadLine()) != null)
                 {
                     line = line.Split(',').ToList()[1];
@@ -196,7 +196,7 @@ namespace Buddies.API.Controllers
         /// <param name="page">current page</param>
         /// <param name="size">number of results per page</param>
         [HttpGet("email/{search}/{page}/{size}")]
-        public async Task<ActionResult> GetUser(string search, int page, float size)
+        public async Task<ActionResult<SearchResponse>> GetUser(string search, int page, float size)
         {
 
             SearchResponse badResponse = new SearchResponse
@@ -240,7 +240,7 @@ namespace Buddies.API.Controllers
                 CurrentPage = page,
                 TotalPages = (int)pageCount
             };
-            return Ok(emailPage);
+            return Ok(response);
         }
 
              

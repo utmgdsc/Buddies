@@ -116,7 +116,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -164,7 +181,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -212,7 +246,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -415,8 +466,11 @@
     "schemas": {
       "CreateProjectRequest": {
         "required": [
+          "category",
           "description",
+          "invitedUsers",
           "location",
+          "maxMembers",
           "title"
         ],
         "type": "object",
@@ -429,16 +483,24 @@
             "type": "string"
           },
           "invitedUsers": {
+            "minItems": 1,
             "type": "array",
             "items": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "nullable": true
+              "type": "string"
+            }
           },
           "description": {
             "maxLength": 1000,
             "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "maxMembers": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -481,6 +543,31 @@
           },
           "password": {
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SearchResponse": {
+        "required": [
+          "currentPage",
+          "searches",
+          "totalPages"
+        ],
+        "type": "object",
+        "properties": {
+          "searches": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currentPage": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
