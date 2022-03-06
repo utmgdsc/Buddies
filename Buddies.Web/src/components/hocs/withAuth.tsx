@@ -1,4 +1,4 @@
-﻿import Error from 'next/error';
+import Error from 'next/error';
 import { StatusCodes } from 'http-status-codes';
 import React from 'react';
 import { authStore } from '../../stores/authStore';
