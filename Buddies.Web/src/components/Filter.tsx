@@ -20,8 +20,6 @@ const MultipleSelectPlaceholder = ({ placeholder, names, filtFunc }:
   filterValue: any) => void }) => {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState<string[]>([]);
-  console.log()
-  console.log(names);
   function getStyles(name: string, pName: readonly string[], style: Theme) {
     return {
       fontWeight:
@@ -46,17 +44,13 @@ const MultipleSelectPlaceholder = ({ placeholder, names, filtFunc }:
 
   React.useEffect(() => {
     if (personName.length !== 0) {
-      console.log('hi');
       let compare: string = personName[0].slice(placeholder.length + 2);
-      console.log(personName);
-      console.log(compare);
-      if (personName.length == 2) {
-        compare += "," + personName[1];
+      if (personName.length === 2) {
+        compare = `${compare},${personName[1]}`;
       }
-      console.log(compare);
-      if (placeholder === "Members" && compare==="N/A"){
-        filtFunc(placeholder, "-1");
-      }else{
+      if (placeholder === 'Members' && compare === 'N/A') {
+        filtFunc(placeholder, '-1');
+      } else {
         filtFunc(placeholder, compare);
       }
     }
