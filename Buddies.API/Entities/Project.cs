@@ -40,6 +40,16 @@ namespace Buddies.API.Entities
         public string Location { get; set; } = null!;
 
         /// <summary>
+        /// Type of project
+        /// </summary>
+        public string Category { get; set; } = null!;
+
+        /// <summary>
+        /// Group capacity
+        /// </summary>
+        public int MaxMembers { get; set; } = default!;
+
+        /// <summary>
         /// ID of the user the project belongs to (project owner).
         /// </summary>
         public int OwnerId { get; set; }

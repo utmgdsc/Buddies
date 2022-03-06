@@ -41,12 +41,31 @@ namespace Buddies.API.Controllers
                 return Unauthorized();
             }
 
-            String url = String.Format("https://nominatim.openstreetmap.org/search/lookup?city={0}&country=Canada&format=json&addressdetails=1", project.Location);
-
-            var responseString = await client.GetStringAsync(url);
-            if (responseString == "[]")
+            try
             {
-                return NotFound("Invalid City");
+                var lst = project.Location.Split(',').ToList();
+                var city = lst[0];
+                var state = lst[1];
+                String url = String.Format("https://nominatim.openstreetmap.org/search/lookup?city={0}&state={1}&country=Canada&format=json&addressdetails=1", city, state);
+                var responseString = await client.GetStringAsync(url);
+                if (responseString == "[]")
+                {
+                    return NotFound("Invalid Location");
+                }
+            } catch
+            {
+                return NotFound("Invalid Location");
+            }
+
+            var check = _context.Categories.Where(p => p.Name.Contains(project.Category));
+            if (check.Count() == 0)
+            {
+                return NotFound("Invalid Category");
+            }
+
+            if (project.MaxMembers <= 1)
+            {
+                return NotFound("Invalid Member Count");
             }
 
             Project dbProject = new Project();
@@ -54,6 +73,8 @@ namespace Buddies.API.Controllers
             dbProject.Title = project.Title;
             dbProject.Description = project.Description;
             dbProject.Location = project.Location;
+            dbProject.MaxMembers = project.MaxMembers;
+            dbProject.Category = project.Category;
             dbProject.Members.Add(userEntity);
 
             foreach (string invitation in project.InvitedUsers)
@@ -61,7 +82,7 @@ namespace Buddies.API.Controllers
                 var dbProfile = await _context.Users.FirstOrDefaultAsync(user => user.Email == invitation);
                 if (dbProfile == null)
                 {
-                    return NotFound();
+                    return NotFound("No such user");
                 }
                 dbProject.InvitedUsers.Add(dbProfile);
 
@@ -75,7 +96,7 @@ namespace Buddies.API.Controllers
         }
 
         /// <summary>
-        /// API route GET /api/v1/projects/locations for fetching categories.
+        /// API route GET /api/v1/projects/category for fetching categories.
         /// </summary>
         /// <param name="search">Category to search for</param>
         /// <param name="page">current page</param>
@@ -156,14 +177,19 @@ namespace Buddies.API.Controllers
                 string? line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    line = line.Split(',').ToList()[1];
-                    line = line.Remove(0, 1);
-                    line = line.Remove(line.Count()-1, 1);
+                    var lst = line.Split(',').ToList();
+                    var city = lst[1].Remove(0, 1);
+                    city = city.Remove(city.Count()-1, 1);
+
+                    var province = lst[3].Remove(0, 1);
+                    province = province.Remove(province.Count() - 1, 1);
+                    line = String.Format("{0}, {1}", city, province);
+
                     cities.Add(line);
                 }
             }
             string searchitem = search.ToLower();
-            cities.Remove("city_ascii");
+            cities.Remove("city_ascii, province_name");
             int TOLERANCE = 0;
             var matchingCities = cities.Where(p =>
             {
@@ -190,7 +216,7 @@ namespace Buddies.API.Controllers
         }
 
         /// <summary>
-        /// API route GET /api/v1/projects/locations for fetching emails.
+        /// API route GET /api/v1/projects/email for fetching emails.
         /// </summary>
         /// <param name="search">Category to search for</param>
         /// <param name="page">current page</param>
