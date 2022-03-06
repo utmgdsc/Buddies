@@ -10,23 +10,24 @@ const ITEM_PADDING_TOP = 8;
 const MenuProps = {
   PaperProps: {
     style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
     },
   },
 };
 
-
-export default function MultipleSelectPlaceholder({ placeholder, names, filtFunc }:
-   { placeholder: string, names: string[], filtFunc: (filterType: string, filterValue: any) => void}) {
+const MultipleSelectPlaceholder = ({ placeholder, names, filtFunc }:
+{ placeholder: string, names: string[], filtFunc: (filterType: string,
+  filterValue: any) => void }) => {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState<string[]>([]);
-
-  function getStyles(name: string, personName: readonly string[], theme: Theme) {
+  console.log()
+  console.log(names);
+  function getStyles(name: string, pName: readonly string[], style: Theme) {
     return {
       fontWeight:
-        personName.indexOf(name) === -1
-          ? theme.typography.fontWeightRegular
-          : theme.typography.fontWeightMedium,
+        pName.indexOf(name) === -1
+          ? style.typography.fontWeightRegular
+          : style.typography.fontWeightMedium,
     };
   }
 
@@ -38,50 +39,61 @@ export default function MultipleSelectPlaceholder({ placeholder, names, filtFunc
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
-    //console.log('hi');
-    //console.log(personName[0].slice(placeholder.length+2));
-    //filtFunc(placeholder, personName);
+    // console.log('hi');
+    // console.log(personName[0].slice(placeholder.length+2));
+    // filtFunc(placeholder, personName);
   };
 
   React.useEffect(() => {
-    if (personName.length != 0) {
+    if (personName.length !== 0) {
       console.log('hi');
-      const compare: string = personName[0].slice(placeholder.length+2);
+      let compare: string = personName[0].slice(placeholder.length + 2);
+      console.log(personName);
       console.log(compare);
-      filtFunc(placeholder, compare);
+      if (personName.length == 2) {
+        compare += "," + personName[1];
+      }
+      console.log(compare);
+      if (placeholder === "Members" && compare==="N/A"){
+        filtFunc(placeholder, "-1");
+      }else{
+        filtFunc(placeholder, compare);
+      }
     }
   }, [personName]);
 
   return (
-      <FormControl sx={{ m: 1, mt: 3, float: 'right'}}>
-        <Select
-          displayEmpty
-          value={personName || ""}
-          onChange={handleChange}
-          input={<OutlinedInput />}
-          renderValue={(selected) => {
-            if (selected.length === 0) {
-              return <em>{placeholder}</em>;
-            }
+    <FormControl sx={{ m: 1, mt: 3, float: 'right' }}>
+      <Select
+        displayEmpty
+        value={personName || ''}
+        onChange={handleChange}
+        input={<OutlinedInput />}
+        renderValue={(selected) => {
+          if (selected.length === 0) {
+            return <em>{placeholder}</em>;
+          }
 
-            return selected.join(', ');
-          }}
-          MenuProps={MenuProps}
-          inputProps={{ 'aria-label': 'Without label' }}
-        >
-          <MenuItem disabled value="">
-            <em>{placeholder}</em>
+          return selected.join(', ');
+        }}
+        MenuProps={MenuProps}
+        inputProps={{ 'aria-label': 'Without label' }}
+      >
+        <MenuItem disabled value="">
+          <em>{placeholder}</em>
+        </MenuItem>
+        {names.map((name) => (
+          <MenuItem
+            key={name}
+            value={name}
+            style={getStyles(name, personName, theme)}
+          >
+            {name}
           </MenuItem>
-          {names.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, personName, theme)}
-            >
-              {name.slice(placeholder.length+2) == -1?"Members: N/A" : name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+        ))}
+      </Select>
+    </FormControl>
   );
-}
+};
+
+export default MultipleSelectPlaceholder;

@@ -14,7 +14,8 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StyleIcon from '@mui/icons-material/Style';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import TablePagination from '@mui/material/TablePagination';
-import TableFooter from '@mui/material/TableFooter';
+import CategoryIcon from '@mui/icons-material/Category';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import { Container, FormControl } from '@material-ui/core';
 import ListIcon from '@mui/icons-material/List';
 import MultipleSelectPlaceholder from '../components/Filter';
@@ -51,14 +52,10 @@ const api = axios.create({
     },
   });
 
-let memberfilters: Set<string> = new Set();
-memberfilters.add("Members: -1")
+let memberfilters: string[] = [];
+let locations: string[] = [];
+let categories: string[] = [];
 
-let locations: Set<string> = new Set();
-locations.add("Location: N/A")
-
-let categories: Set<string> = new Set();
-categories.add("Category: N/A")
 
 const PostingsTable = () => {
     const [page, setPage] = React.useState(0);
@@ -90,9 +87,9 @@ const PostingsTable = () => {
                     Members: res.data.projects[i].members,
                     Category: res.data.projects[i].category
                 }
-                locations.add("Location: " + res.data.projects[i].location)
-                memberfilters.add("Members: " + res.data.projects[i].members)
-                categories.add("Category: " + res.data.projects[i].category)
+                locations = res.data.locations;
+                memberfilters = res.data.members;
+                categories = res.data.categories;
             };
             console.log("DATA");
             console.log(DATA);
@@ -148,9 +145,9 @@ const PostingsTable = () => {
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={12} md={8}>
-                            <MultipleSelectPlaceholder placeholder='Location' names={Array.from(locations.values())} filtFunc={applyFilter}/>
-                            <MultipleSelectPlaceholder placeholder='Members' names={Array.from(memberfilters.values())} filtFunc={applyFilter}/>
-                            <MultipleSelectPlaceholder placeholder='Category' names={Array.from(categories.values())} filtFunc={applyFilter}/>
+                            <MultipleSelectPlaceholder placeholder='Location' names={locations} filtFunc={applyFilter}/>
+                            <MultipleSelectPlaceholder placeholder='Members' names={memberfilters} filtFunc={applyFilter}/>
+                            <MultipleSelectPlaceholder placeholder='Category' names={categories} filtFunc={applyFilter}/>
                             <ListIcon sx={{marginTop: 5, float: 'right'}}/>
                         </Grid>
                     </Grid>
@@ -196,11 +193,11 @@ const PostingsTable = () => {
                                                     >
                                                         {row.BuddyScore}
                                                     </Button>
-                                                    <LocationOnIcon sx={{marginTop: 1, marginLeft: 2}} />
+                                                    <LocationOnIcon sx={{marginTop: 1.35, marginLeft: 2}} />
                                                     <Typography sx={{marginTop: 2 }} variant="subtitle2">
                                                         {row.Location}
                                                     </Typography>
-                                                    <StyleIcon sx={{marginTop: 1, marginLeft: 2}} />
+                                                    <DashboardIcon sx={{marginTop: 1.5, marginLeft: 2}} />
                                                     <Typography sx={{marginTop: 2 }} variant="subtitle2">
                                                         {row.Category}
                                                     </Typography>
@@ -212,14 +209,14 @@ const PostingsTable = () => {
                                         <Grid container>
                                             <PeopleAltIcon sx={{marginTop: 1, marginRight: 2}} />
                                             <Typography sx={{marginTop: 1 }} variant="subtitle2">
-                                                        {row.Members}/4
+                                                        1/{row.Members}
                                             </Typography>
                                         </Grid>
                                     </TableCell>
                                 </TableRow>
                             ))}
                             </TableBody>
-                            <TableFooter>
+    
                                 <TablePagination
                             rowsPerPageOptions={[5, 10, 15]}
                             component="div"
@@ -229,7 +226,7 @@ const PostingsTable = () => {
                             onPageChange={handleChangePage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
                             />
-                            </TableFooter>
+                  
                             
                         </Table>
                     </TableContainer>
