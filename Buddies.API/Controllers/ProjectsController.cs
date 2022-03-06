@@ -14,7 +14,6 @@ namespace Buddies.API.Controllers
     {
         private readonly ApiContext _context;
         private readonly UserManager<User> _userManager;
-        private static readonly HttpClient client = new HttpClient();
 
         /// <summary>
         /// Initializes a new ProjectController.
@@ -25,8 +24,6 @@ namespace Buddies.API.Controllers
         {
             _context = context;
             _userManager = userManager;
-            client.DefaultRequestHeaders.TryAddWithoutValidation("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-            client.DefaultRequestHeaders.TryAddWithoutValidation("Referer", "http://www.microsoft.com");
         }
 
         /// <summary>
@@ -41,31 +38,18 @@ namespace Buddies.API.Controllers
                 return Unauthorized();
             }
 
-            try
-            {
-                var lst = project.Location.Split(',').ToList();
-                var city = lst[0];
-                var state = lst[1];
-                String url = String.Format("https://nominatim.openstreetmap.org/search/lookup?city={0}&state={1}&country=Canada&format=json&addressdetails=1", city, state);
-                var responseString = await client.GetStringAsync(url);
-                if (responseString == "[]")
-                {
-                    return NotFound("Invalid Location");
-                }
-            } catch
+            var dbLocation = await _context.Locations.FirstOrDefaultAsync(x => x.Address == project.Location);
+
+            if (dbLocation == null)
             {
                 return NotFound("Invalid Location");
             }
 
-            var check = _context.Categories.Where(p => p.Name.Contains(project.Category));
-            if (check.Count() == 0)
+
+            var check = _context.Categories.FirstOrDefaultAsync(p => p.Name == project.Category);
+            if (check == null)
             {
                 return NotFound("Invalid Category");
-            }
-
-            if (project.MaxMembers <= 1)
-            {
-                return NotFound("Invalid Member Count");
             }
 
             Project dbProject = new Project();
@@ -79,13 +63,16 @@ namespace Buddies.API.Controllers
 
             foreach (string invitation in project.InvitedUsers)
             {
-                var dbProfile = await _context.Users.FirstOrDefaultAsync(user => user.Email == invitation);
-                if (dbProfile == null)
+                if (invitation != userEntity.Email)
                 {
-                    return NotFound("No such user");
-                }
-                dbProject.InvitedUsers.Add(dbProfile);
+                    var dbProfile = await _context.Users.FirstOrDefaultAsync(user => user.Email == invitation);
+                    if (dbProfile == null)
+                    {
+                        return NotFound("No such user");
+                    }
+                    dbProject.InvitedUsers.Add(dbProfile);
 
+                }
             }
 
             await _context.Projects.AddAsync(dbProject);
@@ -169,46 +156,33 @@ namespace Buddies.API.Controllers
         [HttpGet("locations/{search}/{page}/{size}")]
         public async Task<ActionResult<SearchResponse>> GetLocation(string search, int page, float size)
         {
-            String url = "https://raw.githubusercontent.com/SyedTahaA/test/main/canadacities.csv";
-            List<string> cities = new List<string>();
-            var CityResponseString = await client.GetStringAsync(url);
-            using (StringReader reader = new StringReader(CityResponseString))
-            {
-                string? line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    var lst = line.Split(',').ToList();
-                    var city = lst[1].Remove(0, 1);
-                    city = city.Remove(city.Count()-1, 1);
-
-                    var province = lst[3].Remove(0, 1);
-                    province = province.Remove(province.Count() - 1, 1);
-                    line = String.Format("{0}, {1}", city, province);
-
-                    cities.Add(line);
-                }
-            }
-            string searchitem = search.ToLower();
-            cities.Remove("city_ascii, province_name");
+            var cities = await _context.Locations.ToListAsync();
             int TOLERANCE = 0;
             var matchingCities = cities.Where(p =>
             {
                 //Check Contains
-                bool contains = p.ToLower().Contains(searchitem);
+                bool contains = p.Address.ToLower().Contains(search.ToLower());
                 if (contains) return true;
 
                 //Check LongestCommonSubsequence
                 string output = "";
-                bool subsequenceTolerated = FuzzySearchService.LongestCommonSubsequence(p.ToLower(), searchitem, out output) >= searchitem.Length - TOLERANCE;
+                bool subsequenceTolerated = FuzzySearchService.LongestCommonSubsequence(p.Address.ToLower(), search.ToLower(), out output) >= search.Length - TOLERANCE;
 
                 return subsequenceTolerated;
             }).ToList();
+
             float pageResults = size;
             var pageCount = Math.Ceiling(matchingCities.Count() / pageResults);
             var cityPage = matchingCities.Skip((page - 1) * (int)pageResults).Take((int)pageResults).ToList();
+            var matchingSearch = new List<string>();
+            foreach (Location loc in cityPage)
+            {
+                matchingSearch.Add(loc.Address);
+            }
+
             var response = new SearchResponse
             {
-                Searches = cityPage,
+                Searches = matchingSearch,
                 CurrentPage = page,
                 TotalPages = (int)pageCount
             };
