@@ -145,7 +145,7 @@ const CreateProjectForm: React.VFC<Props> = ({
           }}
           rules={{
             required: { value: true, message: 'A member limit is required.' },
-            min: { value: 1, message: 'Member limit must be greater than or equal to 1.' },
+            min: { value: 2, message: 'Member limit must be greater than or equal to 2.' },
           }}
         />
       </Grid>
