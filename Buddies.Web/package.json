@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && next export",
     "start": "next start",
     "lint": "next lint",
     "gen-types": "openapi-generator-cli generate -i ../Buddies.API/swagger.json -g typescript-angular -o src/api --global-property models --additional-properties=stringEnums=true && next lint --dir src/api/model --fix"
