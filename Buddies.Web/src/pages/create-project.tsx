@@ -1,4 +1,4 @@
-﻿import { NextPage } from 'next';
+import { NextPage } from 'next';
 import Box from '@mui/material/Box';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
