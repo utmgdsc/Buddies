@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Buddies.API.IO;
 using Buddies.API.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Buddies.API.Controllers
 {
@@ -30,13 +31,11 @@ namespace Buddies.API.Controllers
         /// API route POST /api/v1/projects for creating project.
         /// </summary>
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> CreateProject(CreateProjectRequest project)
         {
             var userEntity = _userManager.GetUserAsync(User).Result;
-            if (userEntity == null)
-            {
-                return Unauthorized();
-            }
+
 
             var dbLocation = await _context.Locations.FirstOrDefaultAsync(x => x.Address == project.Location);
 
@@ -243,7 +242,58 @@ namespace Buddies.API.Controllers
             return Ok(response);
         }
 
-             
+        /// <summary>
+        /// API route GET /api/v1/projects/:id for fetching project profile.
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetProfile(int id)
+        {
+            var project = await _context.Projects.FindAsync(id);
+
+            if (project == null)
+            {
+                return NotFound("PROJECT PROFILE NOT FOUND");
+            }
+
+            var profileResponse = new ProjectProfileResponse{
+                Title = project.Title,
+                Description = project.Description,
+                Location = project.Location,
+                Category = project.Category,
+                MaxMembers = project.MaxMembers,
+            };
+
+            foreach (User member in project.Members)
+            {
+                profileResponse.Title = "here";
+                var userInfo = new UserInfoResponse();
+                var userprofile = await _context.Profiles.FindAsync(member.Id);
+                if (userprofile == null) {
+                    return NotFound("MEMBER PROFILE NOT FOUND");
+                }
+
+                userInfo.FirstName = userprofile.FirstName;
+                userInfo.LastName = userprofile.LastName;
+                userInfo.Email = member.Email;
+                profileResponse.Members.Add(userInfo);
+            }
+
+            foreach (User invitedUser in project.InvitedUsers)
+            {
+                var userInfo = new UserInfoResponse();
+                var userprofile = await _context.Profiles.FindAsync(invitedUser.Id);
+                if (userprofile == null)
+                {
+                    return NotFound("INVITED USER PROFILE NOT FOUND");
+                }
+                userInfo.FirstName = userprofile.FirstName;
+                userInfo.LastName = userprofile.LastName;
+                userInfo.Email = invitedUser.Email;
+                profileResponse.InvitedUsers.Add(userInfo);
+            }
+
+            return Ok(profileResponse);
+        }
 
     }
 }

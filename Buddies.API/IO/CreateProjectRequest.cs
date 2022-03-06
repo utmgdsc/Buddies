@@ -4,8 +4,7 @@ namespace Buddies.API.IO;
 
 public record CreateProjectRequest
 {
-    [Required(ErrorMessage = "A title is required."), 
-     MaxLength(50, ErrorMessage = "Title must be less than or equal to 50 characters.")]
+    [Required(ErrorMessage = "A title is required.")]
     public string Title { get; init; } = default!;
 
     [Required(ErrorMessage = "A location is required.")]

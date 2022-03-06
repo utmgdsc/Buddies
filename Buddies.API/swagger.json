@@ -268,6 +268,37 @@
         }
       }
     },
+    "/api/v{version}/projects/{id}": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/v{version}/users/register": {
       "post": {
         "tags": [
@@ -476,7 +507,6 @@
         "type": "object",
         "properties": {
           "title": {
-            "maxLength": 50,
             "type": "string"
           },
           "location": {
@@ -498,7 +528,7 @@
           },
           "maxMembers": {
             "maximum": 2147483647,
-            "minimum": 1,
+            "minimum": 2,
             "type": "integer",
             "format": "int32"
           }
