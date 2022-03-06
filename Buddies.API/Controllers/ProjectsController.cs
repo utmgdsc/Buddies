@@ -96,7 +96,7 @@ namespace Buddies.API.Controllers
         }
 
         /// <summary>
-        /// API route GET /api/v1/projects/locations for fetching categories.
+        /// API route GET /api/v1/projects/category for fetching categories.
         /// </summary>
         /// <param name="search">Category to search for</param>
         /// <param name="page">current page</param>
@@ -216,7 +216,7 @@ namespace Buddies.API.Controllers
         }
 
         /// <summary>
-        /// API route GET /api/v1/projects/locations for fetching emails.
+        /// API route GET /api/v1/projects/email for fetching emails.
         /// </summary>
         /// <param name="search">Category to search for</param>
         /// <param name="page">current page</param>
