@@ -10,6 +10,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { authStore } from '../../stores/authStore';
+import ProjectProfile from '../../components/Dashboard';
 
 const api = axios.create({
     baseURL: '/api/v1/projects/',
@@ -154,67 +155,21 @@ const Project: React.VFC = () => {
     const authentication: boolean | null = (authState
         && parseInt(authState.nameid, 10) === ownerId);
     currId = (authState?parseInt(authState.nameid, 10):-1);
+    console.log(currId);
     const isInvited: boolean = invitedIds.includes(currId);
     const inGroup: boolean = memberIds.includes(currId);
+    const isFull: boolean = memberIds.length == project.MaxMembers;
     console.log(invitedIds);
     return (
         <Container>
-            <Grid container spacing={5}>
-                <Grid item xs={12}>
-                    <Card sx={{
-                    padding: 2,
-                    width: '100%',
-                    height: 500,
-                    border: 1,
-                    alignItems: 'center',
-                    paddingRight: 3,
-                    boxShadow: 12,
-                    marginTop: 5
-                    }}
-                    >
-                        <Typography color="inherit" variant="h4" gutterBottom>
-                            {project.Title}
-                        </Typography>
-                        <Card>
-                            <Typography color="inherit" variant="subtitle1" gutterBottom sx={{marginTop: 1, marginLeft: 2}}>
-                                Details:
-                            </Typography>
-                            <Grid container p={1} spacing={2}>
-                                <Grid item xs={6}>
-                                    <Typography color="inherit" variant="caption" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
-                                        Project Owner: {project.ProjectOwner}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography color="inherit" variant="caption" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
-                                        Location: {project.Location}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography color="inherit" variant="caption" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
-                                        Email: {project.ProjectOwnerEmail}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography color="inherit" variant="caption" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
-                                        Category: {project.Category}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Typography color="inherit" variant="body2" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
-                                        Description:
-                                    </Typography>
-                                    <Typography color="inherit" variant="caption" gutterBottom sx={{marginLeft: 1}}>
-                                        {project.Description}
-                                    </Typography>
-                                </Grid>
-                                
-                            </Grid>
-                        </Card>
-                        <Typography color="inherit" variant="h6" gutterBottom>
-                            Members
-                        </Typography>
-                        <Card> 
+            <ProjectProfile inGroup={inGroup} title={project.Title} location = {project.Location}
+            category = {project.Category} total={project.MaxMembers}
+            curr={project.MemberLst.length} desc={project.Description}
+            pOwner={project.ProjectOwner} pEmail={project.ProjectOwnerEmail}/>
+
+            <Grid container justifyContent='center' marginTop={2} spacing={3} marginBottom={5}>
+                <Grid item xs={10}>
+                    <Card elevation={10}> 
                             <Grid container p={1} spacing={2} justifyContent="center">
                                 {project.MemberLst.map((member: UserInfo) => {
                                     return (
@@ -230,7 +185,7 @@ const Project: React.VFC = () => {
                                             </Grid>
                                         );
                                 })}
-                                {authentication &&
+                                {authentication && !isFull &&
                                 <Grid item xs={2}>
                                     <Card sx={{border: 1, height: 80}}>
                                         <CardActionArea>
@@ -243,7 +198,7 @@ const Project: React.VFC = () => {
                                     </Card>
                                 </Grid>
                                 }
-                                {!authentication && isInvited && !inGroup &&
+                                {!authentication && isInvited && !inGroup && !isFull &&
                                 <Grid item xs={2}>
                                     <Card sx={{border: 1, height: 80}}>
                                         <CardActionArea onClick={addMember}>
@@ -257,7 +212,7 @@ const Project: React.VFC = () => {
                                 </Grid>
                                 }
 
-                                {!authentication && !isInvited &&
+                                {!authentication && !isInvited && !inGroup && !isFull &&
                                 <Grid item xs={2}>
                                     <Card sx={{border: 1, height: 80}}>
                                         <CardActionArea>
@@ -270,14 +225,132 @@ const Project: React.VFC = () => {
                                     </Card>
                                 </Grid>
                                 }
-                                
-                    
                             </Grid>
                         </Card>
-                    </Card>
                 </Grid>
             </Grid>
         </Container>
+
+        // <Container>
+        //     <Grid container spacing={5}>
+        //         <Grid item xs={12}>
+        //             <Card sx={{
+        //             padding: 2,
+        //             width: '100%',
+        //             height: 500,
+        //             border: 1,
+        //             alignItems: 'center',
+        //             paddingRight: 3,
+        //             boxShadow: 12,
+        //             marginTop: 5
+        //             }}
+        //             >
+        //                 <Typography color="inherit" variant="h4" gutterBottom>
+        //                     {project.Title}
+        //                 </Typography>
+        //                 <Card>
+        //                     <Typography color="inherit" variant="subtitle1" gutterBottom sx={{marginTop: 1, marginLeft: 2}}>
+        //                         Details:
+        //                     </Typography>
+        //                     <Grid container p={1} spacing={2}>
+        //                         <Grid item xs={6}>
+        //                             <Typography color="inherit" variant="caption" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
+        //                                 Project Owner: {project.ProjectOwner}
+        //                             </Typography>
+        //                         </Grid>
+        //                         <Grid item xs={6}>
+        //                             <Typography color="inherit" variant="caption" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
+        //                                 Location: {project.Location}
+        //                             </Typography>
+        //                         </Grid>
+        //                         <Grid item xs={6}>
+        //                             <Typography color="inherit" variant="caption" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
+        //                                 Email: {project.ProjectOwnerEmail}
+        //                             </Typography>
+        //                         </Grid>
+        //                         <Grid item xs={6}>
+        //                             <Typography color="inherit" variant="caption" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
+        //                                 Category: {project.Category}
+        //                             </Typography>
+        //                         </Grid>
+        //                         <Grid item xs={12}>
+        //                             <Typography color="inherit" variant="body2" gutterBottom sx={{marginTop: 1, marginLeft: 1}}>
+        //                                 Description:
+        //                             </Typography>
+        //                             <Typography color="inherit" variant="caption" gutterBottom sx={{marginLeft: 1}}>
+        //                                 {project.Description}
+        //                             </Typography>
+        //                         </Grid>
+                                
+        //                     </Grid>
+        //                 </Card>
+        //                 <Typography color="inherit" variant="h6" gutterBottom>
+        //                     Members
+        //                 </Typography>
+        //                 <Card> 
+        //                     <Grid container p={1} spacing={2} justifyContent="center">
+        //                         {project.MemberLst.map((member: UserInfo) => {
+        //                             return (
+        //                                     <Grid item xs={2}>
+        //                                         <Card sx={{border: 1, height: 80}}>
+        //                                             <CardActionArea href={"Profiles/" + member.UserId}>
+        //                                                 <Avatar sx={{margin: 'auto', marginTop: 1}}/>
+        //                                                 <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
+        //                                                     {member.FirstName + " " + member.LastName}
+        //                                                 </Typography>
+        //                                             </CardActionArea>
+        //                                         </Card>
+        //                                     </Grid>
+        //                                 );
+        //                         })}
+        //                         {authentication &&
+        //                         <Grid item xs={2}>
+        //                             <Card sx={{border: 1, height: 80}}>
+        //                                 <CardActionArea>
+        //                                     <AddIcon sx={{marginLeft: '40%', marginTop: 1, cursor: 'pointer'}}/>
+        //                                     <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
+        //                                         Invite More Users
+        //                                     </Typography>
+        //                                 </CardActionArea>
+                                        
+        //                             </Card>
+        //                         </Grid>
+        //                         }
+        //                         {!authentication && isInvited && !inGroup &&
+        //                         <Grid item xs={2}>
+        //                             <Card sx={{border: 1, height: 80}}>
+        //                                 <CardActionArea onClick={addMember}>
+        //                                     <AddIcon sx={{marginLeft: '40%', marginTop: 1, cursor: 'pointer'}}/>
+        //                                     <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
+        //                                         Join Project
+        //                                     </Typography>
+        //                                 </CardActionArea>
+                                        
+        //                             </Card>
+        //                         </Grid>
+        //                         }
+
+        //                         {!authentication && !isInvited &&
+        //                         <Grid item xs={2}>
+        //                             <Card sx={{border: 1, height: 80}}>
+        //                                 <CardActionArea>
+        //                                     <EmailIcon sx={{marginLeft: '40%', marginTop: 1, cursor: 'pointer'}}/>
+        //                                     <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
+        //                                         Request to Join
+        //                                     </Typography>
+        //                                 </CardActionArea>
+                                        
+        //                             </Card>
+        //                         </Grid>
+        //                         }
+                                
+                    
+        //                     </Grid>
+        //                 </Card>
+        //             </Card>
+        //         </Grid>
+        //     </Grid>
+        // </Container>
     );
 };
 
