@@ -414,11 +414,20 @@ namespace Buddies.API.Controllers
             if (project.OwnerId == _userManager.GetUserAsync(User).Result.Id) { return BadRequest("Cannot remove owner from project"); }
 
             var invitedUsers = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.InvitedUsers).ToList();
-            var invitedUser = _userManager.GetUserAsync(User).Result;
+            var membersInProject = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.Members).ToList();
+            var currentUser = _userManager.GetUserAsync(User).Result;
 
-            if (invitedUser != null && !invitedUsers.Contains(invitedUser))
+            if (membersInProject.Contains(currentUser))
             {
-                project.Members.Add(invitedUser);
+                return BadRequest("You are already a member!");
+            }
+
+            if (currentUser != null && invitedUsers.Contains(currentUser))
+            {
+                project.Members.Add(currentUser);
+                project.InvitedUsers.Remove(currentUser);
+                currentUser.Projects.Add(project);
+                currentUser.InvitedTo.Remove(project);
                 await _context.SaveChangesAsync();
                 return Ok();
             }
