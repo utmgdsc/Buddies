@@ -48,7 +48,8 @@ public class TokenService
             {
                 [ClaimTypes.NameIdentifier] = user.Id.ToString(),
                 [ClaimTypes.GivenName] = user.Profile.FirstName,
-                [ClaimTypes.Surname] = user.Profile.LastName
+                [ClaimTypes.Surname] = user.Profile.LastName,
+                [ClaimTypes.Email] = user.Email
             },
             Expires = DateTime.UtcNow.AddMinutes(15),
             SigningCredentials = credentials
