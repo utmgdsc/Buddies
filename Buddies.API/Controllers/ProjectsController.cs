@@ -353,12 +353,14 @@ namespace Buddies.API.Controllers
                 return NotFound("PROFILE NOT FOUND");
             }
             if (project.OwnerId != _userManager.GetUserAsync(User).Result.Id) { return Unauthorized(); }
-
-            foreach (var member in project.Members)
+            var membersInProject = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.Members).ToList();
+            foreach (var member in membersInProject)
             {
                 if (member.Id == uid)
                 {
                     project.Members.Remove(member);
+
+
                     await _context.SaveChangesAsync();
                     return Ok();
                 }
@@ -382,9 +384,11 @@ namespace Buddies.API.Controllers
                 return NotFound("PROFILE NOT FOUND");
             }
             if (project.OwnerId != _userManager.GetUserAsync(User).Result.Id) { return Unauthorized(); }
-            
+
+            var invitedUsers = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.InvitedUsers).ToList();
             var invitedUser = _context.Users.FindAsync(uid).Result;
-            if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)){
+
+            if (invitedUser != null && !invitedUsers.Contains(invitedUser)){
                 project.InvitedUsers.Add(invitedUser);
                 await _context.SaveChangesAsync();
                 return Ok();
@@ -393,6 +397,34 @@ namespace Buddies.API.Controllers
             return NotFound("User not found");
         }
 
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/join/ for joining profile IF you're on the invited list.
+        /// </summary>
+        [HttpPost("{pid}/join/")]
+        [Authorize]
+        public async Task<ActionResult> JoinProject(int pid, int uid)
+        {
+            var project = await _context.Projects.FindAsync(pid);
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+            if (project.OwnerId == _userManager.GetUserAsync(User).Result.Id) { return BadRequest("Cannot remove owner from project"); }
+
+            var invitedUsers = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.InvitedUsers).ToList();
+            var invitedUser = _userManager.GetUserAsync(User).Result;
+
+            if (invitedUser != null && !invitedUsers.Contains(invitedUser))
+            {
+                project.Members.Add(invitedUser);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+
+            return NotFound("User not found");
+        }
 
     }
 }
