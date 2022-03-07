@@ -39,7 +39,7 @@ public class ApiContext : IdentityDbContext<User, Role, int>
             {
                 Id = 5,
             },
-            new Category("Architect")
+            new Category("Architecture")
             {
                 Id = 6,
             },
