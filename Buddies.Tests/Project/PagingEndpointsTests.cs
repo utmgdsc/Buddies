@@ -78,7 +78,6 @@ namespace Buddies.Tests.Project
 
             var response = await _client.GetAsync("/api/v1/projects/email/test/1/10");
             string stringResponse = response.Content.ReadAsStringAsync().Result;
-            //var searchResponse = JObject.Parse(stringResponse);
 
             Assert.Contains("test@email.com", stringResponse);
 

@@ -5,8 +5,39 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/v{version}/profiles/{id}": {
+      "get": {
+        "tags": [
+          "Profiles"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/v{version}/profiles": {
-      "post": {
+      "put": {
         "tags": [
           "Profiles"
         ],
@@ -20,6 +51,30 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
@@ -774,6 +829,27 @@
         },
         "additionalProperties": false
       },
+      "SkillResponse": {
+        "required": [
+          "delete",
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "delete": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "TokenResponse": {
         "required": [
           "accessToken"
@@ -786,31 +862,38 @@
         },
         "additionalProperties": false
       },
-      "UpdateProjectProfileRequest": {
+      "UpdateProfileRequest": {
         "required": [
-          "category",
-          "description",
-          "location",
-          "maxMembers",
-          "title"
+          "aboutMe",
+          "firstName",
+          "headline",
+          "lastName",
+          "skills",
+          "userId"
         ],
         "type": "object",
         "properties": {
-          "title": {
+          "firstName": {
             "type": "string"
           },
-          "location": {
+          "lastName": {
             "type": "string"
           },
-          "description": {
-            "type": "string"
-          },
-          "category": {
-            "type": "string"
-          },
-          "maxMembers": {
+          "userId": {
             "type": "integer",
             "format": "int32"
+          },
+          "headline": {
+            "type": "string"
+          },
+          "aboutMe": {
+            "type": "string"
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillResponse"
+            }
           }
         },
         "additionalProperties": false

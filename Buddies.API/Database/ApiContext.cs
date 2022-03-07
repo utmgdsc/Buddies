@@ -39,7 +39,7 @@ public class ApiContext : IdentityDbContext<User, Role, int>
             {
                 Id = 5,
             },
-            new Category("Architect")
+            new Category("Architecture")
             {
                 Id = 6,
             },
@@ -112,11 +112,6 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     }
 
     /// <summary>
-    /// Collection of all profiles.
-    /// </summary>
-    public DbSet<Profile> Profiles { get; set; } = null!;
-
-    /// <summary>
     /// Collection of all projects.
     /// </summary>
     public DbSet<Project> Projects { get; set; } = null!;
@@ -130,4 +125,15 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     /// Collection of all valid locations.
     /// </summary>
     public DbSet<Location> Locations { get; set; } = null!;
+
+    /// <summary>
+    /// Collection of all profiles.
+    /// </summary>
+    public DbSet<Profile> Profiles { get; set; } = null!;
+
+    /// </summary>
+    /// Collection of all Skills that belong 
+    /// to a User Profile.
+    /// </summary>
+    public DbSet<Skill> Skills { get; set; } = null!;
 }
