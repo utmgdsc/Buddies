@@ -72,7 +72,7 @@ const PostingsTable = () => {
         path += `${filterTracker[fil as keyof FilterObject]}/`;
       }
     });
-    axios.get(baseURL).then((res) => {
+    axios.get(baseURL + path).then((res) => {
       const DATA: Project[] = [];
       for (let i = 0; i < res.data.projects.length; i += 1) {
         DATA[i] = {

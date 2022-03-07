@@ -179,7 +179,7 @@ const Project: React.VFC = () => {
                                     return (
                                             <Grid item xs={2}>
                                                 <Card sx={{border: 1, height: 80}}>
-                                                    <CardActionArea href={"Profiles/" + member.UserId}>
+                                                    <CardActionArea href={"../Profiles/" + member.UserId}>
                                                         <Avatar sx={{margin: 'auto', marginTop: 1}}/>
                                                         <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
                                                             {member.FirstName + " " + member.LastName}
