@@ -295,5 +295,100 @@ namespace Buddies.API.Controllers
             return Ok(profileResponse);
         }
 
+
+        /// <summary>
+        /// API route PUT /api/v1/profiles for updating profile.
+        /// </summary>
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<ActionResult> UpdateProjectProfile(int id, UpdateProjectProfileRequest profile)
+        {
+            var project = await _context.Projects.FindAsync(id);
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+            if (project.OwnerId != _userManager.GetUserAsync(User).Result.Id) { return Unauthorized(); }
+
+            var requestLocation = await _context.Locations.FirstOrDefaultAsync(x => x.Address == profile.Location);
+
+            if (requestLocation == null)
+            {
+                return NotFound("Invalid Location");
+            }
+
+
+            var requestCategory = await _context.Categories.FirstOrDefaultAsync(p => p.Name == profile.Category);
+            if (requestCategory == null)
+            {
+                return NotFound("Invalid Category");
+            }
+
+            project.Title = profile.Title;
+            project.Description = profile.Description;
+            project.Location = profile.Location;
+            project.Category = profile.Category;
+            project.MaxMembers = profile.MaxMembers;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/delete/{uid} for updating profile.
+        /// </summary>
+        [HttpPost("{pid}/delete/{uid}")]
+        [Authorize]
+        public async Task<ActionResult> DeleteProjectMember(int pid, int uid)
+        {
+            var project = await _context.Projects.FindAsync(pid);
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+            if (project.OwnerId != _userManager.GetUserAsync(User).Result.Id) { return Unauthorized(); }
+
+            foreach (var member in project.Members)
+            {
+                if (member.Id == uid)
+                {
+                    project.Members.Remove(member);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+
+            }
+
+            return NotFound("User not found");
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/delete/{uid} for updating profile.
+        /// </summary>
+        [HttpPost("{pid}/invite/{uid}")]
+        [Authorize]
+        public async Task<ActionResult> InviteProjectMember(int pid, int uid)
+        {
+            var project = await _context.Projects.FindAsync(pid);
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+            if (project.OwnerId != _userManager.GetUserAsync(User).Result.Id) { return Unauthorized(); }
+            
+            var invitedUser = _context.Users.FindAsync(uid).Result;
+            if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)){
+                project.InvitedUsers.Add(invitedUser);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+
+            return NotFound("User not found");
+        }
+
+
     }
 }

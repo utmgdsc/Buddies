@@ -10,15 +10,13 @@ namespace Buddies.API.IO
         [Required(ErrorMessage = "A location is required.")]
         public string Location { get; set;} = default!;
 
-        [Required(ErrorMessage = "A description is required."),
-         MaxLength(1000, ErrorMessage = "Description must be less than or equal to 1000 characters.")]
+        [Required(ErrorMessage = "A description is required.")]
         public string Description { get; set; } = default!;
 
         [Required(ErrorMessage = "A category is required.")]
         public string Category { get; set; } = default!;
 
-        [Required(ErrorMessage = "A member limit is required."),
-         Range(2, int.MaxValue, ErrorMessage = "Member limit must be greater than or equal to 2.")] // todo: decide on a reasonable max
+        [Required] // todo: decide on a reasonable max
         public int MaxMembers { get; set; } = default!;
 
         [Required]
