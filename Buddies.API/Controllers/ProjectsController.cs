@@ -249,21 +249,33 @@ namespace Buddies.API.Controllers
         public async Task<ActionResult> GetProfile(int id)
         {
             var project = await _context.Projects.FindAsync(id);
-
             if (project == null)
             {
                 return NotFound("PROJECT PROFILE NOT FOUND");
             }
-
+            var owner = await _context.Profiles.FindAsync(project.OwnerId);
+            if (owner == null)
+            {
+                return NotFound("OWNER OF PROJECT PROFILE NOT FOUND");
+            }
+            var ownerUser = await _context.Users.FindAsync(project.OwnerId);
+            if (ownerUser == null)
+            {
+                return NotFound("OWNER OF PROJECT PROFILE NOT FOUND");
+            }
             var profileResponse = new ProjectProfileResponse{
                 Title = project.Title,
                 Description = project.Description,
                 Location = project.Location,
+                Username = owner.FirstName + " " + owner.LastName,
+                Email = ownerUser.Email,
                 Category = project.Category,
                 MaxMembers = project.MaxMembers,
             };
 
-            foreach (User member in project.Members)
+            var membersInProject = _context.Projects.Where(p => p.ProjectId == id).SelectMany(p => p.Members).ToList();
+
+            foreach (User member in membersInProject)
             {
                 profileResponse.Title = "here";
                 var userInfo = new UserInfoResponse();
@@ -275,10 +287,12 @@ namespace Buddies.API.Controllers
                 userInfo.FirstName = userprofile.FirstName;
                 userInfo.LastName = userprofile.LastName;
                 userInfo.Email = member.Email;
+                userInfo.UserId = member.Id;
                 profileResponse.Members.Add(userInfo);
             }
 
-            foreach (User invitedUser in project.InvitedUsers)
+            var invitedUsers = _context.Projects.Where(p => p.ProjectId == id).SelectMany(p => p.InvitedUsers).ToList();
+            foreach (User invitedUser in invitedUsers)
             {
                 var userInfo = new UserInfoResponse();
                 var userprofile = await _context.Profiles.FindAsync(invitedUser.Id);
@@ -289,6 +303,7 @@ namespace Buddies.API.Controllers
                 userInfo.FirstName = userprofile.FirstName;
                 userInfo.LastName = userprofile.LastName;
                 userInfo.Email = invitedUser.Email;
+                userInfo.UserId = invitedUser.Id;
                 profileResponse.InvitedUsers.Add(userInfo);
             }
 
@@ -382,6 +397,42 @@ namespace Buddies.API.Controllers
             var invitedUser = _context.Users.FindAsync(uid).Result;
             if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)){
                 project.InvitedUsers.Add(invitedUser);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+
+            return NotFound("User not found");
+        }
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/join/ for joining profile IF you're on the invited list.
+        /// </summary>
+        [HttpPost("{pid}/join/")]
+        [Authorize]
+        public async Task<ActionResult> JoinProject(int pid, int uid)
+        {
+            var project = await _context.Projects.FindAsync(pid);
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+            if (project.OwnerId == _userManager.GetUserAsync(User).Result.Id) { return BadRequest("Cannot remove owner from project"); }
+
+            var invitedUsers = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.InvitedUsers).ToList();
+            var membersInProject = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.Members).ToList();
+            var currentUser = _userManager.GetUserAsync(User).Result;
+
+            if (membersInProject.Contains(currentUser))
+            {
+                return BadRequest("You are already a member!");
+            }
+
+            if (currentUser != null && invitedUsers.Contains(currentUser))
+            {
+                project.Members.Add(currentUser);
+                project.InvitedUsers.Remove(currentUser);
+                currentUser.Projects.Add(project);
+                currentUser.InvitedTo.Remove(project);
                 await _context.SaveChangesAsync();
                 return Ok();
             }

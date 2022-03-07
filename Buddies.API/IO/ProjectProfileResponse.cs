@@ -7,11 +7,17 @@ namespace Buddies.API.IO
         [Required]
         public string Title { get; set;} = default!;
 
+        [Required(ErrorMessage = "A description is required.")]
+        public string Description { get; set; } = default!;
+
         [Required(ErrorMessage = "A location is required.")]
         public string Location { get; set;} = default!;
 
-        [Required(ErrorMessage = "A description is required.")]
-        public string Description { get; set; } = default!;
+        [Required(ErrorMessage = "A username is required.")]
+        public string Username { get; init; } = default!;
+
+        [Required(ErrorMessage = "An email is required.")]
+        public string Email { get; init; } = default!;
 
         [Required(ErrorMessage = "A category is required.")]
         public string Category { get; set; } = default!;

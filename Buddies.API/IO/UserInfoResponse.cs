@@ -16,4 +16,8 @@ public record UserInfoResponse
     [Required(ErrorMessage = "")]
     public string Email { get; set; } = default!;
 
+    [Required(ErrorMessage = "")]
+    public int UserId { get; set; } = default!;
+
+
 }
