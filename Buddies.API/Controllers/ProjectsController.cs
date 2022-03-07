@@ -263,7 +263,9 @@ namespace Buddies.API.Controllers
                 MaxMembers = project.MaxMembers,
             };
 
-            foreach (User member in project.Members)
+            var membersInProject = _context.Projects.Where(p => p.ProjectId == id).SelectMany(p => p.Members).ToList();
+
+            foreach (User member in membersInProject)
             {
                 profileResponse.Title = "here";
                 var userInfo = new UserInfoResponse();
@@ -278,7 +280,9 @@ namespace Buddies.API.Controllers
                 profileResponse.Members.Add(userInfo);
             }
 
-            foreach (User invitedUser in project.InvitedUsers)
+            var invitedUsers = _context.Projects.Where(p => p.ProjectId == id).SelectMany(p => p.InvitedUsers).ToList();
+
+            foreach (User invitedUser in invitedUsers)
             {
                 var userInfo = new UserInfoResponse();
                 var userprofile = await _context.Profiles.FindAsync(invitedUser.Id);
