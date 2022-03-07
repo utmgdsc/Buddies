@@ -11,15 +11,17 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { authStore } from '../../stores/authStore';
 import ProjectProfile from '../../components/Dashboard';
+import { TokenResponse } from '../../api/model/tokenResponse';
 
-const api = axios.create({
-    baseURL: '/api/v1/projects/',
-    headers: {
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-  });
+// const api = axios.create({
+//     baseURL: '/api/v1/projects/',
+//     headers: {
+//       Accept: 'application/json',
+//       'Content-type': 'application/json',
+//     },
+//   });
 
+const baseURL = '/api/v1/projects/'
 type UserInfo = {
     FirstName: string,
     LastName: string,
@@ -73,7 +75,7 @@ const Project: React.VFC = () => {
             alert('error');
             return;
         }
-        api.get(projectId).then((res) => {
+        axios.get(baseURL + projectId).then((res) => {
             console.log(res.data);
             let newMemberLst = []
             for (let i = 0; i < res.data.members.length; i += 1) {
@@ -122,8 +124,10 @@ const Project: React.VFC = () => {
           alert('error');
           return;
         }
+        // const res2 = await api.get<TokenResponse>('/api/v1/users/refresh');
+        // api.defaults.headers.common.Authorization = `Bearer ${res2.data.accessToken}`;
         console.log('hi');
-        const res = await api.post(projectId + "/join/", currId).catch((error) => {
+        const res = await axios.post(baseURL + projectId + "/join/", currId).catch((error) => {
           alert(error);
         });
         if (true && res) {
@@ -136,7 +140,7 @@ const Project: React.VFC = () => {
           alert('error');
           return;
         }
-        const res = await api.post(projectId + "/invite/" + memberId).catch((error) => {
+        const res = await axios.post(baseURL + projectId + "/invite/" + memberId).catch((error) => {
           alert(error);
         });
         if (true && res) {
