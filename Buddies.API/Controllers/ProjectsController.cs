@@ -55,6 +55,7 @@ namespace Buddies.API.Controllers
                     var projectResponse = new ProjectResponse
                     {
                         Title = project.Title,
+                        ProjectId = project.ProjectId,
                         Description = project.Description,
                         Location = project.Location,
                         Username = String.Format("{0} {1}", owner.FirstName, owner.LastName),

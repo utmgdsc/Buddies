@@ -19,9 +19,11 @@ import ListIcon from '@mui/icons-material/List';
 import axios from 'axios';
 import { useEffect } from 'react';
 import MultipleSelectPlaceholder from '../components/Filter';
+import CardActionArea from '@mui/material/CardActionArea';
 
 type Project = {
   Title: string,
+  ProjectId: number,
   Description: string,
   Location: string,
   Username: string,
@@ -41,14 +43,14 @@ let filterTracker: FilterObject = {
   Members: -1,
   Category: 'N/A',
 };
-
-const api = axios.create({
-  baseURL: '/api/v1/projects/postings/',
-  headers: {
-    Accept: 'application/json',
-    'Content-type': 'application/json',
-  },
-});
+const baseURL = '/api/v1/projects/postings/';
+// const api = axios.create({
+//   baseURL: '/api/v1/projects/postings/',
+//   headers: {
+//     Accept: 'application/json',
+//     'Content-type': 'application/json',
+//   },
+// });
 
 let memberfilters: string[] = [];
 let locations: string[] = [];
@@ -70,11 +72,12 @@ const PostingsTable = () => {
         path += `${filterTracker[fil as keyof FilterObject]}/`;
       }
     });
-    api.get(path).then((res) => {
+    axios.get(baseURL).then((res) => {
       const DATA: Project[] = [];
       for (let i = 0; i < res.data.projects.length; i += 1) {
         DATA[i] = {
           Title: res.data.projects[i].title,
+          ProjectId: res.data.projects[i].projectId,
           Description: res.data.projects[i].description,
           Location: res.data.projects[i].location,
           Username: res.data.projects[i].username,
@@ -147,43 +150,45 @@ const PostingsTable = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      <Grid container>
-                        <Grid item>
-                          <Typography variant="h5">
-                            {row.Title}
-                          </Typography>
-                          <Grid container>
-                            <Avatar />
-                            <Typography sx={{ marginTop: 2, marginLeft: 1 }} variant="subtitle2">
-                              {row.Username}
+                      <CardActionArea href={"projects/" + row.ProjectId}>
+                        <Grid container>
+                          <Grid item>
+                            <Typography variant="h5">
+                              {row.Title}
+                            </Typography>
+                            <Grid container>
+                              <Avatar />
+                              <Typography sx={{ marginTop: 2, marginLeft: 1 }} variant="subtitle2">
+                                {row.Username}
 
-                            </Typography>
-                            <Button
-                              variant="contained"
-                              style={{
-                                color: 'white',
-                                backgroundColor: 'green',
-                                maxWidth: '25px',
-                                maxHeight: '25px',
-                                minWidth: '25px',
-                                minHeight: '25px',
-                                marginLeft: 5,
-                                marginTop: 10,
-                              }}
-                            >
-                              {row.BuddyScore}
-                            </Button>
-                            <LocationOnIcon sx={{ marginTop: 1.35, marginLeft: 2 }} />
-                            <Typography sx={{ marginTop: 2 }} variant="subtitle2">
-                              {row.Location}
-                            </Typography>
-                            <DashboardIcon sx={{ marginTop: 1.5, marginLeft: 2 }} />
-                            <Typography sx={{ marginTop: 2 }} variant="subtitle2">
-                              {row.Category}
-                            </Typography>
+                              </Typography>
+                              <Button
+                                variant="contained"
+                                style={{
+                                  color: 'white',
+                                  backgroundColor: 'green',
+                                  maxWidth: '25px',
+                                  maxHeight: '25px',
+                                  minWidth: '25px',
+                                  minHeight: '25px',
+                                  marginLeft: 5,
+                                  marginTop: 10,
+                                }}
+                              >
+                                {row.BuddyScore}
+                              </Button>
+                              <LocationOnIcon sx={{ marginTop: 1.35, marginLeft: 2 }} />
+                              <Typography sx={{ marginTop: 2 }} variant="subtitle2">
+                                {row.Location}
+                              </Typography>
+                              <DashboardIcon sx={{ marginTop: 1.5, marginLeft: 2 }} />
+                              <Typography sx={{ marginTop: 2 }} variant="subtitle2">
+                                {row.Category}
+                              </Typography>
+                            </Grid>
                           </Grid>
                         </Grid>
-                      </Grid>
+                      </CardActionArea>
                     </TableCell>
                     <TableCell>
                       <Grid container>
@@ -193,6 +198,7 @@ const PostingsTable = () => {
                           {row.Members}
                         </Typography>
                       </Grid>
+                      
                     </TableCell>
                   </TableRow>
                 ))}

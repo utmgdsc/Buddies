@@ -4,6 +4,7 @@
     {
         public string Title { get; init; } = default!;
 
+        public int ProjectId { get; init; } = default!;
         public string Description { get; init; } = default!;
 
         public string Location { get; init; } = default!;
