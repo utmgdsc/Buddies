@@ -14,6 +14,8 @@ public class User : IdentityUser<int>
     public User(string email)
     {
         Email = email;
+        Projects = new List<Project>();
+        InvitedTo = new List<Project>();
     }
     public sealed override string Email
     {
@@ -31,4 +33,14 @@ public class User : IdentityUser<int>
     /// Profile of the user.
     /// </summary>
     public Profile Profile { get; init; } = null!; // populated by EF
+
+    /// <summary>
+    /// Projects User is member of 
+    /// </summary>
+    public List<Project> Projects { get; set; }
+
+    /// <summary>
+    /// Projects User is invited to
+    /// </summary>
+    public List<Project> InvitedTo { get; set; }
 }

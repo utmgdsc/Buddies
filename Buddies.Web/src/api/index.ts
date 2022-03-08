@@ -5,6 +5,8 @@ import { RegisterRequest } from './model/registerRequest';
 import { LoginRequest } from './model/loginRequest';
 import { TokenResponse } from './model/tokenResponse';
 import { authStore, AuthState } from '../stores/authStore';
+import { CreateProjectRequest } from './model/createProjectRequest';
+import { SearchResponse } from './model/searchResponse';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -26,6 +28,10 @@ export async function logoutUser() {
   authStore.setState({ authState: null });
 }
 
+export async function createProject(request: CreateProjectRequest) {
+  return axios.post('/api/v1/projects', request);
+}
+
 axios.interceptors.response.use((res) => res, async (error) => {
   const req = error.config;
 
@@ -37,3 +43,20 @@ axios.interceptors.response.use((res) => res, async (error) => {
   }
   return Promise.reject(error);
 });
+
+export type SearchFunc = (search: string, page: number, count: number) => Promise<SearchResponse>;
+
+export const getLocations: SearchFunc = async (search, page, count) => {
+  const res = await axios.get<SearchResponse>(`/api/v1/projects/locations/${search}/${page}/${count}`);
+  return res.data;
+};
+
+export const getCategories: SearchFunc = async (search, page, count) => {
+  const res = await axios.get<SearchResponse>(`/api/v1/projects/category/${search}/${page}/${count}`);
+  return res.data;
+};
+
+export const getUsers: SearchFunc = async (search, page, count) => {
+  const res = await axios.get<SearchResponse>(`/api/v1/projects/email/${search}/${page}/${count}`);
+  return res.data;
+};

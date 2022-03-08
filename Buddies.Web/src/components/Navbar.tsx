@@ -6,6 +6,8 @@ import Link from '@mui/material/Link';
 import NextLink from 'next/link';
 import Stack from '@mui/material/Stack';
 import { useRouter } from 'next/router';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import AccountTab from './AccountTab';
 import { logoutUser } from '../api';
 import { authStore } from '../stores/authStore';
@@ -17,12 +19,21 @@ const Navbar: React.VFC = () => {
 
   return (
     <AppBar position="static">
-      <Toolbar>
+      <Toolbar variant="dense">
         <NextLink href="/" passHref>
           {// known issue: https://github.com/vercel/next.js/discussions/32233
               /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <Link color="inherit" variant="h6" underline="none">Project Buddies</Link>
         </NextLink>
+        <Tabs value={router.pathname} sx={{ paddingLeft: 3 }}>
+          {authState && (
+            // needed to inject value prop to NextLink
+            // @ts-ignore
+            <NextLink href="/create-project" passHref value="/create-project">
+              <Tab label="Create Project" />
+            </NextLink>
+          )}
+        </Tabs>
         <Stack
           direction="row"
           alignItems="center"

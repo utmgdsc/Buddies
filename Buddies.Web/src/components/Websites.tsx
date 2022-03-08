@@ -22,7 +22,7 @@ const Websites = ({ logCheck }:{ logCheck: boolean | null }) => {
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          {logCheck && <CustomizedDialogs color="inherit" topmarg={0} />}
+          {logCheck && <CustomizedDialogs color="inherit" topmarg={0}>{undefined}</CustomizedDialogs>}
         </Grid>
       </Grid>
       <Typography variant="subtitle2" gutterBottom>
