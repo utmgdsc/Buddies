@@ -1,10 +1,10 @@
 import React from 'react';
 import Card from '@mui/material/Card';
-import Grid from '@material-ui/core/grid';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 import Aboutmeform from './Aboutmeform';
-import type { UpdateProf } from '../pages/Profiles/[pid]';
+import type { UpdateProf } from '../pages/profiles/[pid]';
 
 /* About me component. */
 const Aboutme = ({

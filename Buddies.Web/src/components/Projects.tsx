@@ -1,6 +1,6 @@
 import React from 'react';
 import Card from '@mui/material/Card';
-import Grid from '@material-ui/core/grid';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@mui/material/Typography';
 
 /* Projects section */

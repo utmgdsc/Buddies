@@ -1,10 +1,18 @@
 import React from 'react';
 import Card from '@mui/material/Card';
-import Grid from '@material-ui/core/grid';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 
-const Websites = ({ logCheck }:{ logCheck: boolean | null }) => {
+interface Props {
+  /**
+   * variable to track whether a user is logged in
+   * and viewing his profile
+   */
+  logCheck: boolean | null
+}
+
+const Websites: React.FC<Props> = ({ logCheck }:{ logCheck: boolean | null }) => {
   return (
     <Card sx={{
       width: '100%',
@@ -22,7 +30,7 @@ const Websites = ({ logCheck }:{ logCheck: boolean | null }) => {
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          {logCheck && <CustomizedDialogs color="inherit" topmarg={0} />}
+          {logCheck && <CustomizedDialogs color="inherit" topmarg={0} children={undefined} />}
         </Grid>
       </Grid>
       <Typography variant="subtitle2" gutterBottom>

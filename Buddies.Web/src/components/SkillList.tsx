@@ -1,7 +1,7 @@
 import React from 'react';
-import Grid from '@material-ui/core/grid';
+import Grid from '@material-ui/core/Grid';
 import Skill from './Skill';
-import type { Skillobject } from '../pages/Profiles/[pid]';
+import type { Skillobject } from '../pages/profiles/[pid]';
 
 /* returns a list of all the skills in a grid */
 

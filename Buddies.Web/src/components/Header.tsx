@@ -1,14 +1,14 @@
 import React from 'react';
 import Card from '@mui/material/Card';
 import Avatar from '@mui/material/Avatar';
-import Grid from '@material-ui/core/grid';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@mui/material/Typography';
 import Button from '@material-ui/core/Button';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import CustomizedDialogs from './dialog';
 import Headerform from './Headerform';
-import type { UpdateProf } from '../pages/Profiles/[pid]';
+import type { UpdateProf } from '../pages/profiles/[pid]';
 
 /* Header component of the profile page. Includes the profile pic, name and headline */
 const Header = ({

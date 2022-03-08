@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
-import Grid from '@material-ui/core/grid';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@mui/material/Typography';
 import { Box, Button } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -28,7 +28,8 @@ type Project = {
   Location: string,
   Username: string,
   BuddyScore: number,
-  Members: number
+  MaxMembers: number,
+  CurrentMembers: number,
   Category: string,
 };
 
@@ -82,7 +83,8 @@ const PostingsTable = () => {
           Location: res.data.projects[i].location,
           Username: res.data.projects[i].username,
           BuddyScore: res.data.projects[i].buddyScore,
-          Members: res.data.projects[i].members,
+          MaxMembers: res.data.projects[i].maxMembers,
+          CurrentMembers: res.data.projects[i].currentMembers,
           Category: res.data.projects[i].category,
         };
         locations = res.data.locations;
@@ -194,8 +196,7 @@ const PostingsTable = () => {
                       <Grid container>
                         <PeopleAltIcon sx={{ marginTop: 1, marginRight: 2 }} />
                         <Typography sx={{ marginTop: 1 }} variant="subtitle2">
-                          1/
-                          {row.Members}
+                          {row.CurrentMembers}/{row.MaxMembers}
                         </Typography>
                       </Grid>
                       

@@ -3,7 +3,7 @@ import React from 'react';
 import { Formik, Form } from 'formik';
 import { Button } from '@material-ui/core';
 import Card from '@mui/material/Card';
-import type { UpdateProf } from '../pages/Profiles/[pid]';
+import type { UpdateProf } from '../pages/profiles/[pid]';
 
 interface Values {
   aboutme: string

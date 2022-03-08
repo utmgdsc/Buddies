@@ -13,7 +13,9 @@
 
         public int BuddyScore  { get; init; } = default!;
 
-        public int Members { get; init; } = default!;
+        public int MaxMembers { get; init; } = default!;
+
+        public int CurrentMembers { get; init; } = default!;
 
         public string Category { get; init; } = default!;
 

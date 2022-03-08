@@ -1,4 +1,4 @@
-import Grid from '@material-ui/core/grid';
+import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
@@ -179,7 +179,7 @@ const Project: React.VFC = () => {
                                     return (
                                             <Grid item xs={2}>
                                                 <Card sx={{border: 1, height: 80}}>
-                                                    <CardActionArea href={"../Profiles/" + member.UserId}>
+                                                    <CardActionArea href={"../profiles/" + member.UserId}>
                                                         <Avatar sx={{margin: 'auto', marginTop: 1}}/>
                                                         <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
                                                             {member.FirstName + " " + member.LastName}

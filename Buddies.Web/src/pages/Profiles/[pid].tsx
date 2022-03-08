@@ -1,6 +1,6 @@
-import { Container } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
 import Box from '@mui/material/Box';
-import Grid from '@material-ui/core/grid';
+import Grid from '@material-ui/core/Grid';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
@@ -13,13 +13,7 @@ import Websites from '../../components/Websites';
 import '../../api/index';
 import { authStore } from '../../stores/authStore';
 
-const api = axios.create({
-  baseURL: '/api/v1/Profiles/',
-  headers: {
-    Accept: 'application/json',
-    'Content-type': 'application/json',
-  },
-});
+const baseURL = '/api/v1/Profiles/';
 
 let profileId: string | string[] | undefined = '';
 
@@ -60,7 +54,7 @@ const Profile: React.VFC = () => {
       alert('error');
       return;
     }
-    api.get(profileId).then((res) => {
+    axios.get(baseURL + profileId).then((res) => {
       setProfile(res.data);
     }).catch((error) => {
       alert(error);
@@ -81,7 +75,7 @@ const Profile: React.VFC = () => {
       alert('error');
       return;
     }
-    const res = await api.put('/', profileToUpdate).catch((error) => {
+    const res = await axios.put(baseURL, profileToUpdate).catch((error) => {
       alert(error);
     });
     if (true && res) {
