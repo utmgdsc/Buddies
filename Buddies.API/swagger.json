@@ -734,6 +734,7 @@
         "type": "object",
         "properties": {
           "title": {
+            "maxLength": 50,
             "type": "string"
           },
           "location": {

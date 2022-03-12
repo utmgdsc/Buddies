@@ -1,0 +1,36 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: latest
+      dotnet: latest
+    commands:
+      - /usr/local/bin/dotnet-install.sh --channel LTS      
+  pre_build:
+    commands:
+      - echo Pre Build started on `date`
+      - cd Buddies.Web/
+      - yarn install
+      - yarn run lint -- --fix
+      - cd ..
+      - dotnet tool restore
+      - dotnet restore Buddies.API/Buddies.API.csproj
+  build:
+    commands:
+      - echo Build started on `date`
+      - cd Buddies.Web/
+      - yarn build
+      - cd ..
+      - dotnet build Buddies.API/Buddies.API.csproj
+  post_build:
+    commands:
+      - echo Post Build started on `date`
+      - dotnet publish -c Release -r linux-x64 --self-contained false Buddies.API/Buddies.API.csproj
+artifacts:
+  files:
+    - Buddies.Web/out/**/*
+    - Buddies.API/bin/Release/net6.0/linux-x64/publish/**/*
+    - appspec.yml
+    - scripts/startapp.sh
+    - scripts/startapi.sh
+    - scripts/stopapi.sh

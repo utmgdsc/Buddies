@@ -35,7 +35,10 @@ namespace Buddies.API.Controllers
         public async Task<ActionResult> CreateProject(CreateProjectRequest project)
         {
             var userEntity = _userManager.GetUserAsync(User).Result;
-
+            if (userEntity == null)
+            {
+                return Unauthorized();
+            }
 
             var dbLocation = await _context.Locations.FirstOrDefaultAsync(x => x.Address == project.Location);
 
