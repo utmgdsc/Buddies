@@ -33,20 +33,15 @@ namespace Buddies.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> GetProfile(int id)
         {
-            var profile = await _context.Profiles.FindAsync(id);
 
-            if (profile == null)
-            {
-                return NotFound("PROFILE NOT FOUND");
-            }
-            var userSkills = await _context.Skills.Where(s => s.ProfileId == profile.UserId).ToListAsync();
+            var userSkills = new List<Skill>();
 
             var profileResponse = new UserProfileResponse();
-            profileResponse.FirstName = profile.FirstName;
-            profileResponse.LastName = profile.LastName;
-            profileResponse.UserId = profile.UserId;
-            profileResponse.AboutMe = profile.AboutMe;
-            profileResponse.Headline = profile.Headline;
+            profileResponse.FirstName = "Test";
+            profileResponse.LastName = "Test";
+            profileResponse.UserId = id;
+            profileResponse.AboutMe = "TEST";
+            profileResponse.Headline = "Test2";
 
             foreach (Skill s in userSkills)
             {
