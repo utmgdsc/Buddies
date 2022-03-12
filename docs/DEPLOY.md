@@ -80,6 +80,19 @@ Install pm2
   $ sudo npm install -g pm2
 ```
 
+### Set up RDS database
+
+  - Choose *Standard create* for creation method
+  - Choose *PostgreSQL* for Engine type and *12.9-R1* for Version under Engine options
+  - Select *Free tier* for template
+  - Create and store username and password credentials (will be used in connection string)
+  - Turn Public access off and choose the same virtual private cloud the EC2 instance is on
+  - For authentication options, select *Password authentication*.
+  - To add connection string to EC2 environment, 
+    1. SSH into EC2 server
+    2. Run vim .bash_profile, to edit environment variables.
+    3. Add connection string to variable *RdsConnectionString*.
+
 ### Configure CodeDeploy
 
   - [Create an application](https://docs.aws.amazon.com/codedeploy/latest/userguide/applications-create-in-place.html)
