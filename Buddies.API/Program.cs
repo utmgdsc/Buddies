@@ -26,7 +26,11 @@ builder.Services.AddApiVersioning();
 
 // Postgres DB connection
 
-var connectionString = builder.Configuration.GetConnectionString("ApiContext");
+var connectionString = Environment.GetEnvironmentVariable("RdsConnectionString");
+if (connectionString == null)
+{
+    connectionString = builder.Configuration.GetConnectionString("ApiContext");
+}
 
 builder.Services.AddDbContext<ApiContext>(options => options.UseNpgsql(connectionString));
 
