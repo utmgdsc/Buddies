@@ -12,6 +12,9 @@ import SettingsIcon from '@mui/icons-material/Settings';
 
 const drawerWidth = 250;
 
+/* Sidebar of the project profile page
+*/
+
 const Sidebar = () => {
   const [state, setState] = React.useState(false);
 

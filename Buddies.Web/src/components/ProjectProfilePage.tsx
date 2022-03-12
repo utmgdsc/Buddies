@@ -8,6 +8,8 @@ import CategorySharpIcon from '@mui/icons-material/CategorySharp';
 import Avatar from '@mui/material/Avatar';
 import Sidebar from './ProjectSidebar';
 
+/* Displays all the neccessary information for the project profile page
+*/
 const ProjectProfilePage = ({
   inGroup, title,
   location, category, total, curr, desc, pOwner, pEmail,
