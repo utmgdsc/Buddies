@@ -37,7 +37,7 @@ const memberLst: UserInfo[] = [{
   UserId: -1,
 }];
 
-//default project that loads when project id is not found
+// default project that loads when project id is not found
 const defaultProject: ProjectProfile = {
   Title: 'Not Found',
   Description: 'This error means the project that you are searching for was not found. There are many causes for this. First, check if the url is correct. Second, if the url is correct, it means the project owner has most likely deleted his account!',
@@ -54,7 +54,7 @@ let projectId: string | string[] | undefined = '';
 let currId: number; // id of the user viewing the page
 const invitedIds: number[] = []; // list of userId's in the invited list
 const memberIds: number[] = []; // list of userId's in the member list
-let ownerId: number; //Id of the owner of the project
+let ownerId: number; // Id of the owner of the project
 
 /* Project profile page. Responsible for putting all the components that make up the
   page together. It also sends GET requests to get a project by its id. And a
@@ -134,15 +134,21 @@ const Project: React.VFC = () => {
         the project profile page accordingly */
   }, [router.isReady]);
 
+  // checks if owner of the project is on the page
+  // if this is null, then it means the user is not logged in.
   const authentication: boolean | null = (authState
-        && parseInt(authState.nameid, 10) === ownerId); // checks if owner of the project is on the page
-        // if this is null, then it means the user is not logged in.
-  currId = (authState ? parseInt(authState.nameid, 10) : -1); // gets the Id of the user viewing the page
+        && parseInt(authState.nameid, 10) === ownerId);
 
-  const isInvited: boolean = invitedIds.includes(currId); // checks if the user has been invited to the project
-  const inGroup: boolean = memberIds.includes(currId);  // checks if the user is a member of the project
+  // gets the Id of the user viewing the page
+  currId = (authState ? parseInt(authState.nameid, 10) : -1);
 
-  const isFull: boolean = memberIds.length === project.MaxMembers; 
+  // checks if the user has been invited to the project
+  const isInvited: boolean = invitedIds.includes(currId);
+
+  // checks if the user is a member of the project
+  const inGroup: boolean = memberIds.includes(currId);
+
+  const isFull: boolean = memberIds.length === project.MaxMembers;
   return (
     <Container>
       <ProjectProfilePage
