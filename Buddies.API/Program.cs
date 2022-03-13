@@ -26,10 +26,10 @@ builder.Services.AddApiVersioning();
 
 // Postgres DB connection
 
-var connectionString = Environment.GetEnvironmentVariable("RdsConnectionString");
+var connectionString = System.Environment.GetEnvironmentVariable("RdsConnectionString", EnvironmentVariableTarget.Machine);
 if (connectionString == null)
 {
-    connectionString = "Host=database-1.cbkn085yu8co.us-east-1.rds.amazonaws.com;Port=5432;Username=postgres;Password=***_***;Database=projectbuddydb";
+    connectionString = builder.Configuration.GetConnectionString("ApiContext");
 }
 
 builder.Services.AddDbContext<ApiContext>(options => options.UseNpgsql(connectionString));
