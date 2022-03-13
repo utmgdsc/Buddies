@@ -4,15 +4,14 @@ import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
-import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
 import EmailIcon from '@mui/icons-material/Email';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { authStore } from '../../stores/authStore';
 import ProjectProfilePage from '../../components/ProjectProfilePage';
+import { getProject, addMember } from '../../api';
 
-const baseURL = '/api/v1/projects/';
 type UserInfo = {
   FirstName: string,
   LastName: string,
@@ -68,12 +67,12 @@ const Project: React.VFC = () => {
   /* Gets project by id and then creates necessary global data structures.
      (memberLst, invitedLst, project object)
   */
-  function getProject() {
+  function getAndMakeProject() {
     if (!(typeof projectId === 'string')) {
       alert('error');
       return;
     }
-    axios.get(baseURL + projectId).then((res) => {
+    getProject(projectId).then((res) => {
       const newMemberLst = [];
       for (let i = 0; i < res.data.members.length; i += 1) {
         newMemberLst.push({
@@ -113,16 +112,17 @@ const Project: React.VFC = () => {
     });
   }
 
-  const addMember = async () => {
+  const addMemberToProject = async () => {
     if (!(typeof projectId === 'string')) {
       alert('error');
       return;
     }
-    const res = await axios.post(`${baseURL + projectId}/join/`, currId).catch((error) => {
+    const res = await addMember(projectId, currId).catch((error) => {
       alert(error);
     });
-    if (true && res) {
-      getProject();
+
+    if (res) {
+      getAndMakeProject();
     }
   };
 
@@ -130,7 +130,7 @@ const Project: React.VFC = () => {
     if (!router.isReady) return;
     const { pid } = router.query;
     projectId = pid; /* id of user */
-    getProject(); /* When the page loads, a get request is made to populate
+    getAndMakeProject(); /* When the page loads, a get request is made to populate
         the project profile page accordingly */
   }, [router.isReady]);
 
@@ -199,7 +199,7 @@ const Project: React.VFC = () => {
                                 && (
                                 <Grid item xs={2}>
                                   <Card sx={{ border: 1, height: 80 }}>
-                                    <CardActionArea onClick={addMember}>
+                                    <CardActionArea onClick={addMemberToProject}>
                                       <AddIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
                                       <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
                                         Join Project
