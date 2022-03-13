@@ -26,7 +26,7 @@ builder.Services.AddApiVersioning();
 
 // Postgres DB connection
 
-var connectionString = System.Environment.GetEnvironmentVariable("RdsConnectionString", EnvironmentVariableTarget.Machine);
+var connectionString = Environment.GetEnvironmentVariable("RdsConnectionString");
 if (connectionString == null)
 {
     connectionString = builder.Configuration.GetConnectionString("ApiContext");
