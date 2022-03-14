@@ -86,6 +86,13 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+var config = app.Services.GetRequiredService<IConfiguration>();
+
+foreach (var c in config.AsEnumerable())
+{
+    Console.WriteLine(c.Key + " = " + c.Value);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
