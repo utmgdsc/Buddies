@@ -22,13 +22,13 @@ namespace Buddies.API.IO
         [Required(ErrorMessage = "A category is required.")]
         public string Category { get; set; } = default!;
 
-        [Required] // todo: decide on a reasonable max
+        [Required(ErrorMessage = "A MaxMember is required.")] 
         public int MaxMembers { get; set; } = default!;
 
-        [Required]
+        [Required(ErrorMessage = "A list of invited users is required.")]
         public List<UserInfoResponse> InvitedUsers { get; set; } = new List<UserInfoResponse>();
 
-        [Required]
+        [Required(ErrorMessage = "A list of project members is required.")]
         public List<UserInfoResponse> Members { get; set; } = new List<UserInfoResponse>();
 
 
