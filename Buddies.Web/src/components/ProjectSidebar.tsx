@@ -15,7 +15,7 @@ const drawerWidth = 250;
 /* Sidebar of the project profile page
 */
 
-const Sidebar = ({name}:{name: string}) => {
+const Sidebar = ({ name }:{ name: string }) => {
   const [state, setState] = React.useState(false);
 
   const toggleDrawer = (open: boolean) => () => {
