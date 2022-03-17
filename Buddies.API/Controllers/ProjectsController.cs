@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Buddies.API.IO;
 using Buddies.API.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Buddies.API.Controllers
 {
@@ -30,6 +31,7 @@ namespace Buddies.API.Controllers
         /// API route POST /api/v1/projects for creating project.
         /// </summary>
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> CreateProject(CreateProjectRequest project)
         {
             var userEntity = _userManager.GetUserAsync(User).Result;
@@ -46,14 +48,14 @@ namespace Buddies.API.Controllers
             }
 
 
-            var check = _context.Categories.FirstOrDefaultAsync(p => p.Name == project.Category);
+            var check = await _context.Categories.FirstOrDefaultAsync(p => p.Name == project.Category);
             if (check == null)
             {
                 return NotFound("Invalid Category");
             }
 
             Project dbProject = new Project();
-            dbProject.OwnerId = userEntity.Id;
+            dbProject.Owner = userEntity;
             dbProject.Title = project.Title;
             dbProject.Description = project.Description;
             dbProject.Location = project.Location;
@@ -243,7 +245,224 @@ namespace Buddies.API.Controllers
             return Ok(response);
         }
 
-             
+        /// <summary>
+        /// API route GET /api/v1/projects/:id for fetching project profile.
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetProfile(int id)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Include(project => project.Owner)
+                .ThenInclude(owner => owner.Profile)
+                .Where(project => project.ProjectId == id)
+                .FirstOrDefault();
+                
+            if (project == null)
+            {
+                return NotFound("PROJECT PROFILE NOT FOUND");
+            }
+            var profileResponse = new ProjectProfileResponse{
+                Title = project.Title,
+                Description = project.Description,
+                Location = project.Location,
+                Username = project.Owner.Profile.FirstName + " " + project.Owner.Profile.LastName,
+                Email = project.Owner.Email,
+                Category = project.Category,
+                MaxMembers = project.MaxMembers,
+            };
+
+            foreach (User member in project.Members)
+            {
+                var userInfo = new UserInfoResponse();
+                var userprofile = await _context.Profiles.FindAsync(member.Id);
+                if (userprofile == null) {
+                    return NotFound("MEMBER PROFILE NOT FOUND");
+                }
+
+                userInfo.FirstName = userprofile.FirstName;
+                userInfo.LastName = userprofile.LastName;
+                userInfo.Email = member.Email;
+                userInfo.UserId = member.Id;
+                profileResponse.Members.Add(userInfo);
+            }
+
+            foreach (User invitedUser in project.InvitedUsers)
+            {
+                var userInfo = new UserInfoResponse();
+                var userprofile = await _context.Profiles.FindAsync(invitedUser.Id);
+                if (userprofile == null)
+                {
+                    return NotFound("INVITED USER PROFILE NOT FOUND");
+                }
+                userInfo.FirstName = userprofile.FirstName;
+                userInfo.LastName = userprofile.LastName;
+                userInfo.Email = invitedUser.Email;
+                userInfo.UserId = invitedUser.Id;
+                profileResponse.InvitedUsers.Add(userInfo);
+            }
+
+            return Ok(profileResponse);
+        }
+
+
+        /// <summary>
+        /// API route PUT /api/v1/profiles for updating profile.
+        /// </summary>
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<ActionResult> UpdateProjectProfile(int id, UpdateProjectProfileRequest profile)
+        {
+            var project = _context.Projects
+                .Include(project => project.Owner)
+                .Include(project => project.Members)
+                .Where(project => project.ProjectId == id)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized("You must be the owner"); }
+
+            var requestLocation = await _context.Locations.FirstOrDefaultAsync(x => x.Address == profile.Location);
+
+            if (requestLocation == null)
+            {
+                return NotFound("Invalid Location");
+            }
+
+            var requestCategory = await _context.Categories.FirstOrDefaultAsync(p => p.Name == profile.Category);
+            if (requestCategory == null)
+            {
+                return NotFound("Invalid Category");
+            }
+
+            if (project.Members.Count > profile.MaxMembers)
+            {
+                return BadRequest("You must remove more members before setting this new member capacity");
+            }
+
+            project.Title = profile.Title;
+            project.Description = profile.Description;
+            project.Location = profile.Location;
+            project.Category = profile.Category;
+            project.MaxMembers = profile.MaxMembers;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/delete/{uid} for updating profile.
+        /// </summary>
+        [HttpPost("{pid}/delete/{uid}")]
+        [Authorize]
+        public async Task<ActionResult> DeleteProjectMember(int pid, int uid)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
+            foreach (var member in project.Members)
+            {
+                if (member.Id == uid)
+                {
+                    project.Members.Remove(member);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+
+            }
+
+            return NotFound("User not found");
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/delete/{uid} for updating profile.
+        /// </summary>
+        [HttpPost("{pid}/invite/{uid}")]
+        [Authorize]
+        public async Task<ActionResult> InviteProjectMember(int pid, int uid)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
+
+            var invitedUser = _context.Users.FindAsync(uid).Result;
+
+            if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)){
+                project.InvitedUsers.Add(invitedUser);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+
+            return NotFound("User not found");
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/join/ for joining profile IF you're on the invited list.
+        /// </summary>
+        [HttpPost("{pid}/join/")]
+        [Authorize]
+        public async Task<ActionResult> JoinProject(int pid, int uid)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
+            if (project.Members.Count >= project.MaxMembers)
+            {
+                return BadRequest("There are no more space in this project!");
+            }
+            if (project.Owner == _userManager.GetUserAsync(User).Result) 
+            { 
+                return BadRequest("Cannot remove owner from project"); 
+            }
+
+            var currentUser = _userManager.GetUserAsync(User).Result;
+
+            if (project.Members.Contains(currentUser))
+            {
+                return BadRequest("You are already a member!");
+            }
+
+            if (currentUser != null && project.InvitedUsers.Contains(currentUser))
+            {
+                project.Members.Add(currentUser);
+                project.InvitedUsers.Remove(currentUser);
+                currentUser.Projects.Add(project);
+                currentUser.InvitedTo.Remove(project);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+
+            return NotFound("User not found");
+        }
+
 
     }
 }
