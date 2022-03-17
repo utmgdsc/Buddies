@@ -755,7 +755,7 @@
             "type": "string"
           },
           "maxMembers": {
-            "maximum": 2147483647,
+            "maximum": 10,
             "minimum": 2,
             "type": "integer",
             "format": "int32"
@@ -895,6 +895,37 @@
             "items": {
               "$ref": "#/components/schemas/SkillResponse"
             }
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateProjectProfileRequest": {
+        "required": [
+          "category",
+          "description",
+          "location",
+          "maxMembers",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "maxMembers": {
+            "maximum": 10,
+            "minimum": 2,
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

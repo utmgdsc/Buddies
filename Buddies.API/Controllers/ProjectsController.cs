@@ -48,7 +48,7 @@ namespace Buddies.API.Controllers
             }
 
 
-            var check = _context.Categories.FirstOrDefaultAsync(p => p.Name == project.Category);
+            var check = await _context.Categories.FirstOrDefaultAsync(p => p.Name == project.Category);
             if (check == null)
             {
                 return NotFound("Invalid Category");
