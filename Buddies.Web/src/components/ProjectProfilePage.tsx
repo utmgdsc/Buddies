@@ -26,7 +26,7 @@ const ProjectProfilePage = ({
               <Typography variant="h4">
                 {title}
               </Typography>
-              {inGroup && <Sidebar />}
+              {inGroup && <Sidebar name={pOwner}/>}
             </Container>
 
             <div style={{ display: 'flex', marginTop: 25, marginLeft: 22 }}>

@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/grid';
 import Container from '@material-ui/core/Container';
 import Card from '@mui/material/Card';
@@ -6,7 +7,6 @@ import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import AddIcon from '@mui/icons-material/Add';
 import EmailIcon from '@mui/icons-material/Email';
-import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { authStore } from '../../stores/authStore';
 import ProjectProfilePage from '../../components/ProjectProfilePage';

@@ -1,3 +1,4 @@
+import React from 'react';
 import { ListItemIcon, ListItemText, Typography } from '@mui/material';
 import Container from '@material-ui/core/Container';
 import Button from '@mui/material/Button';
@@ -5,7 +6,6 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Avatar from '@mui/material/Avatar';
-import React from 'react';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -15,7 +15,7 @@ const drawerWidth = 250;
 /* Sidebar of the project profile page
 */
 
-const Sidebar = () => {
+const Sidebar = ({name}:{name: string}) => {
   const [state, setState] = React.useState(false);
 
   const toggleDrawer = (open: boolean) => () => {
@@ -42,7 +42,7 @@ const Sidebar = () => {
       </Container>
       <Container sx={{ marginTop: 4 }}>
         <Avatar />
-        <Typography sx={{ marginTop: 1 }}>John Doe</Typography>
+        <Typography sx={{ marginTop: 1 }}>{name}</Typography>
       </Container>
 
       <List>
