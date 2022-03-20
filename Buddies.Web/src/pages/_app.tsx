@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { SnackbarProvider } from 'notistack';
 import Layout from '../components/Layout';
 import { fetchToken } from '../api';
 
@@ -30,12 +31,14 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
-      {loaded
-          && (
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-          )}
+      <SnackbarProvider>
+        {loaded
+            && (
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+            )}
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };

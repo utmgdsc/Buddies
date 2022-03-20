@@ -3,9 +3,12 @@ import Container from '@mui/material/Container';
 import { useRouter } from 'next/router';
 import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
-import { getProject, addMember } from '../../api';
+import {
+  getProject, addMember, getUsers, inviteMember,
+} from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
+import { InviteUserRequest } from '../../api/model/inviteUserRequest';
 
 type UserInfo = {
   FirstName: string,
@@ -123,6 +126,11 @@ const Project: React.VFC = () => {
     }
   };
 
+  const submitInvite = async (req: InviteUserRequest) => {
+    await inviteMember(projectId as string, req);
+    getAndMakeProject();
+  };
+
   useEffect(() => {
     if (!router.isReady) return;
     const { pid } = router.query;
@@ -172,6 +180,8 @@ const Project: React.VFC = () => {
             setSidebarOpen={setSidebarOpen}
             isOwner={ownerId.toString() === authState?.nameid}
             ownerId={ownerId}
+            getUsers={getUsers}
+            submitInvite={submitInvite}
           />
         );
       default:

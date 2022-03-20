@@ -10,8 +10,10 @@
  * Do not edit the class manually.
  */
 
-export interface SearchResponse {
-  searches: Array<string>;
-  totalPages: number;
-  currentPage: number;
+export interface UpdateProjectProfileRequest {
+  title: string;
+  location: string;
+  description: string;
+  category: string;
+  maxMembers: number;
 }
