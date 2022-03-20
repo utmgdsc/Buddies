@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Typography } from '@mui/material';
-import Grid from '@material-ui/core/Grid';
-import Container from '@material-ui/core/Container';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
 import LocationOnSharpIcon from '@mui/icons-material/LocationOnSharp';
 import GroupIcon from '@mui/icons-material/Group';
 import CategorySharpIcon from '@mui/icons-material/CategorySharp';

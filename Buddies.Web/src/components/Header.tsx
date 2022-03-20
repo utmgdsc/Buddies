@@ -1,10 +1,10 @@
 import React from 'react';
 import Card from '@mui/material/Card';
 import Avatar from '@mui/material/Avatar';
-import Grid from '@material-ui/core/grid';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import Button from '@material-ui/core/Button';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import Button from '@mui/material/Button';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import CustomizedDialogs from './dialog';
 import Headerform from './Headerform';
