@@ -81,11 +81,13 @@ const ProjectBuddies: React.VFC<Props> = ({
               </ListItem>
             );
           })}
+          {isOwner && (
           <ListItem disablePadding>
             <ListItemButton onClick={() => setOpenedDialog('Invite')}>
               <ListItemText sx={{ textAlign: 'center' }}>Invite User</ListItemText>
             </ListItemButton>
           </ListItem>
+          )}
         </List>
       </Card>
       <InviteDialog
