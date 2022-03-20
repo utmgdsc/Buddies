@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
@@ -12,6 +12,9 @@ import EmailIcon from '@mui/icons-material/Email';
 import Button from '@mui/material/Button';
 import SettingsIcon from '@mui/icons-material/Settings';
 import type { ProjectProfile } from '../pages/projects/[pid]';
+import InviteDialog from './InviteDialog';
+import { SearchFunc } from '../api';
+import { InviteUserRequest } from '../api/model/inviteUserRequest';
 
 interface Props extends ProjectProfile {
   inGroup: boolean;
@@ -20,6 +23,8 @@ interface Props extends ProjectProfile {
   isFull: boolean;
   addMemberToProject: () => Promise<void>;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  getUsers: SearchFunc;
+  submitInvite: (req: InviteUserRequest) => void;
 }
 
 /* Displays all the neccessary information for the project profile page
@@ -39,7 +44,11 @@ const ProjectDashboard: React.VFC<Props> = ({
   isFull,
   addMemberToProject,
   setSidebarOpen,
+  getUsers,
+  submitInvite,
 }) => {
+  const [openInvite, setOpenInvite] = useState(false);
+
   return (
     <>
       <Grid container justifyContent="center" marginTop={3} spacing={3}>
@@ -129,7 +138,7 @@ const ProjectDashboard: React.VFC<Props> = ({
                   && (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
-                      <CardActionArea>
+                      <CardActionArea onClick={() => setOpenInvite(true)}>
                         <AddIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
                         <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
                           Invite More Users
@@ -172,6 +181,12 @@ const ProjectDashboard: React.VFC<Props> = ({
           </Card>
         </Grid>
       </Grid>
+      <InviteDialog
+        open={openInvite}
+        closeDialog={() => setOpenInvite(false)}
+        getUsers={getUsers}
+        onSubmit={submitInvite}
+      />
     </>
   );
 };

@@ -73,3 +73,7 @@ export async function addMember(projectId: string | string[] | undefined, userId
 export async function inviteMember(projectId: string, req: InviteUserRequest) {
   return axios.post(`/api/v1/projects/${projectId}/invite/`, req);
 }
+
+export async function removeMember(projectId: string, userId: number) {
+  return axios.post(`/api/v1/projects/${projectId}/delete/${userId}`);
+}

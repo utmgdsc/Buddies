@@ -4,10 +4,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import type { Dialogs } from './ProjectBuddies';
 import { InviteUserRequest } from '../api/model/inviteUserRequest';
 import { makeThrottledSearch } from '../api/utils';
 import { SearchFunc } from '../api';
@@ -15,26 +15,33 @@ import { scrollHandler } from './utils';
 
 interface Props {
   open: boolean;
-  setOpenedDialog: React.Dispatch<React.SetStateAction<Dialogs>>;
+  closeDialog: () => void;
   getUsers: SearchFunc;
   onSubmit: SubmitHandler<InviteUserRequest>;
 }
 
 const InviteDialog: React.VFC<Props> = ({
   open,
-  setOpenedDialog,
+  closeDialog,
   getUsers,
   onSubmit,
 }) => {
-  const { control, handleSubmit, reset } = useForm<InviteUserRequest>({
+  const {
+    control, handleSubmit, reset, formState: { isSubmitting },
+  } = useForm<InviteUserRequest>({
     defaultValues: {
       userEmail: '',
     },
   });
 
   const handleClose = () => {
-    setOpenedDialog('');
+    closeDialog();
     reset();
+  };
+
+  const handleInvite = () => {
+    handleSubmit(onSubmit)()
+      .then(() => handleClose());
   };
 
   const [users, setUsers] = useState<string[]>([]);
@@ -102,7 +109,12 @@ const InviteDialog: React.VFC<Props> = ({
         />
       </DialogContent>
       <DialogActions sx={{ px: 3 }}>
-        <Button onClick={handleSubmit(onSubmit)}>Invite</Button>
+        <LoadingButton
+          onClick={handleInvite}
+          loading={isSubmitting}
+        >
+          Invite
+        </LoadingButton>
         <Button onClick={handleClose}>Cancel</Button>
       </DialogActions>
     </Dialog>

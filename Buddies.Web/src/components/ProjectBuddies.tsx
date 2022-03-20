@@ -9,19 +9,19 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
-import { useSnackbar } from 'notistack';
-import axios from 'axios';
-import type { ProjectProfile } from '../pages/projects/[pid]';
+import type { ProjectProfile, UserInfo } from '../pages/projects/[pid]';
 import InviteDialog from './InviteDialog';
 import { SearchFunc } from '../api';
 import { InviteUserRequest } from '../api/model/inviteUserRequest';
+import RemoveDialog from './RemoveDialog';
 
 interface Props extends ProjectProfile {
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isOwner: boolean;
   ownerId: number;
   getUsers: SearchFunc;
-  submitInvite: (req: InviteUserRequest) => Promise<any>;
+  submitInvite: (req: InviteUserRequest) => void;
+  submitRemoval: (userId: number) => void;
 }
 
 export type Dialogs = '' | 'Invite' | 'Remove';
@@ -34,24 +34,11 @@ const ProjectBuddies: React.VFC<Props> = ({
   getUsers,
   submitInvite,
   InvitedLst,
+  submitRemoval,
 }) => {
   const [openedDialog, setOpenedDialog] = useState<Dialogs>('');
 
-  const { enqueueSnackbar } = useSnackbar();
-
-  const onSubmitInvite = (req: InviteUserRequest) => {
-    submitInvite(req)
-      .then(() => {
-        enqueueSnackbar('User invited.', { variant: 'success' });
-      })
-      .catch((err) => {
-        if (axios.isAxiosError(err) && err.response) {
-          enqueueSnackbar(err.response.data, { variant: 'error' });
-        } else {
-          enqueueSnackbar(err, { variant: 'error' });
-        }
-      });
-  };
+  const [toRemove, setToRemove] = useState<UserInfo | null>(null);
 
   return (
     <>
@@ -71,7 +58,19 @@ const ProjectBuddies: React.VFC<Props> = ({
             return (
               <ListItem>
                 <ListItemText primary={`${user.FirstName} ${user.LastName}`} />
-                {isOwner && user.UserId !== ownerId && <Button color="error">Remove</Button>}
+                {isOwner && user.UserId !== ownerId
+                  && (
+                  <Button
+                    color="error"
+                    variant="outlined"
+                    onClick={() => {
+                      setToRemove(user);
+                      setOpenedDialog('Remove');
+                    }}
+                  >
+                    Remove
+                  </Button>
+                  )}
               </ListItem>
             );
           })}
@@ -91,10 +90,18 @@ const ProjectBuddies: React.VFC<Props> = ({
       </Card>
       <InviteDialog
         open={openedDialog === 'Invite'}
-        setOpenedDialog={setOpenedDialog}
+        closeDialog={() => setOpenedDialog('')}
         getUsers={getUsers}
-        onSubmit={onSubmitInvite}
+        onSubmit={submitInvite}
       />
+      {toRemove && (
+      <RemoveDialog
+        open={openedDialog === 'Remove'}
+        closeDialog={() => setOpenedDialog('')}
+        onSubmit={() => submitRemoval(toRemove.UserId)}
+        name={`${toRemove.FirstName} ${toRemove.LastName}`}
+      />
+      )}
     </>
   );
 };

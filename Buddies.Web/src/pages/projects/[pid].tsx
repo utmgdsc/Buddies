@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import axios from 'axios';
 import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
 import {
-  getProject, addMember, getUsers, inviteMember,
+  getProject, addMember, getUsers, inviteMember, removeMember,
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
 import { InviteUserRequest } from '../../api/model/inviteUserRequest';
 
-type UserInfo = {
+export type UserInfo = {
   FirstName: string,
   LastName: string,
   UserId: number
@@ -107,6 +109,7 @@ const Project: React.VFC = () => {
         InvitedLst: newInvitedLst,
       };
       setProject(newProject);
+      // console.log(`${memberIds.length} ${project.MaxMembers}`);
     }).catch((error) => {
       alert(error);
     });
@@ -126,9 +129,36 @@ const Project: React.VFC = () => {
     }
   };
 
-  const submitInvite = async (req: InviteUserRequest) => {
-    await inviteMember(projectId as string, req);
-    getAndMakeProject();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const submitInvite = (req: InviteUserRequest) => {
+    inviteMember(projectId as string, req)
+      .then(() => {
+        getAndMakeProject();
+        enqueueSnackbar('User invited.', { variant: 'success' });
+      })
+      .catch((err) => {
+        if (axios.isAxiosError(err) && err.response) {
+          enqueueSnackbar(err.response.data, { variant: 'error' });
+        } else {
+          enqueueSnackbar(err, { variant: 'error' });
+        }
+      });
+  };
+
+  const submitRemoval = (userId: number) => {
+    removeMember(projectId as string, userId)
+      .then(() => {
+        getAndMakeProject();
+        enqueueSnackbar('User removed.', { variant: 'success' });
+      })
+      .catch((err) => {
+        if (axios.isAxiosError(err) && err.response) {
+          enqueueSnackbar(err.response.data, { variant: 'error' });
+        } else {
+          enqueueSnackbar(err, { variant: 'error' });
+        }
+      });
   };
 
   useEffect(() => {
@@ -171,6 +201,8 @@ const Project: React.VFC = () => {
             isFull={isFull}
             addMemberToProject={addMemberToProject}
             setSidebarOpen={setSidebarOpen}
+            getUsers={getUsers}
+            submitInvite={submitInvite}
           />
         );
       case 'Buddies':
@@ -182,6 +214,7 @@ const Project: React.VFC = () => {
             ownerId={ownerId}
             getUsers={getUsers}
             submitInvite={submitInvite}
+            submitRemoval={submitRemoval}
           />
         );
       default:
