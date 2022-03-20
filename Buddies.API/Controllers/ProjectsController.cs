@@ -32,8 +32,8 @@ namespace Buddies.API.Controllers
         /// API route GET /api/v1/postings/{filters}/... for fetching all projects
         /// that pass the filters.
         /// </summary>
-        [HttpGet("postings/{location}/{members}/{category}")]
-        public async Task<ActionResult> GetProjectListing(string location, int members, string category)
+        [HttpGet("postings/{location}/{members}/{category}/{page}/{results}")]
+        public async Task<ActionResult> GetProjectListing(string location, int members, string category, int page, float results)
         {
             var projectList = await _context.Projects.ToListAsync();
             var response = new ProjectListingsResponse();
@@ -72,6 +72,15 @@ namespace Buddies.API.Controllers
                     categoryList.Add("Category: " + project.Category);
                 }
             }
+
+            var pageCount = Math.Ceiling(response.Projects.Count() / results);
+            response.Projects = response.Projects
+                .Skip((page - 1) * (int)results)
+                .Take((int)results)
+                .ToList();
+
+            response.TotalPages = (int)pageCount;
+            response.CurrentPage = page;
 
             response.Locations = locationList.OrderBy(p => p).Distinct().ToList();
             response.Locations.Insert(0, "Location: N/A");
