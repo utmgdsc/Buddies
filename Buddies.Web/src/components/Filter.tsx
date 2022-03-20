@@ -34,12 +34,8 @@ const MultipleSelectPlaceholder = ({ placeholder, names, filtFunc }:
       target: { value },
     } = event;
     setPersonName(
-      // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
-    // console.log('hi');
-    // console.log(personName[0].slice(placeholder.length+2));
-    // filtFunc(placeholder, personName);
   };
 
   React.useEffect(() => {

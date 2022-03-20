@@ -20,6 +20,7 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import MultipleSelectPlaceholder from '../components/Filter';
 import CardActionArea from '@mui/material/CardActionArea';
+import { getPostings } from '../api';
 
 type Project = {
   Title: string,
@@ -39,30 +40,32 @@ type FilterObject = {
   Category: string
 };
 
+// default filter values. Indicate, there are no filters to apply
 let filterTracker: FilterObject = {
-  Location: 'N/A',
+  Location: 'N/A',  
   Members: -1,
   Category: 'N/A',
 };
-const baseURL = '/api/v1/projects/postings/';
-// const api = axios.create({
-//   baseURL: '/api/v1/projects/postings/',
-//   headers: {
-//     Accept: 'application/json',
-//     'Content-type': 'application/json',
-//   },
-// });
 
 let memberfilters: string[] = [];
-let locations: string[] = [];
+let locations: string[] = [];   // all filters
 let categories: string[] = [];
 
+let totalProjects: number = 0;
+
+/* Project postings page. Responsible for putting all the components that make up the
+  page together. It also sends GET requests to get all project based on filtered
+  values.
+*/
 const PostingsTable = () => {
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(4);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [projects, setProjects] = React.useState<Project[]>([]);
 
-  function getPostings() {
+  /* Gets project by id and then creates necessary global data structures.
+     (memberLst, invitedLst, project object)
+  */
+  function getAndMakePostings() {
     let path: string = '';
     Object.keys(filterTracker).forEach((fil) => {
       if (filterTracker[fil as keyof FilterObject] === 'N/A') {
@@ -73,7 +76,8 @@ const PostingsTable = () => {
         path += `${filterTracker[fil as keyof FilterObject]}/`;
       }
     });
-    axios.get(baseURL + path).then((res) => {
+    console.log(rowsPerPage)
+    getPostings(path, page+1, rowsPerPage).then((res) => {
       const DATA: Project[] = [];
       for (let i = 0; i < res.data.projects.length; i += 1) {
         DATA[i] = {
@@ -91,6 +95,7 @@ const PostingsTable = () => {
         memberfilters = res.data.members;
         categories = res.data.categories;
       }
+      totalProjects = res.data.totalPages * rowsPerPage;
       setProjects(DATA);
     }).catch((error) => {
       alert(error);
@@ -98,11 +103,12 @@ const PostingsTable = () => {
   }
 
   useEffect(() => {
-    getPostings();
-  }, []);
+    getAndMakePostings();
+  }, [page]);
 
   const handleChangePage = (e: unknown, newPage: number) => {
     setPage(newPage);
+    getAndMakePostings();
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +119,7 @@ const PostingsTable = () => {
   const applyFilter = (filterType: string, filterValue: string | number) => {
     /// applyFilter...
     filterTracker = { ...filterTracker, [filterType as keyof FilterObject]: filterValue };
-    getPostings();
+    getAndMakePostings();
   };
 
   return (
@@ -146,9 +152,9 @@ const PostingsTable = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {projects.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                {projects.map((row) => (
                   <TableRow
-                    key={row.Title}
+                    key={row.ProjectId}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
@@ -206,9 +212,9 @@ const PostingsTable = () => {
               </TableBody>
 
               <TablePagination
-                rowsPerPageOptions={[5, 10, 15]}
+                rowsPerPageOptions={[]}
                 component="div"
-                count={projects.length}
+                count={totalProjects}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}

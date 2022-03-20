@@ -60,3 +60,7 @@ export const getUsers: SearchFunc = async (search, page, count) => {
   const res = await axios.get<SearchResponse>(`/api/v1/projects/email/${search}/${page}/${count}`);
   return res.data;
 };
+
+export async function getPostings(path: string, page: number, results: number){
+  return await axios.get(`/api/v1/projects/postings/${path}/${page}/${results}`);
+};
