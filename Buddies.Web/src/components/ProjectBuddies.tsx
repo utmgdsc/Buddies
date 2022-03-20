@@ -46,7 +46,7 @@ const ProjectBuddies: React.VFC<Props> = ({
         <CardContent>
           <Stack direction="row">
             <Typography variant="h4">
-              Project Buddies
+              Project Members
             </Typography>
             <Button onClick={() => setSidebarOpen((prevState) => !prevState)}>
               <SettingsIcon />
