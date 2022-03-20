@@ -8,30 +8,33 @@ import ListItem from '@mui/material/ListItem';
 import Avatar from '@mui/material/Avatar';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
-import SettingsIcon from '@mui/icons-material/Settings';
+import type { Tabs } from '../pages/projects/[pid]';
 
 const drawerWidth = 250;
 
 /* Sidebar of the project profile page
 */
 
-const Sidebar = ({ name }:{ name: string }) => {
-  const [state, setState] = React.useState(false);
+export interface SidebarProps {
+  name: string;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setTab: React.Dispatch<React.SetStateAction<Tabs>>
+}
 
-  const toggleDrawer = (open: boolean) => () => {
-    setState(open);
-  };
-
+const Sidebar: React.VFC<SidebarProps> = ({
+  name, open, setOpen, setTab,
+}) => {
   const menuItems = [
     {
       text: 'Dashboard',
       icon: <DashboardIcon htmlColor="Primary" sx={{ fill: '#759be6' }} />,
-      path: '/',
+      onClick: () => setTab('Dashboard'),
     },
     {
       text: 'Buddies',
       icon: <GroupIcon htmlColor="Primary" sx={{ fill: '#759be6' }} />,
-      path: '/create',
+      onClick: () => setTab('Buddies'),
     },
   ];
 
@@ -48,7 +51,7 @@ const Sidebar = ({ name }:{ name: string }) => {
       <List>
         {menuItems.map((item) => (
           <ListItem>
-            <Button variant="outlined" href={item.path} sx={{ width: '100%' }}>
+            <Button variant="outlined" onClick={item.onClick} sx={{ width: '100%' }}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </Button>
@@ -60,18 +63,13 @@ const Sidebar = ({ name }:{ name: string }) => {
 
   return (
     <div>
-      <Button onClick={toggleDrawer(true)}>
-        {' '}
-        <SettingsIcon />
-        {' '}
-      </Button>
       <Drawer
         sx={{
           '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
         }}
         anchor="left"
-        open={state}
-        onClose={toggleDrawer(false)}
+        open={open}
+        onClose={() => setOpen(false)}
       >
         {list()}
       </Drawer>

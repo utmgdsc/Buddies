@@ -1,16 +1,11 @@
-import React, { useEffect } from 'react';
-import Grid from '@mui/material/Grid';
+import React, { useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import AddIcon from '@mui/icons-material/Add';
-import EmailIcon from '@mui/icons-material/Email';
 import { useRouter } from 'next/router';
 import { authStore } from '../../stores/authStore';
-import ProjectProfilePage from '../../components/ProjectProfilePage';
+import ProjectDashboard from '../../components/ProjectDashboard';
 import { getProject, addMember } from '../../api';
+import ProjectBuddies from '../../components/ProjectBuddies';
+import Sidebar from '../../components/ProjectSidebar';
 
 type UserInfo = {
   FirstName: string,
@@ -18,7 +13,7 @@ type UserInfo = {
   UserId: number
 };
 
-type ProjectProfile = {
+export type ProjectProfile = {
   Title: string,
   Description: string,
   Location: string,
@@ -29,6 +24,8 @@ type ProjectProfile = {
   MemberLst: UserInfo[],
   InvitedLst: UserInfo[]
 };
+
+export type Tabs = 'Dashboard' | 'Buddies';
 
 const memberLst: UserInfo[] = [{
   FirstName: 'John',
@@ -61,7 +58,7 @@ let ownerId: number; // Id of the owner of the project
 */
 const Project: React.VFC = () => {
   const [project, setProject] = React.useState<ProjectProfile>(defaultProject);
-  const authState = authStore((state: { authState: any; }) => state.authState);
+  const authState = authStore((state) => state.authState);
   const router = useRouter();
 
   /* Gets project by id and then creates necessary global data structures.
@@ -149,85 +146,48 @@ const Project: React.VFC = () => {
   const inGroup: boolean = memberIds.includes(currId);
 
   const isFull: boolean = memberIds.length === project.MaxMembers;
+
+  const [tab, setTab] = useState<Tabs>('Dashboard');
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const getTabComponent = () => {
+    switch (tab) {
+      case 'Dashboard':
+        return (
+          <ProjectDashboard
+            inGroup={inGroup}
+            {...project}
+            authentication={authentication}
+            isInvited={isInvited}
+            isFull={isFull}
+            addMemberToProject={addMemberToProject}
+            setSidebarOpen={setSidebarOpen}
+          />
+        );
+      case 'Buddies':
+        return (
+          <ProjectBuddies
+            {...project}
+            setSidebarOpen={setSidebarOpen}
+            isOwner={ownerId.toString() === authState?.nameid}
+            ownerId={ownerId}
+          />
+        );
+      default:
+        return 'Error';
+    }
+  };
+
   return (
     <Container>
-      <ProjectProfilePage
-        inGroup={inGroup}
-        title={project.Title}
-        location={project.Location}
-        category={project.Category}
-        total={project.MaxMembers}
-        curr={project.MemberLst.length}
-        desc={project.Description}
-        pOwner={project.ProjectOwner}
-        pEmail={project.ProjectOwnerEmail}
+      <Sidebar
+        name={project.ProjectOwner}
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+        setTab={setTab}
       />
-
-      <Grid container justifyContent="center" marginTop={2} spacing={3} marginBottom={5}>
-        <Grid item xs={10}>
-          <Card elevation={10}>
-            <Grid container p={1} spacing={2} justifyContent="center">
-              {project.MemberLst.map((member: UserInfo) => {
-                return (
-                  <Grid item xs={2}>
-                    <Card sx={{ border: 1, height: 80 }}>
-                      <CardActionArea href={`../Profiles/${member.UserId}`}>
-                        <Avatar sx={{ margin: 'auto', marginTop: 1 }} />
-                        <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
-                          {`${member.FirstName} ${member.LastName}`}
-                        </Typography>
-                      </CardActionArea>
-                    </Card>
-                  </Grid>
-                );
-              })}
-              {authentication && !isFull
-                                && (
-                                <Grid item xs={2}>
-                                  <Card sx={{ border: 1, height: 80 }}>
-                                    <CardActionArea>
-                                      <AddIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
-                                      <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
-                                        Invite More Users
-                                      </Typography>
-                                    </CardActionArea>
-
-                                  </Card>
-                                </Grid>
-                                )}
-              {!authentication && isInvited && !inGroup && !isFull
-                                && (
-                                <Grid item xs={2}>
-                                  <Card sx={{ border: 1, height: 80 }}>
-                                    <CardActionArea onClick={addMemberToProject}>
-                                      <AddIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
-                                      <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
-                                        Join Project
-                                      </Typography>
-                                    </CardActionArea>
-
-                                  </Card>
-                                </Grid>
-                                )}
-
-              {!authentication && !isInvited && !inGroup && !isFull && authentication != null
-                                && (
-                                <Grid item xs={2}>
-                                  <Card sx={{ border: 1, height: 80 }}>
-                                    <CardActionArea>
-                                      <EmailIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
-                                      <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
-                                        Request to Join
-                                      </Typography>
-                                    </CardActionArea>
-
-                                  </Card>
-                                </Grid>
-                                )}
-            </Grid>
-          </Card>
-        </Grid>
-      </Grid>
+      {getTabComponent()}
     </Container>
   );
 };
