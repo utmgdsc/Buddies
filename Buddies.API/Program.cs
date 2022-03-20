@@ -25,14 +25,7 @@ builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true
 builder.Services.AddApiVersioning();
 
 // Postgres DB connection
-
-var connectionString = Environment.GetEnvironmentVariable("RdsConnectionString");
-if (connectionString == null)
-{
-    connectionString = builder.Configuration.GetConnectionString("ApiContext");
-}
-
-builder.Services.AddDbContext<ApiContext>(options => options.UseNpgsql(connectionString));
+var connectionString = builder.Configuration.GetConnectionString("ApiContext");
 
 // set up authentication
 builder.Services.AddIdentity<User, Role>(options => options.User.RequireUniqueEmail = true)

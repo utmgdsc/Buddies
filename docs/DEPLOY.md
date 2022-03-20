@@ -88,10 +88,16 @@ Install pm2
   - Create and store username and password credentials (will be used in connection string)
   - Turn Public access off and choose the same virtual private cloud the EC2 instance is on
   - For authentication options, select *Password authentication*.
+
+  - To allow communication between API and database:
+    - Go to EC2 console and under security groups 
+      add the database's and EC2's security groups 
+      to eachothers inbound and outbound rules.    
+
   - To add connection string to EC2 environment, 
     1. SSH into EC2 server
-    2. Run vim .bash_profile, to edit environment variables.
-    3. Add connection string to variable *RdsConnectionString*.
+    2. cd into the api folder and create appsettings.Production.json file using vim.
+    3. Add the connection string.
 
 ### Configure CodeDeploy
 
