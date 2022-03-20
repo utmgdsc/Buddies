@@ -93,6 +93,7 @@ const ProjectBuddies: React.VFC<Props> = ({
         closeDialog={() => setOpenedDialog('')}
         getUsers={getUsers}
         onSubmit={submitInvite}
+        currentMemberEmails={MemberLst.map((user) => user.Email)}
       />
       {toRemove && (
       <RemoveDialog

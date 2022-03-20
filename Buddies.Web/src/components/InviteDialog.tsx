@@ -18,6 +18,7 @@ interface Props {
   closeDialog: () => void;
   getUsers: SearchFunc;
   onSubmit: SubmitHandler<InviteUserRequest>;
+  currentMemberEmails: string[];
 }
 
 const InviteDialog: React.VFC<Props> = ({
@@ -25,6 +26,7 @@ const InviteDialog: React.VFC<Props> = ({
   closeDialog,
   getUsers,
   onSubmit,
+  currentMemberEmails,
 }) => {
   const {
     control, handleSubmit, reset, formState: { isSubmitting },
@@ -99,6 +101,9 @@ const InviteDialog: React.VFC<Props> = ({
                     }
                   }),
                   role: 'list-box',
+                }}
+                filterOptions={(options) => {
+                  return options.filter((option) => !currentMemberEmails.includes(option));
                 }}
               />
             );

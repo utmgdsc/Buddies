@@ -15,7 +15,8 @@ import { InviteUserRequest } from '../../api/model/inviteUserRequest';
 export type UserInfo = {
   FirstName: string,
   LastName: string,
-  UserId: number
+  UserId: number,
+  Email: string,
 };
 
 export type ProjectProfile = {
@@ -36,6 +37,7 @@ const memberLst: UserInfo[] = [{
   FirstName: 'John',
   LastName: 'Doe',
   UserId: -1,
+  Email: 'test@test.com',
 }];
 
 // default project that loads when project id is not found
@@ -81,6 +83,7 @@ const Project: React.VFC = () => {
           FirstName: res.data.members[i].firstName,
           LastName: res.data.members[i].lastName,
           UserId: res.data.members[i].userId,
+          Email: res.data.members[i].email,
         });
         memberIds.push(res.data.members[i].userId);
         if (res.data.email === res.data.members[i].email) {
@@ -93,6 +96,7 @@ const Project: React.VFC = () => {
           FirstName: res.data.invitedUsers[i].firstName,
           LastName: res.data.invitedUsers[i].lastName,
           UserId: res.data.invitedUsers[i].userId,
+          Email: res.data.invitedUsers[i].email,
         });
         invitedIds.push(res.data.invitedUsers[i].userId);
       }
