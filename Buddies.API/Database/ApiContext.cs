@@ -108,6 +108,17 @@ public class ApiContext : IdentityDbContext<User, Role, int>
                 builder.Entity<Location>().HasData(location);
             }
 
+            builder.Entity<Project>()
+            .HasOne(p => p.Owner);
+
+            builder.Entity<Project>()
+            .HasMany(p => p.Members)
+            .WithMany(u => u.Projects);
+
+            builder.Entity<Project>()
+            .HasMany(p => p.InvitedUsers)
+            .WithMany(u => u.InvitedTo);
+
         }
     }
 

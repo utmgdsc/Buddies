@@ -30,7 +30,7 @@ const Websites: React.FC<Props> = ({ logCheck }:{ logCheck: boolean | null }) =>
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          {logCheck && <CustomizedDialogs color="inherit" topmarg={0} children={undefined} />}
+          {logCheck && <CustomizedDialogs color="inherit" topmarg={0}>{undefined}</CustomizedDialogs>}
         </Grid>
       </Grid>
       <Typography variant="subtitle2" gutterBottom>

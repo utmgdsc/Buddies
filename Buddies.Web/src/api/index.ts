@@ -64,3 +64,11 @@ export const getUsers: SearchFunc = async (search, page, count) => {
 export async function getPostings(path: string, page: number, results: number){
   return await axios.get(`/api/v1/projects/postings/${path}/${page}/${results}`);
 };
+
+export async function getProject(projectId: string | string[] | undefined){
+  return await axios.get(`/api/v1/projects/${projectId}`);
+};
+
+export async function addMember(projectId: string | string[] | undefined, userId: number){
+  return axios.post(`/api/v1/projects/${projectId}/join/`, userId);
+};

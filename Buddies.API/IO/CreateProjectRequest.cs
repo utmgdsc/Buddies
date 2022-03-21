@@ -4,7 +4,8 @@ namespace Buddies.API.IO;
 
 public record CreateProjectRequest
 {
-    [Required(ErrorMessage = "A title is required.")]
+    [Required(ErrorMessage = "A title is required."), 
+     MaxLength(50, ErrorMessage = "Title must be less than or equal to 50 characters.")]
     public string Title { get; init; } = default!;
 
     [Required(ErrorMessage = "A location is required.")]
@@ -22,6 +23,6 @@ public record CreateProjectRequest
     public string Category { get; init; } = default!;
 
     [Required(ErrorMessage = "A member limit is required."), 
-     Range(2, int.MaxValue, ErrorMessage = "Member limit must be greater than or equal to 2.")] // todo: decide on a reasonable max
+     Range(2, 10, ErrorMessage = "Member limit must be between 2 and 10")] 
     public int MaxMembers { get; init; } = default!;
 }

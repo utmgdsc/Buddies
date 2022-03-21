@@ -1,0 +1,20 @@
+version: 0.0
+os: linux
+files:
+ - source: /Buddies.Web/out/
+   destination: /var/www/html/
+ - source: /Buddies.API/bin/Release/net6.0/linux-x64/publish/
+   destination: /home/ec2-user/dotnetapi/
+file_exists_behavior: OVERWRITE
+hooks:
+  ApplicationStart:
+    - location: scripts/startapp.sh
+      timeout: 300
+      runas: root
+    - location: scripts/startapi.sh
+      timeout: 300
+      runas: root
+  ApplicationStop:
+    - location: scripts/stopapi.sh
+      timeout: 300
+      runas: root

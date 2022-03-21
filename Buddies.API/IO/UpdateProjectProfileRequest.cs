@@ -21,7 +21,8 @@ public record UpdateProjectProfileRequest
     [Required(ErrorMessage = "A category is required.")]
     public string Category { get; init; } = default!;
 
-    [Required] // todo: decide on a reasonable max
+    [Required(ErrorMessage = "A member limit is required."),
+     Range(2, 10, ErrorMessage = "Member limit must be between 2 and 10")]
     public int MaxMembers { get; init; } = default!;
 
 }

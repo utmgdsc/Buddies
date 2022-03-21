@@ -35,7 +35,15 @@ namespace Buddies.API.Controllers
         [HttpGet("postings/{location}/{members}/{category}/{page}/{results}")]
         public async Task<ActionResult> GetProjectListing(string location, int members, string category, int page, float results)
         {
-            var projectList = await _context.Projects.ToListAsync();
+
+            // var projectList = await _context.Projects.ToListAsync();
+
+            var projectList = await _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Include(project => project.Owner)
+                .ThenInclude(owner => owner.Profile).ToListAsync();
+
             var response = new ProjectListingsResponse();
             var locationList = new List<String>();
             var membersList = new List<String>();
@@ -49,7 +57,7 @@ namespace Buddies.API.Controllers
                     (project.MaxMembers == members || members == -1) &&
                     (project.Category == category || category == "null"))
                 {
-                    var owner = await _context.Profiles.FindAsync(project.OwnerId);
+                    var owner = project.Owner.Profile;
                     if (owner == null)
                     {
                         return NotFound("The owner has deleted his profile");
@@ -100,7 +108,10 @@ namespace Buddies.API.Controllers
         public async Task<ActionResult> CreateProject(CreateProjectRequest project)
         {
             var userEntity = _userManager.GetUserAsync(User).Result;
-
+            if (userEntity == null)
+            {
+                return Unauthorized();
+            }
 
             var dbLocation = await _context.Locations.FirstOrDefaultAsync(x => x.Address == project.Location);
 
@@ -110,14 +121,14 @@ namespace Buddies.API.Controllers
             }
 
 
-            var check = _context.Categories.FirstOrDefaultAsync(p => p.Name == project.Category);
+            var check = await _context.Categories.FirstOrDefaultAsync(p => p.Name == project.Category);
             if (check == null)
             {
                 return NotFound("Invalid Category");
             }
 
             Project dbProject = new Project();
-            dbProject.OwnerId = userEntity.Id;
+            dbProject.Owner = userEntity;
             dbProject.Title = project.Title;
             dbProject.Description = project.Description;
             dbProject.Location = project.Location;
@@ -313,34 +324,29 @@ namespace Buddies.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> GetProfile(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Include(project => project.Owner)
+                .ThenInclude(owner => owner.Profile)
+                .Where(project => project.ProjectId == id)
+                .FirstOrDefault();
+                
             if (project == null)
             {
                 return NotFound("PROJECT PROFILE NOT FOUND");
-            }
-            var owner = await _context.Profiles.FindAsync(project.OwnerId);
-            if (owner == null)
-            {
-                return NotFound("OWNER OF PROJECT PROFILE NOT FOUND");
-            }
-            var ownerUser = await _context.Users.FindAsync(project.OwnerId);
-            if (ownerUser == null)
-            {
-                return NotFound("OWNER OF PROJECT PROFILE NOT FOUND");
             }
             var profileResponse = new ProjectProfileResponse{
                 Title = project.Title,
                 Description = project.Description,
                 Location = project.Location,
-                Username = owner.FirstName + " " + owner.LastName,
-                Email = ownerUser.Email,
+                Username = project.Owner.Profile.FirstName + " " + project.Owner.Profile.LastName,
+                Email = project.Owner.Email,
                 Category = project.Category,
                 MaxMembers = project.MaxMembers,
             };
 
-            var membersInProject = _context.Projects.Where(p => p.ProjectId == id).SelectMany(p => p.Members).ToList();
-
-            foreach (User member in membersInProject)
+            foreach (User member in project.Members)
             {
                 var userInfo = new UserInfoResponse();
                 var userprofile = await _context.Profiles.FindAsync(member.Id);
@@ -355,9 +361,7 @@ namespace Buddies.API.Controllers
                 profileResponse.Members.Add(userInfo);
             }
 
-            var invitedUsers = _context.Projects.Where(p => p.ProjectId == id).SelectMany(p => p.InvitedUsers).ToList();
-
-            foreach (User invitedUser in invitedUsers)
+            foreach (User invitedUser in project.InvitedUsers)
             {
                 var userInfo = new UserInfoResponse();
                 var userprofile = await _context.Profiles.FindAsync(invitedUser.Id);
@@ -383,13 +387,17 @@ namespace Buddies.API.Controllers
         [Authorize]
         public async Task<ActionResult> UpdateProjectProfile(int id, UpdateProjectProfileRequest profile)
         {
-            var project = await _context.Projects.FindAsync(id);
+            var project = _context.Projects
+                .Include(project => project.Owner)
+                .Include(project => project.Members)
+                .Where(project => project.ProjectId == id)
+                .FirstOrDefault();
 
             if (project == null)
             {
                 return NotFound("PROFILE NOT FOUND");
             }
-            if (project.OwnerId != _userManager.GetUserAsync(User).Result.Id) { return Unauthorized(); }
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized("You must be the owner"); }
 
             var requestLocation = await _context.Locations.FirstOrDefaultAsync(x => x.Address == profile.Location);
 
@@ -398,11 +406,15 @@ namespace Buddies.API.Controllers
                 return NotFound("Invalid Location");
             }
 
-
             var requestCategory = await _context.Categories.FirstOrDefaultAsync(p => p.Name == profile.Category);
             if (requestCategory == null)
             {
                 return NotFound("Invalid Category");
+            }
+
+            if (project.Members.Count > profile.MaxMembers)
+            {
+                return BadRequest("You must remove more members before setting this new member capacity");
             }
 
             project.Title = profile.Title;
@@ -422,21 +434,22 @@ namespace Buddies.API.Controllers
         [Authorize]
         public async Task<ActionResult> DeleteProjectMember(int pid, int uid)
         {
-            var project = await _context.Projects.FindAsync(pid);
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
 
             if (project == null)
             {
                 return NotFound("PROFILE NOT FOUND");
             }
-            if (project.OwnerId != _userManager.GetUserAsync(User).Result.Id) { return Unauthorized(); }
-            var membersInProject = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.Members).ToList();
-            foreach (var member in membersInProject)
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
+            foreach (var member in project.Members)
             {
                 if (member.Id == uid)
                 {
                     project.Members.Remove(member);
-
-
                     await _context.SaveChangesAsync();
                     return Ok();
                 }
@@ -453,18 +466,21 @@ namespace Buddies.API.Controllers
         [Authorize]
         public async Task<ActionResult> InviteProjectMember(int pid, int uid)
         {
-            var project = await _context.Projects.FindAsync(pid);
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
 
             if (project == null)
             {
                 return NotFound("PROFILE NOT FOUND");
             }
-            if (project.OwnerId != _userManager.GetUserAsync(User).Result.Id) { return Unauthorized(); }
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
 
-            var invitedUsers = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.InvitedUsers).ToList();
             var invitedUser = _context.Users.FindAsync(uid).Result;
 
-            if (invitedUser != null && !invitedUsers.Contains(invitedUser)){
+            if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)){
                 project.InvitedUsers.Add(invitedUser);
                 await _context.SaveChangesAsync();
                 return Ok();
@@ -480,24 +496,34 @@ namespace Buddies.API.Controllers
         [Authorize]
         public async Task<ActionResult> JoinProject(int pid, int uid)
         {
-            var project = await _context.Projects.FindAsync(pid);
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
 
             if (project == null)
             {
                 return NotFound("PROFILE NOT FOUND");
             }
-            if (project.OwnerId == _userManager.GetUserAsync(User).Result.Id) { return BadRequest("Cannot remove owner from project"); }
 
-            var invitedUsers = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.InvitedUsers).ToList();
-            var membersInProject = _context.Projects.Where(p => p.ProjectId == pid).SelectMany(p => p.Members).ToList();
+            if (project.Members.Count >= project.MaxMembers)
+            {
+                return BadRequest("There are no more space in this project!");
+            }
+            if (project.Owner == _userManager.GetUserAsync(User).Result) 
+            { 
+                return BadRequest("Cannot remove owner from project"); 
+            }
+
             var currentUser = _userManager.GetUserAsync(User).Result;
 
-            if (membersInProject.Contains(currentUser))
+            if (project.Members.Contains(currentUser))
             {
                 return BadRequest("You are already a member!");
             }
 
-            if (currentUser != null && invitedUsers.Contains(currentUser))
+            if (currentUser != null && project.InvitedUsers.Contains(currentUser))
             {
                 project.Members.Add(currentUser);
                 project.InvitedUsers.Remove(currentUser);

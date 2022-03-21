@@ -799,6 +799,7 @@
         "type": "object",
         "properties": {
           "title": {
+            "maxLength": 50,
             "type": "string"
           },
           "location": {
@@ -819,7 +820,7 @@
             "type": "string"
           },
           "maxMembers": {
-            "maximum": 2147483647,
+            "maximum": 10,
             "minimum": 2,
             "type": "integer",
             "format": "int32"
@@ -986,6 +987,8 @@
             "type": "string"
           },
           "maxMembers": {
+            "maximum": 10,
+            "minimum": 2,
             "type": "integer",
             "format": "int32"
           }
