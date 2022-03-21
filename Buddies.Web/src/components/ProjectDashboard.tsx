@@ -186,6 +186,7 @@ const ProjectDashboard: React.VFC<Props> = ({
         closeDialog={() => setOpenInvite(false)}
         getUsers={getUsers}
         onSubmit={submitInvite}
+        currentMemberEmails={MemberLst.map((user) => user.Email)}
       />
     </>
   );
