@@ -36,6 +36,11 @@ public class Profile
     public int UserId { get; init; }
 
     /// <summary>
+    /// BuddyScore of the user the profile belongs to.
+    /// </summary>
+    public int BuddyScore { get; set; }
+
+    /// <summary>
     /// headline on the profile
     /// </summary>
     [MaxLength(50)]

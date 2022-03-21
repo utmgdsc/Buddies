@@ -254,6 +254,7 @@ namespace Buddies.API.Controllers
             var project = _context.Projects
                 .Include(project => project.Members)
                 .Include(project => project.InvitedUsers)
+                .Include(project => project.MembersYetToRate)
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile)
                 .Where(project => project.ProjectId == id)
@@ -271,6 +272,7 @@ namespace Buddies.API.Controllers
                 Email = project.Owner.Email,
                 Category = project.Category,
                 MaxMembers = project.MaxMembers,
+                IsFinished = project.IsFinished
             };
 
             foreach (User member in project.Members)
@@ -301,6 +303,21 @@ namespace Buddies.API.Controllers
                 userInfo.Email = invitedUser.Email;
                 userInfo.UserId = invitedUser.Id;
                 profileResponse.InvitedUsers.Add(userInfo);
+            }
+
+            foreach (User invitedUser in project.MembersYetToRate)
+            {
+                var userInfo = new UserInfoResponse();
+                var userprofile = await _context.Profiles.FindAsync(invitedUser.Id);
+                if (userprofile == null)
+                {
+                    return NotFound("USER PROFILE NOT FOUND");
+                }
+                userInfo.FirstName = userprofile.FirstName;
+                userInfo.LastName = userprofile.LastName;
+                userInfo.Email = invitedUser.Email;
+                userInfo.UserId = invitedUser.Id;
+                profileResponse.MembersYetToRate.Add(userInfo);
             }
 
             return Ok(profileResponse);
@@ -461,6 +478,73 @@ namespace Buddies.API.Controllers
             }
 
             return NotFound("User not found");
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/terminate/ for terminating a project.
+        /// </summary>
+        [HttpPost("{pid}/terminate/")]
+        [Authorize]
+        public async Task<ActionResult> TermintateProject(int pid)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.Owner)
+                .ThenInclude(owner => owner.Profile)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
+
+            project.IsFinished = true;
+            project.MembersYetToRate = project.Members;
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/ratebuddies/ for joining profile IF you're on the invited list.
+        /// </summary>
+        [HttpPost("{pid}/ratebuddies/")]
+        [Authorize]
+        public async Task<ActionResult> RateBuddies(int pid, RateBuddiesRequest request)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.MembersYetToRate)
+                .ThenInclude(owner => owner.Profile)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
+            var currentUser = _userManager.GetUserAsync(User).Result;
+
+            foreach (var member in project.MembersYetToRate)
+            {
+                if (request.BuddyScores.TryGetValue(member.Id, out int score))
+                {
+                    if (member != currentUser) member.Profile.BuddyScore += score;
+                }
+                else
+                {
+                    return BadRequest(member.UserName + " is not in project");
+                }
+            }
+
+            project.MembersYetToRate.Remove(currentUser);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
 
