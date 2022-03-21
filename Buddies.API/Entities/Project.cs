@@ -52,7 +52,7 @@ namespace Buddies.API.Entities
         /// <summary>
         /// ID of the user the project belongs to (project owner).
         /// </summary>
-        public int OwnerId { get; set; }
+        public virtual User Owner { get; set; }
 
 
         /// <summary>
