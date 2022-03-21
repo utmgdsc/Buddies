@@ -96,8 +96,8 @@ Install pm2
 
   - To add connection string to EC2 environment, 
     1. SSH into EC2 server
-    2. cd into the api folder and create appsettings.Production.json file using vim.
-    3. Add the connection string.
+    2. cd into the api folder and create appsettings.Production.json file 
+       with the connection string using vim.
 
 ### Configure CodeDeploy
 
