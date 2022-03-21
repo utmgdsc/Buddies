@@ -22,6 +22,7 @@ interface Props extends ProjectProfile {
   getUsers: SearchFunc;
   submitInvite: (req: InviteUserRequest) => void;
   submitRemoval: (userId: number) => void;
+  isFull: boolean;
 }
 
 export type Dialogs = '' | 'Invite' | 'Remove';
@@ -35,6 +36,7 @@ const ProjectBuddies: React.VFC<Props> = ({
   submitInvite,
   InvitedLst,
   submitRemoval,
+  isFull,
 }) => {
   const [openedDialog, setOpenedDialog] = useState<Dialogs>('');
 
@@ -81,12 +83,12 @@ const ProjectBuddies: React.VFC<Props> = ({
               </ListItem>
             );
           })}
-          {isOwner && (
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => setOpenedDialog('Invite')}>
-              <ListItemText sx={{ textAlign: 'center' }}>Invite User</ListItemText>
-            </ListItemButton>
-          </ListItem>
+          {isOwner && !isFull && (
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => setOpenedDialog('Invite')}>
+                <ListItemText sx={{ textAlign: 'center' }}>Invite User</ListItemText>
+              </ListItemButton>
+            </ListItem>
           )}
         </List>
       </Card>

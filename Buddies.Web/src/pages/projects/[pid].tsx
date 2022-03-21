@@ -219,6 +219,7 @@ const Project: React.VFC = () => {
             getUsers={getUsers}
             submitInvite={submitInvite}
             submitRemoval={submitRemoval}
+            isFull={isFull}
           />
         );
       default:
