@@ -16,10 +16,9 @@ import TablePagination from '@mui/material/TablePagination';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { Container } from '@material-ui/core';
 import ListIcon from '@mui/icons-material/List';
-import axios from 'axios';
 import { useEffect } from 'react';
-import MultipleSelectPlaceholder from '../components/Filter';
 import CardActionArea from '@mui/material/CardActionArea';
+import MultipleSelectPlaceholder from '../components/Filter';
 import { getPostings } from '../api';
 
 type Project = {
@@ -42,13 +41,13 @@ type FilterObject = {
 
 // default filter values. Indicate, there are no filters to apply
 let filterTracker: FilterObject = {
-  Location: 'N/A',  
+  Location: 'N/A',
   Members: -1,
   Category: 'N/A',
 };
 
 let memberfilters: string[] = [];
-let locations: string[] = [];   // all filters
+let locations: string[] = []; // all filters
 let categories: string[] = [];
 
 let totalProjects: number = 0;
@@ -76,8 +75,8 @@ const PostingsTable = () => {
         path += `${filterTracker[fil as keyof FilterObject]}/`;
       }
     });
-    console.log(rowsPerPage)
-    getPostings(path, page+1, rowsPerPage).then((res) => {
+
+    getPostings(path, page + 1, rowsPerPage).then((res) => {
       const DATA: Project[] = [];
       for (let i = 0; i < res.data.projects.length; i += 1) {
         DATA[i] = {
@@ -158,7 +157,7 @@ const PostingsTable = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      <CardActionArea href={"projects/" + row.ProjectId}>
+                      <CardActionArea href={`projects/${row.ProjectId}`}>
                         <Grid container>
                           <Grid item>
                             <Typography variant="h5">
@@ -202,10 +201,12 @@ const PostingsTable = () => {
                       <Grid container>
                         <PeopleAltIcon sx={{ marginTop: 1, marginRight: 2 }} />
                         <Typography sx={{ marginTop: 1 }} variant="subtitle2">
-                          {row.CurrentMembers}/{row.MaxMembers}
+                          {row.CurrentMembers}
+                          /
+                          {row.MaxMembers}
                         </Typography>
                       </Grid>
-                      
+
                     </TableCell>
                   </TableRow>
                 ))}
