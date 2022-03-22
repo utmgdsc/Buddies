@@ -533,11 +533,16 @@ namespace Buddies.API.Controllers
             {
                 if (request.BuddyScores.TryGetValue(member.Id, out int score))
                 {
-                    if (member != currentUser) member.Profile.BuddyScore += score;
+                    if (member != currentUser)
+                    {
+                        var n = member.Profile.ProjectCount;
+                        member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * n)) / (n + 1);
+                        member.Profile.ProjectCount += 1;
+                    }
                 }
                 else
                 {
-                    return BadRequest(member.UserName + " is not in project");
+                    return BadRequest( "Member is not in project");
                 }
             }
 
