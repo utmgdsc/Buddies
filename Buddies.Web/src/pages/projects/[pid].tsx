@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import Grid from '@material-ui/core/grid';
-import Container from '@material-ui/core/Container';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import Typography from '@mui/material/Typography';

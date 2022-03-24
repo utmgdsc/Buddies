@@ -1,6 +1,6 @@
 import React from 'react';
 import { ListItemIcon, ListItemText, Typography } from '@mui/material';
-import Container from '@material-ui/core/Container';
+import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
