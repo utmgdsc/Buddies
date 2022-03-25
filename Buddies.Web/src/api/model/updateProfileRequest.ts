@@ -9,9 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { SkillResponse } from './skillResponse';
 
-export interface SearchResponse {
-  searches: Array<string>;
-  totalPages: number;
-  currentPage: number;
+export interface UpdateProfileRequest {
+  firstName: string;
+  lastName: string;
+  userId: number;
+  headline: string;
+  aboutMe: string;
+  skills: Array<SkillResponse>;
 }
