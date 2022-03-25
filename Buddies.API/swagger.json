@@ -447,7 +447,7 @@
         }
       }
     },
-    "/api/v{version}/projects/{pid}/invite/{uid}": {
+    "/api/v{version}/projects/{pid}/invite": {
       "post": {
         "tags": [
           "Projects"
@@ -455,15 +455,6 @@
         "parameters": [
           {
             "name": "pid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "uid",
             "in": "path",
             "required": true,
             "schema": {
@@ -480,6 +471,30 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteUserRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteUserRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteUserRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteUserRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
@@ -759,6 +774,18 @@
             "minimum": 2,
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InviteUserRequest": {
+        "required": [
+          "userEmail"
+        ],
+        "type": "object",
+        "properties": {
+          "userEmail": {
+            "type": "string"
           }
         },
         "additionalProperties": false
