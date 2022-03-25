@@ -38,9 +38,9 @@ const ProjectBuddies: React.VFC<Props> = ({
   submitRemoval,
   isFull,
 }) => {
-  const [openedDialog, setOpenedDialog] = useState<Dialogs>('');
+  const [dialog, setDialog] = useState<Dialogs>('');
 
-  const [toRemove, setToRemove] = useState<UserInfo | null>(null);
+  const [userToRemove, setUserToRemove] = useState<UserInfo | null>(null);
 
   return (
     <>
@@ -66,8 +66,8 @@ const ProjectBuddies: React.VFC<Props> = ({
                     color="error"
                     variant="outlined"
                     onClick={() => {
-                      setToRemove(user);
-                      setOpenedDialog('Remove');
+                      setUserToRemove(user);
+                      setDialog('Remove');
                     }}
                   >
                     Remove
@@ -85,7 +85,7 @@ const ProjectBuddies: React.VFC<Props> = ({
           })}
           {isOwner && !isFull && (
             <ListItem disablePadding>
-              <ListItemButton onClick={() => setOpenedDialog('Invite')}>
+              <ListItemButton onClick={() => setDialog('Invite')}>
                 <ListItemText sx={{ textAlign: 'center' }}>Invite User</ListItemText>
               </ListItemButton>
             </ListItem>
@@ -93,18 +93,18 @@ const ProjectBuddies: React.VFC<Props> = ({
         </List>
       </Card>
       <InviteDialog
-        open={openedDialog === 'Invite'}
-        closeDialog={() => setOpenedDialog('')}
+        open={dialog === 'Invite'}
+        closeDialog={() => setDialog('')}
         getUsers={getUsers}
         onSubmit={submitInvite}
         currentMemberEmails={MemberLst.map((user) => user.Email)}
       />
-      {toRemove && (
+      {userToRemove && (
       <RemoveDialog
-        open={openedDialog === 'Remove'}
-        closeDialog={() => setOpenedDialog('')}
-        onSubmit={() => submitRemoval(toRemove.UserId)}
-        name={`${toRemove.FirstName} ${toRemove.LastName}`}
+        open={dialog === 'Remove'}
+        closeDialog={() => setDialog('')}
+        onSubmit={() => submitRemoval(userToRemove.UserId)}
+        name={`${userToRemove.FirstName} ${userToRemove.LastName}`}
       />
       )}
     </>
