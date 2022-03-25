@@ -404,7 +404,6 @@ namespace Buddies.API.Controllers
                 return NotFound("PROFILE NOT FOUND");
             }
             if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
-            
             var invitedUser = await _context.Users.FirstOrDefaultAsync(user => user.Email == request.UserEmail);
 
             if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)){
