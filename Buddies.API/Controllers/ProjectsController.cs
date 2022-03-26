@@ -503,6 +503,10 @@ namespace Buddies.API.Controllers
 
             project.IsFinished = true;
             project.MembersYetToRate = project.Members;
+            foreach (var member in project.Members)
+            {
+                member.Profile.ProjectCount += 1;
+            }
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -536,8 +540,7 @@ namespace Buddies.API.Controllers
                     if (member != currentUser)
                     {
                         var n = member.Profile.ProjectCount;
-                        member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * n)) / (n + 1);
-                        member.Profile.ProjectCount += 1;
+                        member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n-1))) / n;
                     }
                 }
                 else
