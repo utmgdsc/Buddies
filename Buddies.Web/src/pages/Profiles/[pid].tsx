@@ -1,6 +1,6 @@
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 import Box from '@mui/material/Box';
-import Grid from '@material-ui/core/grid';
+import Grid from '@mui/material/Grid';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';

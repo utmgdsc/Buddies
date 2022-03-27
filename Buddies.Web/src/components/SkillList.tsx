@@ -1,5 +1,5 @@
 import React from 'react';
-import Grid from '@material-ui/core/grid';
+import Grid from '@mui/material/Grid';
 import Skill from './Skill';
 import type { Skillobject } from '../pages/Profiles/[pid]';
 

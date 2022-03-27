@@ -1,24 +1,25 @@
-import React, { useEffect } from 'react';
-import Grid from '@material-ui/core/grid';
-import Container from '@material-ui/core/Container';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import AddIcon from '@mui/icons-material/Add';
-import EmailIcon from '@mui/icons-material/Email';
+import React, { useEffect, useState } from 'react';
+import Container from '@mui/material/Container';
 import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import axios from 'axios';
 import { authStore } from '../../stores/authStore';
-import ProjectProfilePage from '../../components/ProjectProfilePage';
-import { getProject, addMember } from '../../api';
+import ProjectDashboard from '../../components/ProjectDashboard';
+import {
+  getProject, addMember, getUsers, inviteMember, removeMember,
+} from '../../api';
+import ProjectBuddies from '../../components/ProjectBuddies';
+import Sidebar from '../../components/ProjectSidebar';
+import { InviteUserRequest } from '../../api/model/inviteUserRequest';
 
-type UserInfo = {
+export type UserInfo = {
   FirstName: string,
   LastName: string,
-  UserId: number
+  UserId: number,
+  Email: string,
 };
 
-type ProjectProfile = {
+export type ProjectProfile = {
   Title: string,
   Description: string,
   Location: string,
@@ -30,10 +31,13 @@ type ProjectProfile = {
   InvitedLst: UserInfo[]
 };
 
+export type Tabs = 'Dashboard' | 'Buddies';
+
 const memberLst: UserInfo[] = [{
   FirstName: 'John',
   LastName: 'Doe',
   UserId: -1,
+  Email: 'test@test.com',
 }];
 
 // default project that loads when project id is not found
@@ -61,7 +65,7 @@ let ownerId: number; // Id of the owner of the project
 */
 const Project: React.VFC = () => {
   const [project, setProject] = React.useState<ProjectProfile>(defaultProject);
-  const authState = authStore((state: { authState: any; }) => state.authState);
+  const authState = authStore((state) => state.authState);
   const router = useRouter();
 
   /* Gets project by id and then creates necessary global data structures.
@@ -79,6 +83,7 @@ const Project: React.VFC = () => {
           FirstName: res.data.members[i].firstName,
           LastName: res.data.members[i].lastName,
           UserId: res.data.members[i].userId,
+          Email: res.data.members[i].email,
         });
         memberIds.push(res.data.members[i].userId);
         if (res.data.email === res.data.members[i].email) {
@@ -91,6 +96,7 @@ const Project: React.VFC = () => {
           FirstName: res.data.invitedUsers[i].firstName,
           LastName: res.data.invitedUsers[i].lastName,
           UserId: res.data.invitedUsers[i].userId,
+          Email: res.data.invitedUsers[i].email,
         });
         invitedIds.push(res.data.invitedUsers[i].userId);
       }
@@ -107,6 +113,7 @@ const Project: React.VFC = () => {
         InvitedLst: newInvitedLst,
       };
       setProject(newProject);
+      // console.log(`${memberIds.length} ${project.MaxMembers}`);
     }).catch((error) => {
       alert(error);
     });
@@ -124,6 +131,38 @@ const Project: React.VFC = () => {
     if (res) {
       getAndMakeProject();
     }
+  };
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const submitInvite = (req: InviteUserRequest) => {
+    inviteMember(projectId as string, req)
+      .then(() => {
+        getAndMakeProject();
+        enqueueSnackbar('User invited.', { variant: 'success' });
+      })
+      .catch((err) => {
+        if (axios.isAxiosError(err) && err.response) {
+          enqueueSnackbar(err.response.data, { variant: 'error' });
+        } else {
+          enqueueSnackbar(err, { variant: 'error' });
+        }
+      });
+  };
+
+  const submitRemoval = (userId: number) => {
+    removeMember(projectId as string, userId)
+      .then(() => {
+        getAndMakeProject();
+        enqueueSnackbar('User removed.', { variant: 'success' });
+      })
+      .catch((err) => {
+        if (axios.isAxiosError(err) && err.response) {
+          enqueueSnackbar(err.response.data, { variant: 'error' });
+        } else {
+          enqueueSnackbar(err, { variant: 'error' });
+        }
+      });
   };
 
   useEffect(() => {
@@ -149,85 +188,54 @@ const Project: React.VFC = () => {
   const inGroup: boolean = memberIds.includes(currId);
 
   const isFull: boolean = memberIds.length === project.MaxMembers;
+
+  const [tab, setTab] = useState<Tabs>('Dashboard');
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const getTabComponent = () => {
+    switch (tab) {
+      case 'Dashboard':
+        return (
+          <ProjectDashboard
+            inGroup={inGroup}
+            {...project}
+            authentication={authentication}
+            isInvited={isInvited}
+            isFull={isFull}
+            addMemberToProject={addMemberToProject}
+            setSidebarOpen={setSidebarOpen}
+            getUsers={getUsers}
+            submitInvite={submitInvite}
+          />
+        );
+      case 'Buddies':
+        return (
+          <ProjectBuddies
+            {...project}
+            setSidebarOpen={setSidebarOpen}
+            isOwner={ownerId.toString() === authState?.nameid}
+            ownerId={ownerId}
+            getUsers={getUsers}
+            submitInvite={submitInvite}
+            submitRemoval={submitRemoval}
+            isFull={isFull}
+          />
+        );
+      default:
+        return 'Error';
+    }
+  };
+
   return (
     <Container>
-      <ProjectProfilePage
-        inGroup={inGroup}
-        title={project.Title}
-        location={project.Location}
-        category={project.Category}
-        total={project.MaxMembers}
-        curr={project.MemberLst.length}
-        desc={project.Description}
-        pOwner={project.ProjectOwner}
-        pEmail={project.ProjectOwnerEmail}
+      <Sidebar
+        name={project.ProjectOwner}
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+        setTab={setTab}
       />
-
-      <Grid container justifyContent="center" marginTop={2} spacing={3} marginBottom={5}>
-        <Grid item xs={10}>
-          <Card elevation={10}>
-            <Grid container p={1} spacing={2} justifyContent="center">
-              {project.MemberLst.map((member: UserInfo) => {
-                return (
-                  <Grid item xs={2}>
-                    <Card sx={{ border: 1, height: 80 }}>
-                      <CardActionArea href={`../Profiles/${member.UserId}`}>
-                        <Avatar sx={{ margin: 'auto', marginTop: 1 }} />
-                        <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
-                          {`${member.FirstName} ${member.LastName}`}
-                        </Typography>
-                      </CardActionArea>
-                    </Card>
-                  </Grid>
-                );
-              })}
-              {authentication && !isFull
-                                && (
-                                <Grid item xs={2}>
-                                  <Card sx={{ border: 1, height: 80 }}>
-                                    <CardActionArea>
-                                      <AddIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
-                                      <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
-                                        Invite More Users
-                                      </Typography>
-                                    </CardActionArea>
-
-                                  </Card>
-                                </Grid>
-                                )}
-              {!authentication && isInvited && !inGroup && !isFull
-                                && (
-                                <Grid item xs={2}>
-                                  <Card sx={{ border: 1, height: 80 }}>
-                                    <CardActionArea onClick={addMemberToProject}>
-                                      <AddIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
-                                      <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
-                                        Join Project
-                                      </Typography>
-                                    </CardActionArea>
-
-                                  </Card>
-                                </Grid>
-                                )}
-
-              {!authentication && !isInvited && !inGroup && !isFull && authentication != null
-                                && (
-                                <Grid item xs={2}>
-                                  <Card sx={{ border: 1, height: 80 }}>
-                                    <CardActionArea>
-                                      <EmailIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
-                                      <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
-                                        Request to Join
-                                      </Typography>
-                                    </CardActionArea>
-
-                                  </Card>
-                                </Grid>
-                                )}
-            </Grid>
-          </Card>
-        </Grid>
-      </Grid>
+      {getTabComponent()}
     </Container>
   );
 };
