@@ -8,13 +8,14 @@ import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemButton from '@mui/material/ListItemButton';
 import InviteDialog from './dialogs/InviteDialog';
 import { SearchFunc } from '../api';
 import { InviteUserRequest } from '../api/model/inviteUserRequest';
 import { ProjectProfileResponse } from '../api/model/projectProfileResponse';
 import { UserInfoResponse } from '../api/model/userInfoResponse';
 import ConfirmDialog from './dialogs/ConfirmDialog';
+import { authStore } from '../stores/authStore';
+import RateDialog from './dialogs/RateDialog';
 
 interface Props extends ProjectProfileResponse {
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,7 +26,7 @@ interface Props extends ProjectProfileResponse {
   isFull: boolean;
 }
 
-export type Dialogs = '' | 'Invite' | 'Remove';
+export type Dialogs = '' | 'Invite' | 'Remove' | 'Rate';
 
 const ProjectBuddies: React.VFC<Props> = ({
   setSidebarOpen,
@@ -37,10 +38,14 @@ const ProjectBuddies: React.VFC<Props> = ({
   invitedUsers,
   submitRemoval,
   isFull,
+  isFinished,
+  membersYetToRate,
 }) => {
   const [dialog, setDialog] = useState<Dialogs>('');
 
   const [userToRemove, setUserToRemove] = useState<UserInfoResponse | null>(null);
+
+  const authState = authStore((state) => state.authState)!;
 
   return (
     <>
@@ -50,9 +55,23 @@ const ProjectBuddies: React.VFC<Props> = ({
             <Typography variant="h4">
               Project Members
             </Typography>
-            <Button onClick={() => setSidebarOpen((prevState) => !prevState)}>
+            <Button
+              onClick={() => setSidebarOpen((prevState) => !prevState)}
+              sx={{ marginRight: 'auto' }}
+            >
               <SettingsIcon />
             </Button>
+            {isOwner && !isFull && !isFinished && (
+              <Button onClick={() => setDialog('Invite')} variant="outlined">
+                Invite User
+              </Button>
+            )}
+            {isFinished && membersYetToRate.find((member) => member.email === authState.email)
+              && (
+              <Button onClick={() => setDialog('Rate')} variant="outlined">
+                Rate Members
+              </Button>
+              )}
           </Stack>
         </CardContent>
         <List>
@@ -60,7 +79,7 @@ const ProjectBuddies: React.VFC<Props> = ({
             return (
               <ListItem>
                 <ListItemText primary={`${member.firstName} ${member.lastName}`} />
-                {isOwner && member.email !== ownerEmail
+                {isOwner && member.email !== ownerEmail && !isFinished
                   && (
                   <Button
                     color="error"
@@ -83,13 +102,6 @@ const ProjectBuddies: React.VFC<Props> = ({
               </ListItem>
             );
           })}
-          {isOwner && !isFull && (
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => setDialog('Invite')}>
-                <ListItemText sx={{ textAlign: 'center' }}>Invite User</ListItemText>
-              </ListItemButton>
-            </ListItem>
-          )}
         </List>
       </Card>
       <InviteDialog
@@ -108,6 +120,12 @@ const ProjectBuddies: React.VFC<Props> = ({
         content={`Are you sure you want to remove ${userToRemove.firstName} ${userToRemove.lastName} from your group?`}
       />
       )}
+      <RateDialog
+        open={dialog === 'Rate'}
+        closeDialog={() => setDialog('')}
+        onSubmit={() => {}}
+        peers={members.filter((member) => member.email !== authState.email)}
+      />
     </>
   );
 };

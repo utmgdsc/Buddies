@@ -130,6 +130,7 @@ const Project: React.VFC = () => {
             setSidebarOpen={setSidebarOpen}
             getUsers={getUsers}
             submitInvite={submitInvite}
+            isOwner={isOwner}
           />
         );
       case 'Buddies':
@@ -160,6 +161,7 @@ const Project: React.VFC = () => {
             setTab={setTab}
             isOwner={isOwner}
             submitTerminate={submitTerminate}
+            projFinished={project.isFinished}
           />
           {getTabComponent()}
         </>

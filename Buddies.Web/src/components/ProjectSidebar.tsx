@@ -24,6 +24,7 @@ export interface SidebarProps {
   setTab: React.Dispatch<React.SetStateAction<Tabs>>;
   isOwner: boolean;
   submitTerminate: () => void;
+  projFinished: boolean;
 }
 
 const Sidebar: React.VFC<SidebarProps> = ({
@@ -33,6 +34,7 @@ const Sidebar: React.VFC<SidebarProps> = ({
   setTab,
   isOwner,
   submitTerminate,
+  projFinished,
 }) => {
   const [terminateOpen, setTerminateOpen] = useState(false);
 
@@ -65,7 +67,7 @@ const Sidebar: React.VFC<SidebarProps> = ({
       </Container>
 
       <List>
-        {(isOwner ? menuItems : menuItems.filter((item) => item.text !== 'Terminate'))
+        {(!isOwner || projFinished ? menuItems.filter((item) => item.text !== 'Terminate') : menuItems)
           .map((item) => (
             <ListItem>
               <Button

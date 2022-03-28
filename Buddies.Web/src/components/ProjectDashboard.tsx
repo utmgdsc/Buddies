@@ -20,13 +20,14 @@ interface Props extends ProjectProfileResponse {
   inGroup: boolean;
   isInvited: boolean;
   isFull: boolean;
+  isOwner: boolean;
   addMemberToProject: () => Promise<void>;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   getUsers: SearchFunc;
   submitInvite: (req: InviteUserRequest) => void;
 }
 
-/* Displays all the neccessary information for the project profile page
+/* Displays all the necessary information for the project profile page
 */
 const ProjectDashboard: React.VFC<Props> = ({
   title,
@@ -44,6 +45,8 @@ const ProjectDashboard: React.VFC<Props> = ({
   setSidebarOpen,
   getUsers,
   submitInvite,
+  isFinished,
+  isOwner,
 }) => {
   const [inviteOpen, setInviteOpen] = useState(false);
 
@@ -132,7 +135,7 @@ const ProjectDashboard: React.VFC<Props> = ({
                   </Grid>
                 );
               })}
-              {!isFull
+              {!isFull && !isFinished && isOwner
                   && (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
@@ -146,7 +149,7 @@ const ProjectDashboard: React.VFC<Props> = ({
                     </Card>
                   </Grid>
                   )}
-              {isInvited && !inGroup && !isFull
+              {isInvited && !inGroup && !isFull && !isFinished
                   && (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
@@ -161,7 +164,7 @@ const ProjectDashboard: React.VFC<Props> = ({
                   </Grid>
                   )}
 
-              {!isInvited && !inGroup && !isFull
+              {!isInvited && !inGroup && !isFull && !isFinished
                   && (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
