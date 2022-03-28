@@ -36,7 +36,6 @@ namespace Buddies.API.Controllers
         public async Task<ActionResult> GetProjectListing(string location, int members, string category, int page, float results)
         {
 
-            // var projectList = await _context.Projects.ToListAsync();
 
             var projectList = await _context.Projects
                 .Include(project => project.Members)
