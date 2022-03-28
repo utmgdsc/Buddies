@@ -489,6 +489,7 @@ namespace Buddies.API.Controllers
         {
             var project = _context.Projects
                 .Include(project => project.Members)
+                .ThenInclude(member => member.Profile)
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile)
                 .Where(project => project.ProjectId == pid)
@@ -497,6 +498,11 @@ namespace Buddies.API.Controllers
             if (project == null)
             {
                 return NotFound("PROFILE NOT FOUND");
+            }
+
+            if (project.IsFinished)
+            {
+                return BadRequest("Project already terminated");
             }
 
             if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
@@ -520,9 +526,8 @@ namespace Buddies.API.Controllers
         public async Task<ActionResult> RateBuddies(int pid, RateBuddiesRequest request)
         {
             var project = _context.Projects
-                .Include(project => project.Members)
                 .Include(project => project.MembersYetToRate)
-                .ThenInclude(owner => owner.Profile)
+                .ThenInclude(member => member.Profile)
                 .Where(project => project.ProjectId == pid)
                 .FirstOrDefault();
 
@@ -533,19 +538,27 @@ namespace Buddies.API.Controllers
 
             var currentUser = _userManager.GetUserAsync(User).Result;
 
+            if (!project.MembersYetToRate.Contains(currentUser))
+            {
+                return BadRequest("You have already rated this project or are not a part of this project");
+            }
+
             foreach (var member in project.MembersYetToRate)
             {
+                if (member == currentUser)
+                {
+                    continue;
+                }
+
                 if (request.BuddyScores.TryGetValue(member.Id, out int score))
                 {
-                    if (member != currentUser)
-                    {
-                        var n = member.Profile.ProjectCount;
-                        member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n-1))) / n;
-                    }
+                    var n = member.Profile.ProjectCount;
+                    member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n - 1))) / n;                  
                 }
                 else
                 {
-                    return BadRequest( "Member is not in project");
+                    return BadRequest( "Member: " + member.Profile.FirstName + " " + member.Profile.LastName + 
+                        " is not included in this project rating");
                 }
             }
 
