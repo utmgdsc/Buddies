@@ -9,10 +9,10 @@ interface Props {
    * variable to track whether a user is logged in
    * and viewing his profile
    */
-  logCheck: boolean | null
+  isViewingOwnProfile: boolean | null
 }
 
-const Websites: React.FC<Props> = ({ logCheck }:{ logCheck: boolean | null }) => {
+const Websites: React.FC<Props> = ({ isViewingOwnProfile }:{ isViewingOwnProfile: boolean | null }) => {
   return (
     <Card sx={{
       width: '100%',
@@ -30,7 +30,7 @@ const Websites: React.FC<Props> = ({ logCheck }:{ logCheck: boolean | null }) =>
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          {logCheck && <CustomizedDialogs color="inherit" topmarg={0}>{undefined}</CustomizedDialogs>}
+          {isViewingOwnProfile && <CustomizedDialogs color="inherit" topmarg={0}>{undefined}</CustomizedDialogs>}
         </Grid>
       </Grid>
       <Typography variant="subtitle2" gutterBottom>
