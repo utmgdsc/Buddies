@@ -8,10 +8,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { InviteUserRequest } from '../api/model/inviteUserRequest';
-import { makeThrottledSearch } from '../api/utils';
-import { SearchFunc } from '../api';
-import { scrollHandler } from './event-handlers';
+import { InviteUserRequest } from '../../api/model/inviteUserRequest';
+import { makeThrottledSearch } from '../../api/utils';
+import { SearchFunc } from '../../api';
+import { scrollHandler } from '../event-handlers';
 
 interface Props {
   open: boolean;

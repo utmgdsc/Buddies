@@ -77,3 +77,7 @@ export async function inviteMember(projectId: string, req: InviteUserRequest) {
 export async function removeMember(projectId: string, userId: number) {
   return axios.post(`/api/v1/projects/${projectId}/delete/${userId}`);
 }
+
+export async function terminateProject(projectId: string) {
+  return axios.post(`/api/v1/projects/${projectId}/terminate`);
+}

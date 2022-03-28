@@ -249,7 +249,7 @@ namespace Buddies.API.Controllers
         /// API route GET /api/v1/projects/:id for fetching project profile.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetProfile(int id)
+        public async Task<ActionResult<ProjectProfileResponse>> GetProfile(int id)
         {
             var project = _context.Projects
                 .Include(project => project.Members)

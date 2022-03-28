@@ -349,7 +349,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectProfileResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectProfileResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectProfileResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -865,6 +882,68 @@
         },
         "additionalProperties": false
       },
+      "ProjectProfileResponse": {
+        "required": [
+          "category",
+          "description",
+          "email",
+          "invitedUsers",
+          "isFinished",
+          "location",
+          "maxMembers",
+          "members",
+          "membersYetToRate",
+          "title",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "maxMembers": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "invitedUsers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserInfoResponse"
+            }
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserInfoResponse"
+            }
+          },
+          "membersYetToRate": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserInfoResponse"
+            }
+          },
+          "isFinished": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "RateBuddiesRequest": {
         "required": [
           "buddyScores"
@@ -1027,6 +1106,31 @@
           "maxMembers": {
             "maximum": 10,
             "minimum": 2,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserInfoResponse": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "userId": {
             "type": "integer",
             "format": "int32"
           }

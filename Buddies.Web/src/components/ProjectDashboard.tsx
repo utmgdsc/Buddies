@@ -11,14 +11,13 @@ import AddIcon from '@mui/icons-material/Add';
 import EmailIcon from '@mui/icons-material/Email';
 import Button from '@mui/material/Button';
 import SettingsIcon from '@mui/icons-material/Settings';
-import type { ProjectProfile } from '../pages/projects/[pid]';
-import InviteDialog from './InviteDialog';
+import InviteDialog from './dialogs/InviteDialog';
 import { SearchFunc } from '../api';
 import { InviteUserRequest } from '../api/model/inviteUserRequest';
+import { ProjectProfileResponse } from '../api/model/projectProfileResponse';
 
-interface Props extends ProjectProfile {
+interface Props extends ProjectProfileResponse {
   inGroup: boolean;
-  authentication: boolean | null;
   isInvited: boolean;
   isFull: boolean;
   addMemberToProject: () => Promise<void>;
@@ -30,16 +29,15 @@ interface Props extends ProjectProfile {
 /* Displays all the neccessary information for the project profile page
 */
 const ProjectDashboard: React.VFC<Props> = ({
-  Title,
-  ProjectOwner,
-  Description,
-  ProjectOwnerEmail,
-  Location,
-  MaxMembers,
-  MemberLst,
-  Category,
+  title,
+  username: owner,
+  email: ownerEmail,
+  description,
+  location,
+  maxMembers,
+  members,
+  category,
   inGroup,
-  authentication,
   isInvited,
   isFull,
   addMemberToProject,
@@ -47,7 +45,7 @@ const ProjectDashboard: React.VFC<Props> = ({
   getUsers,
   submitInvite,
 }) => {
-  const [openInvite, setOpenInvite] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   return (
     <>
@@ -56,7 +54,7 @@ const ProjectDashboard: React.VFC<Props> = ({
           <Card elevation={10} sx={{ height: 100 }}>
             <Container sx={{ display: 'flex' }}>
               <Typography variant="h4">
-                {Title}
+                {title}
               </Typography>
               {inGroup && (
               <Button onClick={() => setSidebarOpen((prevState) => !prevState)}>
@@ -70,17 +68,17 @@ const ProjectDashboard: React.VFC<Props> = ({
             <div style={{ display: 'flex', marginTop: 25, marginLeft: 22 }}>
               <LocationOnSharpIcon />
               <Typography variant="body2" color="textSecondary" marginTop={0.6} marginLeft={0.5} marginRight={2}>
-                {Location}
+                {location}
               </Typography>
               <CategorySharpIcon />
               <Typography variant="body2" color="textSecondary" marginTop={0.6} marginLeft={0.5} marginRight={2}>
-                {Category}
+                {category}
               </Typography>
               <GroupIcon />
               <Typography variant="body2" color="textSecondary" marginTop={0.6} marginLeft={0.5} marginRight={2}>
-                {MemberLst.length}
+                {members.length}
                 /
-                {MaxMembers}
+                {maxMembers}
               </Typography>
             </div>
           </Card>
@@ -89,10 +87,10 @@ const ProjectDashboard: React.VFC<Props> = ({
           <Card elevation={10} sx={{ height: 100 }}>
             <Avatar sx={{ margin: 'auto', marginTop: 1 }} />
             <Typography variant="body2" color="textSecondary" marginTop={0.6} marginLeft={0.5} marginRight={2} align="center">
-              {ProjectOwner}
+              {owner}
             </Typography>
             <Typography variant="body2" color="textSecondary" marginTop={0.6} marginLeft={0.5} marginRight={2} align="center">
-              {ProjectOwnerEmail}
+              {ownerEmail}
             </Typography>
           </Card>
         </Grid>
@@ -109,7 +107,7 @@ const ProjectDashboard: React.VFC<Props> = ({
 
             <Container sx={{ maxHeight: 200, overflow: 'auto', marginTop: 3 }}>
               <Typography variant="subtitle2" color="textSecondary" gutterBottom style={{ wordWrap: 'break-word' }}>
-                {Description}
+                {description}
               </Typography>
             </Container>
 
@@ -120,25 +118,25 @@ const ProjectDashboard: React.VFC<Props> = ({
         <Grid item xs={10}>
           <Card elevation={10}>
             <Grid container p={1} spacing={2} justifyContent="center">
-              {MemberLst.map((member) => {
+              {members.map((member) => {
                 return (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
-                      <CardActionArea href={`../Profiles/${member.UserId}`}>
+                      <CardActionArea href={`../Profiles/${member.userId}`}>
                         <Avatar sx={{ margin: 'auto', marginTop: 1 }} />
                         <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
-                          {`${member.FirstName} ${member.LastName}`}
+                          {`${member.firstName} ${member.lastName}`}
                         </Typography>
                       </CardActionArea>
                     </Card>
                   </Grid>
                 );
               })}
-              {authentication && !isFull
+              {!isFull
                   && (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
-                      <CardActionArea onClick={() => setOpenInvite(true)}>
+                      <CardActionArea onClick={() => setInviteOpen(true)}>
                         <AddIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
                         <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
                           Invite More Users
@@ -148,7 +146,7 @@ const ProjectDashboard: React.VFC<Props> = ({
                     </Card>
                   </Grid>
                   )}
-              {!authentication && isInvited && !inGroup && !isFull
+              {isInvited && !inGroup && !isFull
                   && (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
@@ -163,7 +161,7 @@ const ProjectDashboard: React.VFC<Props> = ({
                   </Grid>
                   )}
 
-              {!authentication && !isInvited && !inGroup && !isFull && authentication != null
+              {!isInvited && !inGroup && !isFull
                   && (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
@@ -182,11 +180,11 @@ const ProjectDashboard: React.VFC<Props> = ({
         </Grid>
       </Grid>
       <InviteDialog
-        open={openInvite}
-        closeDialog={() => setOpenInvite(false)}
+        open={inviteOpen}
+        closeDialog={() => setInviteOpen(false)}
         getUsers={getUsers}
         onSubmit={submitInvite}
-        currentMemberEmails={MemberLst.map((user) => user.Email)}
+        currentMemberEmails={members.map((user) => user.email)}
       />
     </>
   );

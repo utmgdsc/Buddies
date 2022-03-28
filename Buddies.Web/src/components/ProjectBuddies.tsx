@@ -9,16 +9,16 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
-import type { ProjectProfile, UserInfo } from '../pages/projects/[pid]';
-import InviteDialog from './InviteDialog';
+import InviteDialog from './dialogs/InviteDialog';
 import { SearchFunc } from '../api';
 import { InviteUserRequest } from '../api/model/inviteUserRequest';
-import RemoveDialog from './RemoveDialog';
+import { ProjectProfileResponse } from '../api/model/projectProfileResponse';
+import { UserInfoResponse } from '../api/model/userInfoResponse';
+import ConfirmDialog from './dialogs/ConfirmDialog';
 
-interface Props extends ProjectProfile {
+interface Props extends ProjectProfileResponse {
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isOwner: boolean;
-  ownerId: number;
   getUsers: SearchFunc;
   submitInvite: (req: InviteUserRequest) => void;
   submitRemoval: (userId: number) => void;
@@ -29,18 +29,18 @@ export type Dialogs = '' | 'Invite' | 'Remove';
 
 const ProjectBuddies: React.VFC<Props> = ({
   setSidebarOpen,
-  MemberLst,
+  members,
   isOwner,
-  ownerId,
+  email: ownerEmail,
   getUsers,
   submitInvite,
-  InvitedLst,
+  invitedUsers,
   submitRemoval,
   isFull,
 }) => {
   const [dialog, setDialog] = useState<Dialogs>('');
 
-  const [userToRemove, setUserToRemove] = useState<UserInfo | null>(null);
+  const [userToRemove, setUserToRemove] = useState<UserInfoResponse | null>(null);
 
   return (
     <>
@@ -56,17 +56,17 @@ const ProjectBuddies: React.VFC<Props> = ({
           </Stack>
         </CardContent>
         <List>
-          {MemberLst.map((user) => {
+          {members.map((member) => {
             return (
               <ListItem>
-                <ListItemText primary={`${user.FirstName} ${user.LastName}`} />
-                {isOwner && user.UserId !== ownerId
+                <ListItemText primary={`${member.firstName} ${member.lastName}`} />
+                {isOwner && member.email !== ownerEmail
                   && (
                   <Button
                     color="error"
                     variant="outlined"
                     onClick={() => {
-                      setUserToRemove(user);
+                      setUserToRemove(member);
                       setDialog('Remove');
                     }}
                   >
@@ -76,10 +76,10 @@ const ProjectBuddies: React.VFC<Props> = ({
               </ListItem>
             );
           })}
-          {InvitedLst.map((user) => {
+          {invitedUsers.map((user) => {
             return (
               <ListItem>
-                <ListItemText primary={`${user.FirstName} ${user.LastName} (Invited)`} />
+                <ListItemText primary={`${user.firstName} ${user.lastName} (Invited)`} />
               </ListItem>
             );
           })}
@@ -97,14 +97,15 @@ const ProjectBuddies: React.VFC<Props> = ({
         closeDialog={() => setDialog('')}
         getUsers={getUsers}
         onSubmit={submitInvite}
-        currentMemberEmails={MemberLst.map((user) => user.Email)}
+        currentMemberEmails={members.map((member) => member.email)}
       />
       {userToRemove && (
-      <RemoveDialog
+      <ConfirmDialog
         open={dialog === 'Remove'}
         closeDialog={() => setDialog('')}
-        onSubmit={() => submitRemoval(userToRemove.UserId)}
-        name={`${userToRemove.FirstName} ${userToRemove.LastName}`}
+        onSubmit={() => submitRemoval(userToRemove.userId)}
+        title="Remove User"
+        content={`Are you sure you want to remove ${userToRemove.firstName} ${userToRemove.lastName} from your group?`}
       />
       )}
     </>
