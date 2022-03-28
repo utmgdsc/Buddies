@@ -25,6 +25,78 @@ namespace Buddies.API.Controllers
         {
             _context = context;
             _userManager = userManager;
+
+        }
+
+        /// <summary>
+        /// API route GET /api/v1/postings/{filters}/... for fetching all projects
+        /// that pass the filters.
+        /// </summary>
+        [HttpGet("postings/{location}/{members}/{category}/{page}/{results}")]
+        public async Task<ActionResult> GetProjectListing(string location, int members, string category, int page, float results)
+        {
+
+
+            var projectList = await _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Include(project => project.Owner)
+                .ThenInclude(owner => owner.Profile).ToListAsync();
+
+            var response = new ProjectListingsResponse();
+            var locationList = new List<String>();
+            var membersList = new List<String>();
+            var categoryList = new List<String>();
+
+
+            foreach (var project in projectList)
+            {
+
+                if ((project.Location == location || location == "null") &&
+                    (project.MaxMembers == members || members == -1) &&
+                    (project.Category == category || category == "null"))
+                {
+                    var owner = project.Owner.Profile;
+                    if (owner == null)
+                    {
+                        return NotFound("The owner has deleted his profile");
+                    }
+                    var projectResponse = new ProjectResponse
+                    {
+                        Title = project.Title,
+                        ProjectId = project.ProjectId,
+                        Description = project.Description,
+                        Location = project.Location,
+                        Username = String.Format("{0} {1}", owner.FirstName, owner.LastName),
+                        BuddyScore = 0,
+                        MaxMembers = project.MaxMembers,
+                        CurrentMembers = _context.Projects.Where(p => p.ProjectId == project.ProjectId).SelectMany(p => p.Members).ToList().Count,
+                        Category = project.Category,
+                    };
+                    response.Projects.Add(projectResponse);
+                    locationList.Add("Location: " + project.Location);
+                    membersList.Add("Members: " + project.MaxMembers.ToString());
+                    categoryList.Add("Category: " + project.Category);
+                }
+            }
+
+            var pageCount = Math.Ceiling(response.Projects.Count() / results);
+            response.Projects = response.Projects
+                .Skip((page - 1) * (int)results)
+                .Take((int)results)
+                .ToList();
+
+            response.TotalPages = (int)pageCount;
+            response.CurrentPage = page;
+
+            response.Locations = locationList.OrderBy(p => p).Distinct().ToList();
+            response.Locations.Insert(0, "Location: N/A");
+            response.Members = membersList.OrderBy(p => p).Distinct().ToList();
+            response.Members.Insert(0, "Members: N/A");
+            response.Categories = categoryList.OrderBy(p => p).Distinct().ToList();
+            response.Categories.Insert(0, "Category: N/A");
+
+            return Ok(response);
         }
 
         /// <summary>

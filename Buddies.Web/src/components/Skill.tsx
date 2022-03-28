@@ -1,6 +1,6 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import type { Skillobject } from '../pages/Profiles/[pid]';
+import type { Skillobject } from '../pages/profiles/[pid]';
 
 /* Each individual skill */
 const Skill = ({ skill, toggleSkill }: { skill: Skillobject,
