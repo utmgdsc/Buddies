@@ -9,12 +9,11 @@ import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Container } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import TablePagination from '@mui/material/TablePagination';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { Container } from '@mui/material';
 import ListIcon from '@mui/icons-material/List';
 import { useEffect } from 'react';
 import CardActionArea from '@mui/material/CardActionArea';
@@ -106,6 +105,7 @@ const PostingsTable = () => {
   }, [page]);
 
   const handleChangePage = (e: unknown, newPage: number) => {
+    console.log(newPage);
     setPage(newPage);
     getAndMakePostings();
   };
@@ -119,6 +119,7 @@ const PostingsTable = () => {
     /// applyFilter...
     filterTracker = { ...filterTracker, [filterType as keyof FilterObject]: filterValue };
     getAndMakePostings();
+    setPage(0);
   };
 
   return (

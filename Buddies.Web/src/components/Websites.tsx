@@ -12,7 +12,8 @@ interface Props {
   isViewingOwnProfile: boolean | null
 }
 
-const Websites: React.FC<Props> = ({ isViewingOwnProfile }:{ isViewingOwnProfile: boolean | null }) => {
+const Websites: React.FC<Props> = ({ isViewingOwnProfile }:
+{ isViewingOwnProfile: boolean | null }) => {
   return (
     <Card sx={{
       width: '100%',
