@@ -6,7 +6,7 @@ namespace Buddies.API.IO
     public class PagedNotificationsResponse
     {
         [Required]
-        public List<NotificationResponse> Projects { get; set; } = new List<NotificationResponse>();
+        public List<NotificationResponse> Notifications { get; set; } = new List<NotificationResponse>();
 
         [Required]
         public int TotalPages { get; set; }
