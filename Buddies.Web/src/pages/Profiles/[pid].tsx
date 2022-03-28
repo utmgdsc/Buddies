@@ -23,13 +23,33 @@ type Skillobject = {
   'delete': boolean
 };
 
+type Projectobject = {
+  'id': number,
+  'title': string,
+  'location': string,
+  'members': number,
+  'description': string
+}
+
+let testdata: Projectobject[] = [];
+for (let i = 0; i < 4; i += 1) {
+  testdata.push({
+    id: i,
+    title: "Transit App",
+    location: "Mississauga, Ontario",
+    members: 4,
+    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+  });
+}
+
 type UpdateProf = {
   'firstName': string,
   'lastName': string,
   'userId': number,
   'headline': string,
   'aboutMe': string,
-  'skills': Skillobject[]
+  'skills': Skillobject[],
+  'projects': Projectobject[]
 };
 
 /* Profile page. Responsible for putting all the components that make up the profile
@@ -46,6 +66,7 @@ const Profile: React.VFC = () => {
     aboutMe: 'n/a',
     skills: [{ id: 1, name: 'Data Structures', delete: false },
       { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }],
+    testdata
   }); // default user profile
     // it's used when someone tries to access a profile that does not exist
 
@@ -55,6 +76,7 @@ const Profile: React.VFC = () => {
       return;
     }
     axios.get(baseURL + profileId).then((res) => {
+      res.data.projects = testdata;
       setProfile(res.data);
     }).catch((error) => {
       alert(error);
@@ -68,6 +90,7 @@ const Profile: React.VFC = () => {
     headline: userProfile.headline,
     aboutMe: userProfile.aboutMe,
     skills: userProfile.skills,
+    projects: testdata
   };
 
   const updateProfile: VoidFunction = async () => {
@@ -126,7 +149,7 @@ const Profile: React.VFC = () => {
               desc={userProfile.aboutMe}
             />
             <br />
-            <Projects />
+            <Projects projectlist={testdata}/>
           </Grid>
         </Grid>
       </Container>
