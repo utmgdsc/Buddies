@@ -1,7 +1,7 @@
-import { TextField } from '@mui/material';
+import TextField from '@mui/material/TextField';
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { Button } from '@material-ui/core';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import type { UpdateProf } from '../pages/profiles/[pid]';
 

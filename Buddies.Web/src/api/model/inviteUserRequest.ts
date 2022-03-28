@@ -10,8 +10,6 @@
  * Do not edit the class manually.
  */
 
-export interface SearchResponse {
-  searches: Array<string>;
-  totalPages: number;
-  currentPage: number;
+export interface InviteUserRequest {
+  userEmail: string;
 }

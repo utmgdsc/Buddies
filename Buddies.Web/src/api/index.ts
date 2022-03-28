@@ -7,6 +7,7 @@ import { TokenResponse } from './model/tokenResponse';
 import { authStore, AuthState } from '../stores/authStore';
 import { CreateProjectRequest } from './model/createProjectRequest';
 import { SearchResponse } from './model/searchResponse';
+import { InviteUserRequest } from './model/inviteUserRequest';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -69,6 +70,14 @@ export async function getProject(projectId: string | string[] | undefined){
   return await axios.get(`/api/v1/projects/${projectId}`);
 };
 
-export async function addMember(projectId: string | string[] | undefined, userId: number){
+export async function addMember(projectId: string | string[] | undefined, userId: number) {
   return axios.post(`/api/v1/projects/${projectId}/join/`, userId);
-};
+}
+
+export async function inviteMember(projectId: string, req: InviteUserRequest) {
+  return axios.post(`/api/v1/projects/${projectId}/invite/`, req);
+}
+
+export async function removeMember(projectId: string, userId: number) {
+  return axios.post(`/api/v1/projects/${projectId}/delete/${userId}`);
+}

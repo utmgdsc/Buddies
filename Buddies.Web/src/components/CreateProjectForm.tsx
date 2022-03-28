@@ -9,15 +9,9 @@ import { CreateProjectRequest } from '../api/model/createProjectRequest';
 import { AuthState } from '../stores/authStore';
 import { makeThrottledSearch } from '../api/utils';
 import { SearchFunc } from '../api';
+import { scrollHandler } from './event-handlers';
 
 const count = 10;
-
-const scrollHandler = (e: React.SyntheticEvent, func: () => void) => {
-  const listboxNode = e.currentTarget;
-  if (listboxNode.scrollTop + listboxNode.clientHeight === listboxNode.scrollHeight) {
-    func();
-  }
-};
 
 interface Props {
   /**

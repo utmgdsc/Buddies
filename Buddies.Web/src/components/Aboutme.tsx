@@ -1,6 +1,6 @@
 import React from 'react';
 import Card from '@mui/material/Card';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 import Aboutmeform from './Aboutmeform';

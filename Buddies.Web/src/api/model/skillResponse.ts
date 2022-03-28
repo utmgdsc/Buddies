@@ -10,8 +10,8 @@
  * Do not edit the class manually.
  */
 
-export interface SearchResponse {
-  searches: Array<string>;
-  totalPages: number;
-  currentPage: number;
+export interface SkillResponse {
+  id: number;
+  name: string;
+  _delete: boolean;
 }
