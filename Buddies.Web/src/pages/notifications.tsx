@@ -1,15 +1,16 @@
 import { Card, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
-import CardActionArea from '@mui/material/CardActionArea';
+import Button from '@mui/material/Button';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Grid from '@mui/material/Grid';
 import axios from "axios";
 import { useEffect, useState } from "react";
+import CardContent from '@mui/material/CardContent';
 
 
-const api = axios.create({
-    baseURL: '/api/v1/projects/notifications/',
+const getapi = axios.create({
+    baseURL: '/api/v1/notifications/',
     headers: {
         Accept: 'application/json',
         'Content-type': 'application/json',
@@ -27,32 +28,48 @@ type notiObject = {
 
 type notiList = {
     'notifications': notiObject[],
-    'totalpages': number,
+    'totalPages': number,
     'currentPage': number,
 }
 
-export default function Home() {
+export default function Notifications() {
     let currentPage = 0;
     let size = 20;
     const [notis, setNotis] = useState([]);
-    
+    const [total, setTotal] = useState(1);
     const loadNotis = () => {
         const currNoti:notiObject[] = [];
-        api
+        getapi
         .get(`${currentPage}/${size}/`)
         .then(({ data } : any) => {
-        data.notifications.forEach((p: notiObject) => currNoti.push(p));
-        setNotis((noti: any) => [...noti, ...currNoti]);
-        });
+            setTotal(data.totalPages);
+            data.notifications.forEach((p: notiObject) => currNoti.push(p));
+            setNotis((noti) => [...noti, ...currNoti]);
+        })
+        .catch((error) => {
+            alert(error);
+          });
         currentPage += 1;
       };
 
     const handleScroll = (e:any) => {
-        console.log(e.type)
+        if (currentPage >= total) {
+            return;
+        }
         if (Math.ceil(e.target.documentElement.scrollTop + window.innerHeight)
             >= e.target.documentElement.scrollHeight) {
             loadNotis();
         }
+    };
+
+    const deleteNoti = (id:number) => {
+        fetch('/api/v1/notifications/' + id,
+        {
+            method: 'DELETE'
+        }).then(() => {
+            const newNotis = notis.filter((noti: notiObject) => noti.noti_id != id);
+            setNotis((newNotis))
+        })
     };
 
     useEffect(() => {
@@ -67,30 +84,39 @@ export default function Home() {
                     <Typography variant="h3">
                         Notifications
                     </Typography>
-                    <NotificationsIcon sx={{marginBottom: 1, fontSize: 40}}/>
+                    <NotificationsIcon sx={{marginTop: 1.25, fontSize: 40}}/>
                 </Container>
                 {notis.map((p:notiObject) => {
                     return (
                     <Card sx={{marginBottom: 2, marginTop: 5}}>
                         <Container sx={{display: 'flex', marginLeft: 0}}>
-                            <a href={`../Profiles/${p.sender_id}`}>
-                            <Avatar sx={{marginRight: 1}}/>
-                            </a>
-                            <Typography variant="h6" sx={{marginTop: 1}}>
-                                {p.sender_name}
-                            </Typography>
+                            <Grid item xs={11}>
+                            <Container sx={{display: 'flex', marginLeft: 0}}>
+                                <a href={`../Profiles/${p.sender_id}`}>
+                                <Avatar sx={{marginRight: 1}}/>
+                                </a>
+                                <Typography variant="h6" sx={{marginTop: 1}}>
+                                    {p.sender_name}
+                                </Typography>
+                                </Container>
+                            </Grid>
+                            <Button variant="outlined" color="secondary" onClick={
+                                () => deleteNoti(p.noti_id)}
+                            >Read</Button>
                         </Container>
-                        <Typography variant="h5" sx={{marginTop: 1}}>
-                            {p.message}
-                        </Typography>
-                        {
-                        p.noti_type == 'Project' &&
-                        <Typography>
-                            <a href={`../Projects/${p.project_id}`}>
-                                Project Link
-                            </a>
-                        </Typography>
-                        } 
+                        <CardContent>
+                            <Typography variant="subtitle2" sx={{marginTop: 1}}>
+                                {p.message}
+                            </Typography>
+                            {
+                            p.noti_type == 'Project' &&
+                            <Typography variant="subtitle2">
+                                <a href={`../Projects/${p.project_id}`}>
+                                    Project Link
+                                </a>
+                            </Typography>
+                            } 
+                        </CardContent>
                     </Card>
                     );
                 })}
