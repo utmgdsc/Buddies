@@ -12,8 +12,7 @@ import Skills from '../../components/Skills';
 import Websites from '../../components/Websites';
 import '../../api/index';
 import { authStore } from '../../stores/authStore';
-
-const baseURL = '/api/v1/Profiles/';
+import { getProfile, updateProfile } from '../../api';
 
 let profileId: string | string[] | undefined = '';
 
@@ -24,23 +23,18 @@ type Skillobject = {
 };
 
 type Projectobject = {
-  'id': number,
   'title': string,
+  'projectId': number,
+  'description': string,  
   'location': string,
-  'members': number,
-  'description': string
+  'username': string,
+  'buddyscore': number,
+  'maxMembers': number,
+  'currentMembers': number,
+  'category': string
 }
 
-let testdata: Projectobject[] = [];
-for (let i = 0; i < 4; i += 1) {
-  testdata.push({
-    id: i,
-    title: "Transit App",
-    location: "Mississauga, Ontario",
-    members: 4,
-    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-  });
-}
+
 
 type UpdateProf = {
   'firstName': string,
@@ -66,23 +60,22 @@ const Profile: React.VFC = () => {
     aboutMe: 'n/a',
     skills: [{ id: 1, name: 'Data Structures', delete: false },
       { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }],
-    testdata
+    projects: []
   }); // default user profile
     // it's used when someone tries to access a profile that does not exist
 
-  function getProfile() {
+  function getAndMakeProfile() {
     if (!(typeof profileId === 'string')) {
       alert('error');
       return;
     }
-    axios.get(baseURL + profileId).then((res) => {
-      res.data.projects = testdata;
+    getProfile(profileId).then((res) => {
       setProfile(res.data);
     }).catch((error) => {
       alert(error);
     });
   }
-
+ 
   const profileToUpdate: UpdateProf = {
     firstName: userProfile.firstName,
     lastName: userProfile.lastName,
@@ -90,18 +83,18 @@ const Profile: React.VFC = () => {
     headline: userProfile.headline,
     aboutMe: userProfile.aboutMe,
     skills: userProfile.skills,
-    projects: testdata
+    projects: userProfile.projects
   };
 
-  const updateProfile: VoidFunction = async () => {
+  const updateUserProfile: VoidFunction = async () => {
     if (!(typeof profileId === 'string')) {
       alert('error');
       return;
     }
-    const res = await axios.put(baseURL, profileToUpdate).catch((error) => {
+    const res = await updateProfile(profileToUpdate).catch((error) => {
       alert(error);
     });
-    if (true && res) {
+    if (res) {
       setProfile(profileToUpdate);
     }
   };
@@ -112,7 +105,7 @@ const Profile: React.VFC = () => {
     if (!router.isReady) return;
     const { pid } = router.query;
     profileId = pid; /* id of user */
-    getProfile(); /* When the page loads, a get request is made to populate
+    getAndMakeProfile(); /* When the page loads, a get request is made to populate
     the profile page accordingly */
   }, [router.isReady]);
 
@@ -127,7 +120,7 @@ const Profile: React.VFC = () => {
       <Container>
         <Grid container spacing={5}>
           <Header
-            updateFunc={updateProfile}
+            updateFunc={updateUserProfile}
             newProfile={profileToUpdate}
             logCheck={loggedin}
             fName={userProfile.firstName}
@@ -137,19 +130,19 @@ const Profile: React.VFC = () => {
           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
             <BScore score={0} />
             <br />
-            <Skills updateFunc={updateProfile} newProfile={profileToUpdate} logCheck={loggedin} />
+            <Skills updateFunc={updateUserProfile} newProfile={profileToUpdate} logCheck={loggedin} />
             <br />
-            <Websites logCheck={loggedin} />
+            <Websites isViewingOwnProfile={loggedin} />
           </Grid>
           <Grid item xs={12} sm={12} md={9} lg={9} xl={9}>
             <Aboutme
-              updateFunc={updateProfile}
+              updateFunc={updateUserProfile}
               newProfile={profileToUpdate}
               logCheck={loggedin}
               desc={userProfile.aboutMe}
             />
             <br />
-            <Projects projectlist={testdata}/>
+            <Projects projectlist={profileToUpdate.projects}/>
           </Grid>
         </Grid>
       </Container>

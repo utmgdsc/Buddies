@@ -1,6 +1,7 @@
 import React from 'react';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
+import CardActionArea from '@mui/material/CardActionArea';
 import Typography from '@mui/material/Typography';
 import type { Projectobject } from '../pages/Profiles/[pid]';
 import LocationOnSharpIcon from '@mui/icons-material/LocationOnSharp';
@@ -9,8 +10,7 @@ const Projects = ({ projectlist }: { projectlist: Projectobject[] }) => {
   return (
     <Card sx={{
       width: '100%',
-      height: 300,
-      maxHeight: '300px',
+      minHeight: 300,
       border: 1,
       padding: 2,
       boxShadow: 12,
@@ -25,23 +25,25 @@ const Projects = ({ projectlist }: { projectlist: Projectobject[] }) => {
         </Grid>
         {projectlist.map((project) => {
           return (
-            <Grid item xs={12} key={project.id}> 
-              <Card sx={{marginTop: 1, marginBottom: 2}}>
-                <Grid container> 
-                  <Typography variant="body1" color="textSecondary" marginTop={0.6} marginLeft={2} marginRight={2} style={{ fontWeight: 600 }}>
-                    {project.title}
+            <Grid item xs={12} key={project.projectId}> 
+              <Card sx={{marginTop: 1, marginBottom: 2, maxHeight: '180px'}}>
+                <CardActionArea href={`../projects/${project.projectId}`}>
+                  <Grid container> 
+                    <Typography variant="body1" color="textSecondary" marginTop={0.6} marginLeft={2} marginRight={2} style={{ fontWeight: 600 }}>
+                      {project.title}
+                    </Typography>
+                    <LocationOnSharpIcon sx={{marginTop:0, marginLeft:-1}}/>
+                    <Typography variant="body2" color="textSecondary" marginTop={0.9} marginLeft={0.5} marginRight={2}>
+                      {project.location}
+                    </Typography>
+                  </Grid>
+                  <Typography variant="body2" color="textSecondary" marginTop={0} marginLeft={2} marginRight={2}>
+                      {project.currentMembers} members
                   </Typography>
-                  <LocationOnSharpIcon />
-                  <Typography variant="body2" color="textSecondary" marginTop={0.6} marginLeft={0.5} marginRight={2}>
-                    {project.location}
+                  <Typography variant="body2" color="textSecondary" marginTop={1.5} marginLeft={2} marginRight={2} style={{textOverflow:"ellipsis", overflow: 'hidden', display: "-webkit-box", "-webkit-line-clamp": '4', "-webkit-box-orient": "vertical"}}>
+                      {project.description}
                   </Typography>
-                </Grid>
-                <Typography variant="body2" color="textSecondary" marginTop={0} marginLeft={2} marginRight={2}>
-                    {project.members} members
-                </Typography>
-                <Typography variant="body2" color="textSecondary" marginTop={1.5} marginLeft={2} marginRight={2}>
-                    {project.description} members
-                </Typography>
+                </CardActionArea>
               </Card>
             </Grid>
           );

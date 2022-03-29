@@ -41,12 +41,17 @@ const Navbar: React.VFC = () => {
           sx={{ marginLeft: 'auto' }}
         >
           {authState ? (
+            <>
+            
+            <Button color="inherit" sx={{ marginLeft: 'auto' }} href={`/Profiles/${parseInt(authState.nameid, 10)}`}>Profile</Button>
+            {/* Using next link was buggy so i just used a button */}
             <AccountTab
               authState={authState}
               logout={() => {
                 router.push('/').then(() => logoutUser());
               }}
             />
+            </>
           )
             : (
               <>

@@ -26,4 +26,7 @@ public record UserProfileResponse
 
     [Required]
     public List<SkillResponse> Skills { get; set; } = new List<SkillResponse>();
+
+    [Required(ErrorMessage = "")]
+    public List<ProjectResponse> Projects { get; set; } = new List<ProjectResponse>();
 }

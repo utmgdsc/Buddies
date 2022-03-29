@@ -57,7 +57,36 @@ namespace Buddies.API.Controllers
                 profileResponse.Skills.Add(skill);
             }
 
+            //var userProjects = await _context.Projects.Where(p => p.Members.Contains(profile.User)).ToListAsync();
+            var allProjects = await _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.Owner)
+                .ThenInclude(owner => owner.Profile).ToListAsync();
 
+            //var userProjects = allProjects.Where(project => project.Owner == profile.User);
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+            var userProjects = user.Projects;
+            foreach (Project p in userProjects)
+            {
+                var projectResponse = new ProjectResponse
+                {
+                    Title = p.Title,
+                    ProjectId = p.ProjectId,
+                    Description = p.Description,
+                    Location = p.Location,
+                    Username = user.UserName,
+                    BuddyScore = 0,
+                    MaxMembers = p.MaxMembers,
+                    CurrentMembers = p.Members.Count,
+                    Category = p.Category,
+                };
+                profileResponse.Projects.Add(projectResponse);
+            }
+  
 
             return Ok(profileResponse);
         }
