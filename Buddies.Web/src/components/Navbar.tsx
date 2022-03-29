@@ -11,6 +11,7 @@ import Tab from '@mui/material/Tab';
 import AccountTab from './AccountTab';
 import { logoutUser } from '../api';
 import { authStore } from '../stores/authStore';
+import NotificationBell from './NotificationBell';
 
 const Navbar: React.VFC = () => {
   const authState = authStore((state) => state.authState);
@@ -41,12 +42,17 @@ const Navbar: React.VFC = () => {
           sx={{ marginLeft: 'auto' }}
         >
           {authState ? (
+            <>
+            <NextLink href="/notifications" passHref>
+            <Button color="inherit" sx={{ marginLeft: 'auto' }}><NotificationBell/></Button>
+            </NextLink>
             <AccountTab
               authState={authState}
               logout={() => {
                 router.push('/').then(() => logoutUser());
               }}
             />
+            </>
           )
             : (
               <>
