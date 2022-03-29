@@ -2,7 +2,6 @@ import { Container } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import Header from '../../components/Header';
 import BScore from '../../components/BScore';
@@ -10,9 +9,8 @@ import Aboutme from '../../components/Aboutme';
 import Projects from '../../components/Projects';
 import Skills from '../../components/Skills';
 import Websites from '../../components/Websites';
-import '../../api/index';
+import { getProfile, updateProfile } from '../../api/index';
 import { authStore } from '../../stores/authStore';
-import { getProfile, updateProfile } from '../../api';
 
 let profileId: string | string[] | undefined = '';
 
@@ -25,16 +23,14 @@ type Skillobject = {
 type Projectobject = {
   'title': string,
   'projectId': number,
-  'description': string,  
+  'description': string,
   'location': string,
   'username': string,
   'buddyscore': number,
   'maxMembers': number,
   'currentMembers': number,
   'category': string
-}
-
-
+};
 
 type UpdateProf = {
   'firstName': string,
@@ -60,7 +56,7 @@ const Profile: React.VFC = () => {
     aboutMe: 'n/a',
     skills: [{ id: 1, name: 'Data Structures', delete: false },
       { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }],
-    projects: []
+    projects: [],
   }); // default user profile
     // it's used when someone tries to access a profile that does not exist
 
@@ -75,7 +71,7 @@ const Profile: React.VFC = () => {
       alert(error);
     });
   }
- 
+
   const profileToUpdate: UpdateProf = {
     firstName: userProfile.firstName,
     lastName: userProfile.lastName,
@@ -83,7 +79,7 @@ const Profile: React.VFC = () => {
     headline: userProfile.headline,
     aboutMe: userProfile.aboutMe,
     skills: userProfile.skills,
-    projects: userProfile.projects
+    projects: userProfile.projects,
   };
 
   const updateUserProfile: VoidFunction = async () => {
@@ -130,7 +126,11 @@ const Profile: React.VFC = () => {
           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
             <BScore score={0} />
             <br />
-            <Skills updateFunc={updateUserProfile} newProfile={profileToUpdate} logCheck={loggedin} />
+            <Skills
+              updateFunc={updateUserProfile}
+              newProfile={profileToUpdate}
+              logCheck={loggedin}
+            />
             <br />
             <Websites isViewingOwnProfile={loggedin} />
           </Grid>
@@ -142,7 +142,7 @@ const Profile: React.VFC = () => {
               desc={userProfile.aboutMe}
             />
             <br />
-            <Projects projectlist={profileToUpdate.projects}/>
+            <Projects projectlist={profileToUpdate.projects} />
           </Grid>
         </Grid>
       </Container>
