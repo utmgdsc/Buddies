@@ -63,7 +63,6 @@ namespace Buddies.API.Controllers
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile).ToListAsync();
 
-            //var userProjects = allProjects.Where(project => project.Owner == profile.User);
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
