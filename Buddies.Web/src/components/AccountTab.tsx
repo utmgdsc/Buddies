@@ -51,7 +51,7 @@ const AccountTab: React.VFC<Props> = ({ authState, logout, profile }) => {
         <MenuItem onClick={profile}>
           Profile
         </MenuItem>
-  
+
         <MenuItem onClick={logout}>
           Logout
         </MenuItem>

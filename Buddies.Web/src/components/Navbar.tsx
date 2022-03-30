@@ -41,17 +41,15 @@ const Navbar: React.VFC = () => {
           sx={{ marginLeft: 'auto' }}
         >
           {authState ? (
-            <>
-              <AccountTab
-                authState={authState}
-                logout={() => {
-                  router.push('/').then(() => logoutUser());
-                }}
-                profile={() => {
-                  router.push(`/Profiles/${parseInt(authState.nameid, 10)}`).then(() => router.reload());
-                }}
-              />
-            </>
+            <AccountTab
+              authState={authState}
+              logout={() => {
+                router.push('/').then(() => logoutUser());
+              }}
+              profile={() => {
+                router.push(`/Profiles/${parseInt(authState.nameid, 10)}`).then(() => router.reload());
+              }}
+            />
           )
             : (
               <>
