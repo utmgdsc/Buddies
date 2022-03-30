@@ -158,7 +158,7 @@ const PostingsTable = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      <CardActionArea href={`projects/${row.ProjectId}`}>
+                      <CardActionArea href={`/projects/${row.ProjectId}`}>
                         <Grid container>
                           <Grid item>
                             <Typography variant="h5">
