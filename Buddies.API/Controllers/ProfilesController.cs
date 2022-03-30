@@ -57,7 +57,6 @@ namespace Buddies.API.Controllers
                 profileResponse.Skills.Add(skill);
             }
 
-            //var userProjects = await _context.Projects.Where(p => p.Members.Contains(profile.User)).ToListAsync();
             var allProjects = await _context.Projects
                 .Include(project => project.Members)
                 .Include(project => project.Owner)
