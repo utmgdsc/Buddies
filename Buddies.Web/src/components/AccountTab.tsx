@@ -14,12 +14,16 @@ interface Props {
    * Function to execute in order to logout.
    */
   logout: () => void
+  /**
+   * Function to execute in order to view profile.
+   */
+  profile: () => void
 }
 
 /**
  * Account tab component containing menus for logout etc.
  */
-const AccountTab: React.VFC<Props> = ({ authState, logout }) => {
+const AccountTab: React.VFC<Props> = ({ authState, logout, profile }) => {
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
 
   return (
@@ -44,6 +48,10 @@ const AccountTab: React.VFC<Props> = ({ authState, logout }) => {
           horizontal: 'right',
         }}
       >
+        <MenuItem onClick={profile}>
+          Profile
+        </MenuItem>
+  
         <MenuItem onClick={logout}>
           Logout
         </MenuItem>
