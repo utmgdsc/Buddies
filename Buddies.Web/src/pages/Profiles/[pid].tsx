@@ -2,7 +2,6 @@ import { Container } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import Header from '../../components/Header';
 import BScore from '../../components/BScore';
@@ -10,16 +9,8 @@ import Aboutme from '../../components/Aboutme';
 import Projects from '../../components/Projects';
 import Skills from '../../components/Skills';
 import Websites from '../../components/Websites';
-import '../../api/index';
+import { getProfile, updateProfile } from '../../api/index';
 import { authStore } from '../../stores/authStore';
-
-const api = axios.create({
-  baseURL: '/api/v1/Profiles/',
-  headers: {
-    Accept: 'application/json',
-    'Content-type': 'application/json',
-  },
-});
 
 let profileId: string | string[] | undefined = '';
 
@@ -29,13 +20,26 @@ type Skillobject = {
   'delete': boolean
 };
 
+type Projectobject = {
+  'title': string,
+  'projectId': number,
+  'description': string,
+  'location': string,
+  'username': string,
+  'buddyscore': number,
+  'maxMembers': number,
+  'currentMembers': number,
+  'category': string
+};
+
 type UpdateProf = {
   'firstName': string,
   'lastName': string,
   'userId': number,
   'headline': string,
   'aboutMe': string,
-  'skills': Skillobject[]
+  'skills': Skillobject[],
+  'projects': Projectobject[]
 };
 
 /* Profile page. Responsible for putting all the components that make up the profile
@@ -52,15 +56,16 @@ const Profile: React.VFC = () => {
     aboutMe: 'n/a',
     skills: [{ id: 1, name: 'Data Structures', delete: false },
       { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }],
+    projects: [],
   }); // default user profile
     // it's used when someone tries to access a profile that does not exist
 
-  function getProfile() {
+  function getAndMakeProfile() {
     if (!(typeof profileId === 'string')) {
       alert('error');
       return;
     }
-    api.get(profileId).then((res) => {
+    getProfile(profileId).then((res) => {
       setProfile(res.data);
     }).catch((error) => {
       alert(error);
@@ -74,17 +79,18 @@ const Profile: React.VFC = () => {
     headline: userProfile.headline,
     aboutMe: userProfile.aboutMe,
     skills: userProfile.skills,
+    projects: userProfile.projects,
   };
 
-  const updateProfile: VoidFunction = async () => {
+  const updateUserProfile: VoidFunction = async () => {
     if (!(typeof profileId === 'string')) {
       alert('error');
       return;
     }
-    const res = await api.put('/', profileToUpdate).catch((error) => {
+    const res = await updateProfile(profileToUpdate).catch((error) => {
       alert(error);
     });
-    if (true && res) {
+    if (res) {
       setProfile(profileToUpdate);
     }
   };
@@ -95,7 +101,7 @@ const Profile: React.VFC = () => {
     if (!router.isReady) return;
     const { pid } = router.query;
     profileId = pid; /* id of user */
-    getProfile(); /* When the page loads, a get request is made to populate
+    getAndMakeProfile(); /* When the page loads, a get request is made to populate
     the profile page accordingly */
   }, [router.isReady]);
 
@@ -110,7 +116,7 @@ const Profile: React.VFC = () => {
       <Container>
         <Grid container spacing={5}>
           <Header
-            updateFunc={updateProfile}
+            updateFunc={updateUserProfile}
             newProfile={profileToUpdate}
             logCheck={loggedin}
             fName={userProfile.firstName}
@@ -120,19 +126,23 @@ const Profile: React.VFC = () => {
           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
             <BScore score={0} />
             <br />
-            <Skills updateFunc={updateProfile} newProfile={profileToUpdate} logCheck={loggedin} />
+            <Skills
+              updateFunc={updateUserProfile}
+              newProfile={profileToUpdate}
+              logCheck={loggedin}
+            />
             <br />
-            <Websites logCheck={loggedin} />
+            <Websites isViewingOwnProfile={loggedin} />
           </Grid>
           <Grid item xs={12} sm={12} md={9} lg={9} xl={9}>
             <Aboutme
-              updateFunc={updateProfile}
+              updateFunc={updateUserProfile}
               newProfile={profileToUpdate}
               logCheck={loggedin}
               desc={userProfile.aboutMe}
             />
             <br />
-            <Projects />
+            <Projects projectlist={profileToUpdate.projects} />
           </Grid>
         </Grid>
       </Container>

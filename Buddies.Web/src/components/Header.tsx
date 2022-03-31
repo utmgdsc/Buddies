@@ -8,7 +8,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import CustomizedDialogs from './dialog';
 import Headerform from './Headerform';
-import type { UpdateProf } from '../pages/Profiles/[pid]';
+import type { UpdateProf } from '../pages/profiles/[pid]';
 
 /* Header component of the profile page. Includes the profile pic, name and headline */
 const Header = ({
