@@ -8,6 +8,7 @@ import { authStore, AuthState } from '../stores/authStore';
 import { CreateProjectRequest } from './model/createProjectRequest';
 import { SearchResponse } from './model/searchResponse';
 import { InviteUserRequest } from './model/inviteUserRequest';
+import { RateBuddiesRequest } from './model/rateBuddiesRequest';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -80,4 +81,8 @@ export async function removeMember(projectId: string, userId: number) {
 
 export async function terminateProject(projectId: string) {
   return axios.post(`/api/v1/projects/${projectId}/terminate`);
+}
+
+export async function rateMembers(projectId: string, ratings: RateBuddiesRequest) {
+  return axios.post(`/api/v1/projects/${projectId}/ratebuddies`, ratings);
 }

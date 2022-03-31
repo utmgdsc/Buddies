@@ -5,8 +5,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Rating from '@mui/material/Rating';
 import { Typography } from '@mui/material';
-import { UserInfoResponse } from '../../api/model/userInfoResponse';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { RateBuddiesRequest } from '../../api/model/rateBuddiesRequest';
+import { UserInfoResponse } from '../../api/model/userInfoResponse';
 
 interface Props {
   open: boolean;
@@ -21,7 +24,9 @@ const RateDialog : React.VFC<Props> = ({
   onSubmit,
   peers,
 }) => {
-  const { control, handleSubmit, reset } = useForm<RateBuddiesRequest>({
+  const {
+    control, handleSubmit, reset, formState: { isSubmitting },
+  } = useForm<RateBuddiesRequest>({
     defaultValues: {
       buddyScores: peers.reduce((scores, peer) => {
         // eslint-disable-next-line no-param-reassign
@@ -36,13 +41,20 @@ const RateDialog : React.VFC<Props> = ({
     reset();
   };
 
+  const submitRatings = () => {
+    handleSubmit(onSubmit)()
+      .then(() => handleClose());
+  };
+
   return (
     <Dialog
       open={open}
       onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
     >
       <DialogTitle>Rate Members</DialogTitle>
-      <DialogContent sx={{ px: 3 }}>
+      <DialogContent sx={{ px: 3, textAlign: 'center' }}>
         {peers.map((peer) => {
           return (
             <>
@@ -60,11 +72,18 @@ const RateDialog : React.VFC<Props> = ({
                 }}
               />
             </>
-
           );
         })}
       </DialogContent>
-
+      <DialogActions sx={{ px: 3 }}>
+        <LoadingButton
+          onClick={submitRatings}
+          loading={isSubmitting}
+        >
+          Rate Members
+        </LoadingButton>
+        <Button onClick={handleClose}>Cancel</Button>
+      </DialogActions>
     </Dialog>
   );
 };

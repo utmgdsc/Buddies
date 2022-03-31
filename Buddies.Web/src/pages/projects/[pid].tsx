@@ -7,12 +7,13 @@ import axios from 'axios';
 import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
 import {
-  getProject, addMember, getUsers, inviteMember, removeMember, terminateProject,
+  getProject, addMember, getUsers, inviteMember, removeMember, terminateProject, rateMembers,
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
 import { InviteUserRequest } from '../../api/model/inviteUserRequest';
 import { ProjectProfileResponse } from '../../api/model/projectProfileResponse';
+import {RateBuddiesRequest} from "../../api/model/rateBuddiesRequest";
 
 export type Tabs = 'Dashboard' | 'Buddies';
 
@@ -101,6 +102,15 @@ const Project: React.VFC = () => {
       .catch((err) => displayErrorNotif(err));
   };
 
+  const submitRatings = (req: RateBuddiesRequest) => {
+    rateMembers(projectId!, req)
+      .then(() => {
+        getAndMakeProject();
+        enqueueSnackbar('Members rated.', { variant: 'success' });
+      })
+      .catch((err) => displayErrorNotif(err));
+  };
+
   const [tab, setTab] = useState<Tabs>('Dashboard');
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -143,6 +153,7 @@ const Project: React.VFC = () => {
             submitInvite={submitInvite}
             submitRemoval={submitRemoval}
             isFull={isFull}
+            submitRatings={submitRatings}
           />
         );
       default:

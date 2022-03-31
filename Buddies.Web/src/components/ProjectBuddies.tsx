@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -16,6 +16,7 @@ import { UserInfoResponse } from '../api/model/userInfoResponse';
 import ConfirmDialog from './dialogs/ConfirmDialog';
 import { authStore } from '../stores/authStore';
 import RateDialog from './dialogs/RateDialog';
+import { RateBuddiesRequest } from '../api/model/rateBuddiesRequest';
 
 interface Props extends ProjectProfileResponse {
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,6 +25,7 @@ interface Props extends ProjectProfileResponse {
   submitInvite: (req: InviteUserRequest) => void;
   submitRemoval: (userId: number) => void;
   isFull: boolean;
+  submitRatings: (req: RateBuddiesRequest) => void;
 }
 
 export type Dialogs = '' | 'Invite' | 'Remove' | 'Rate';
@@ -40,12 +42,17 @@ const ProjectBuddies: React.VFC<Props> = ({
   isFull,
   isFinished,
   membersYetToRate,
+  submitRatings,
 }) => {
   const [dialog, setDialog] = useState<Dialogs>('');
 
   const [userToRemove, setUserToRemove] = useState<UserInfoResponse | null>(null);
 
   const authState = authStore((state) => state.authState)!;
+
+  const rated = useMemo(() => {
+    return !membersYetToRate.find((member) => member.email === authState.email);
+  }, [membersYetToRate, authState]);
 
   return (
     <>
@@ -66,12 +73,15 @@ const ProjectBuddies: React.VFC<Props> = ({
                 Invite User
               </Button>
             )}
-            {isFinished && membersYetToRate.find((member) => member.email === authState.email)
-              && (
-              <Button onClick={() => setDialog('Rate')} variant="outlined">
-                Rate Members
+            {isFinished && (
+              <Button
+                onClick={() => setDialog('Rate')}
+                variant="outlined"
+                disabled={rated}
+              >
+                {rated ? 'Already Rated' : 'Rate Members'}
               </Button>
-              )}
+            )}
           </Stack>
         </CardContent>
         <List>
@@ -123,7 +133,7 @@ const ProjectBuddies: React.VFC<Props> = ({
       <RateDialog
         open={dialog === 'Rate'}
         closeDialog={() => setDialog('')}
-        onSubmit={() => {}}
+        onSubmit={submitRatings}
         peers={members.filter((member) => member.email !== authState.email)}
       />
     </>
