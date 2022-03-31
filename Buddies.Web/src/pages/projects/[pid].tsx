@@ -13,7 +13,7 @@ import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
 import { InviteUserRequest } from '../../api/model/inviteUserRequest';
 import { ProjectProfileResponse } from '../../api/model/projectProfileResponse';
-import {RateBuddiesRequest} from "../../api/model/rateBuddiesRequest";
+import { RateBuddiesRequest } from '../../api/model/rateBuddiesRequest';
 
 export type Tabs = 'Dashboard' | 'Buddies';
 
