@@ -28,7 +28,6 @@ type notiList = {
 }
 
 export default function NotificationBell() {
-    const [total, setTotal] = useState(1);
     const [active, setActive] = useState(false);
     
     const checkNew = () => {
@@ -36,12 +35,11 @@ export default function NotificationBell() {
         getapi
         .get(`${1}/${1}/`)
         .then(({ data } : any) => {
-            if (total < data.totalPages) {
+            if (data.totalPages != 0) {
                 setActive(true);
             } else {
                 setActive(false);
             }
-            setTotal(data.totalPages);
         })
         .catch((error) => {
             alert(error);
@@ -54,7 +52,7 @@ export default function NotificationBell() {
         checkNew();
       }, []);
 
-      setInterval(checkNew, 60000);
+      setInterval(checkNew, 20000);
    
     return (
         <>

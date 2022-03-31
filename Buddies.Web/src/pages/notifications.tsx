@@ -36,13 +36,11 @@ export default function Notifications() {
     let currentPage = 0;
     let size = 20;
     const [notis, setNotis] = useState([]);
-    const [total, setTotal] = useState(1);
     const loadNotis = () => {
         const currNoti:notiObject[] = [];
         getapi
         .get(`${currentPage}/${size}/`)
         .then(({ data } : any) => {
-            setTotal(data.totalPages);
             data.notifications.forEach((p: notiObject) => currNoti.push(p));
             setNotis((noti) => [...noti, ...currNoti]);
         })
@@ -53,9 +51,6 @@ export default function Notifications() {
       };
 
     const handleScroll = (e:any) => {
-        if (currentPage >= total) {
-            return;
-        }
         if (Math.ceil(e.target.documentElement.scrollTop + window.innerHeight)
             >= e.target.documentElement.scrollHeight) {
             loadNotis();
