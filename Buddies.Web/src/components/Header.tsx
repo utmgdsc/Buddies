@@ -18,8 +18,14 @@ const Header = ({
   lName:string, hline:string }) => {
   return (
     <Card sx={{
-      padding: 2, paddingLeft: 3, width: '100%', height: '90%', marginBottom: 1, backgroundColor: 'primary.dark',
-      marginTop: 5, marginLeft: 5
+      padding: 2,
+      paddingLeft: 3,
+      width: '100%',
+      height: '90%',
+      marginBottom: 1,
+      backgroundColor: 'primary.dark',
+      marginTop: 5,
+      marginLeft: 5,
     }}
     >
       <Grid container>
