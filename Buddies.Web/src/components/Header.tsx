@@ -18,12 +18,19 @@ const Header = ({
   lName:string, hline:string }) => {
   return (
     <Card sx={{
-      padding: 2, paddingLeft: 3, width: '100%', height: '90%', marginBottom: 1, backgroundColor: 'primary.dark',
+      padding: 2,
+      paddingLeft: 3,
+      width: '100%',
+      height: '90%',
+      marginBottom: 1,
+      backgroundColor: 'primary.dark',
+      marginTop: 5,
+      marginLeft: 5,
     }}
     >
       <Grid container>
         <Grid container item xs={1} justifyContent="center">
-          <Avatar alt="Remy Sharp" src="profile.png" sx={{ width: 74, height: 74 }} />
+          <Avatar sx={{ width: 74, height: 74 }} />
         </Grid>
         <Grid container item xs={9}>
           <Typography sx={{ marginTop: 5, marginLeft: 2 }} color="inherit" variant="subtitle2" gutterBottom>
