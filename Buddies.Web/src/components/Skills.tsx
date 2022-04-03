@@ -4,7 +4,7 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
-import type { UpdateProf } from '../pages/Profiles/[pid]';
+import type { UpdateProf } from '../pages/profiles/[pid]';
 import Skillform from './Skillform';
 
 /* Skills component. */

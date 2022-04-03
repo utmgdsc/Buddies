@@ -4,7 +4,16 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 
-const Websites = ({ logCheck }:{ logCheck: boolean | null }) => {
+interface Props {
+  /**
+   * variable to track whether a user is logged in
+   * and viewing his profile
+   */
+  isViewingOwnProfile: boolean | null
+}
+
+const Websites: React.FC<Props> = ({ isViewingOwnProfile }:
+{ isViewingOwnProfile: boolean | null }) => {
   return (
     <Card sx={{
       width: '100%',
@@ -22,7 +31,7 @@ const Websites = ({ logCheck }:{ logCheck: boolean | null }) => {
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          {logCheck && <CustomizedDialogs color="inherit" topmarg={0}>{undefined}</CustomizedDialogs>}
+          {isViewingOwnProfile && <CustomizedDialogs color="inherit" topmarg={0}>{undefined}</CustomizedDialogs>}
         </Grid>
       </Grid>
       <Typography variant="subtitle2" gutterBottom>

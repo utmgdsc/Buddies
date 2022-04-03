@@ -67,6 +67,14 @@ namespace Buddies.API.Entities
         /// </summary>
         [InverseProperty("InvitedTo")]
         public List<User> InvitedUsers { get; set; }
+
+        public bool IsFinished { get; set; } = false;
+
+        /// <summary>
+        /// Users that have yet to rate team members when the project has terminated
+        /// </summary>
+        public List<User> MembersYetToRate { get; set; }
+
     }
 
 }

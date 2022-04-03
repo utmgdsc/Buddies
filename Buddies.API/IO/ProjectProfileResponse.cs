@@ -31,6 +31,11 @@ namespace Buddies.API.IO
         [Required(ErrorMessage = "A list of project members is required.")]
         public List<UserInfoResponse> Members { get; set; } = new List<UserInfoResponse>();
 
+        [Required(ErrorMessage = "A list of project members yet to rate is required.")]
+        public List<UserInfoResponse> MembersYetToRate { get; set; } = new List<UserInfoResponse>();
+
+        [Required(ErrorMessage = "isFinished required")]
+        public bool IsFinished { get; set; }
 
     }
 }

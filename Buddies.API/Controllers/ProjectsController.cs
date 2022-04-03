@@ -25,6 +25,78 @@ namespace Buddies.API.Controllers
         {
             _context = context;
             _userManager = userManager;
+
+        }
+
+        /// <summary>
+        /// API route GET /api/v1/postings/{filters}/... for fetching all projects
+        /// that pass the filters.
+        /// </summary>
+        [HttpGet("postings/{location}/{members}/{category}/{page}/{results}")]
+        public async Task<ActionResult> GetProjectListing(string location, int members, string category, int page, float results)
+        {
+
+
+            var projectList = await _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Include(project => project.Owner)
+                .ThenInclude(owner => owner.Profile).ToListAsync();
+
+            var response = new ProjectListingsResponse();
+            var locationList = new List<String>();
+            var membersList = new List<String>();
+            var categoryList = new List<String>();
+
+
+            foreach (var project in projectList)
+            {
+
+                if ((project.Location == location || location == "null") &&
+                    (project.MaxMembers == members || members == -1) &&
+                    (project.Category == category || category == "null"))
+                {
+                    var owner = project.Owner.Profile;
+                    if (owner == null)
+                    {
+                        return NotFound("The owner has deleted his profile");
+                    }
+                    var projectResponse = new ProjectResponse
+                    {
+                        Title = project.Title,
+                        ProjectId = project.ProjectId,
+                        Description = project.Description,
+                        Location = project.Location,
+                        Username = String.Format("{0} {1}", owner.FirstName, owner.LastName),
+                        BuddyScore = 0,
+                        MaxMembers = project.MaxMembers,
+                        CurrentMembers = _context.Projects.Where(p => p.ProjectId == project.ProjectId).SelectMany(p => p.Members).ToList().Count,
+                        Category = project.Category,
+                    };
+                    response.Projects.Add(projectResponse);
+                    locationList.Add("Location: " + project.Location);
+                    membersList.Add("Members: " + project.MaxMembers.ToString());
+                    categoryList.Add("Category: " + project.Category);
+                }
+            }
+
+            var pageCount = Math.Ceiling(response.Projects.Count() / results);
+            response.Projects = response.Projects
+                .Skip((page - 1) * (int)results)
+                .Take((int)results)
+                .ToList();
+
+            response.TotalPages = (int)pageCount;
+            response.CurrentPage = page;
+
+            response.Locations = locationList.OrderBy(p => p).Distinct().ToList();
+            response.Locations.Insert(0, "Location: N/A");
+            response.Members = membersList.OrderBy(p => p).Distinct().ToList();
+            response.Members.Insert(0, "Members: N/A");
+            response.Categories = categoryList.OrderBy(p => p).Distinct().ToList();
+            response.Categories.Insert(0, "Category: N/A");
+
+            return Ok(response);
         }
 
         /// <summary>
@@ -249,11 +321,12 @@ namespace Buddies.API.Controllers
         /// API route GET /api/v1/projects/:id for fetching project profile.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetProfile(int id)
+        public async Task<ActionResult<ProjectProfileResponse>> GetProfile(int id)
         {
             var project = _context.Projects
                 .Include(project => project.Members)
                 .Include(project => project.InvitedUsers)
+                .Include(project => project.MembersYetToRate)
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile)
                 .Where(project => project.ProjectId == id)
@@ -271,6 +344,7 @@ namespace Buddies.API.Controllers
                 Email = project.Owner.Email,
                 Category = project.Category,
                 MaxMembers = project.MaxMembers,
+                IsFinished = project.IsFinished
             };
 
             foreach (User member in project.Members)
@@ -301,6 +375,21 @@ namespace Buddies.API.Controllers
                 userInfo.Email = invitedUser.Email;
                 userInfo.UserId = invitedUser.Id;
                 profileResponse.InvitedUsers.Add(userInfo);
+            }
+
+            foreach (User invitedUser in project.MembersYetToRate)
+            {
+                var userInfo = new UserInfoResponse();
+                var userprofile = await _context.Profiles.FindAsync(invitedUser.Id);
+                if (userprofile == null)
+                {
+                    return NotFound("USER PROFILE NOT FOUND");
+                }
+                userInfo.FirstName = userprofile.FirstName;
+                userInfo.LastName = userprofile.LastName;
+                userInfo.Email = invitedUser.Email;
+                userInfo.UserId = invitedUser.Id;
+                profileResponse.MembersYetToRate.Add(userInfo);
             }
 
             return Ok(profileResponse);
@@ -389,9 +478,9 @@ namespace Buddies.API.Controllers
         /// <summary>
         /// API route PUT /api/v1/projects/{pid}/delete/{uid} for updating profile.
         /// </summary>
-        [HttpPost("{pid}/invite")]
+        [HttpPost("{pid}/invite/{uid}")]
         [Authorize]
-        public async Task<ActionResult> InviteProjectMember(int pid, [FromBody] InviteUserRequest request)
+        public async Task<ActionResult> InviteProjectMember(int pid, int uid)
         {
             var project = _context.Projects
                 .Include(project => project.Members)
@@ -404,7 +493,8 @@ namespace Buddies.API.Controllers
                 return NotFound("PROFILE NOT FOUND");
             }
             if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
-            var invitedUser = await _context.Users.FirstOrDefaultAsync(user => user.Email == request.UserEmail);
+
+            var invitedUser = _context.Users.FindAsync(uid).Result;
 
             if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)){
                 project.InvitedUsers.Add(invitedUser);
@@ -460,6 +550,94 @@ namespace Buddies.API.Controllers
             }
 
             return NotFound("User not found");
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/terminate/ for terminating a project.
+        /// </summary>
+        [HttpPost("{pid}/terminate/")]
+        [Authorize]
+        public async Task<ActionResult> TermintateProject(int pid)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .ThenInclude(member => member.Profile)
+                .Include(project => project.Owner)
+                .ThenInclude(owner => owner.Profile)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
+            if (project.IsFinished)
+            {
+                return BadRequest("Project already terminated");
+            }
+
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
+
+            project.IsFinished = true;
+            project.MembersYetToRate = project.Members;
+            foreach (var member in project.Members)
+            {
+                member.Profile.ProjectCount += 1;
+            }
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/ratebuddies/ for joining profile IF you're on the invited list.
+        /// </summary>
+        [HttpPost("{pid}/ratebuddies/")]
+        [Authorize]
+        public async Task<ActionResult> RateBuddies(int pid, RateBuddiesRequest request)
+        {
+            var project = _context.Projects
+                .Include(project => project.MembersYetToRate)
+                .ThenInclude(member => member.Profile)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
+            var currentUser = _userManager.GetUserAsync(User).Result;
+
+            if (!project.MembersYetToRate.Contains(currentUser))
+            {
+                return BadRequest("You have already rated this project or are not a part of this project");
+            }
+
+            foreach (var member in project.MembersYetToRate)
+            {
+                if (member == currentUser)
+                {
+                    continue;
+                }
+
+                if (request.BuddyScores.TryGetValue(member.Id, out int score))
+                {
+                    var n = member.Profile.ProjectCount;
+                    member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n - 1))) / n;                  
+                }
+                else
+                {
+                    return BadRequest( "Member: " + member.Profile.FirstName + " " + member.Profile.LastName + 
+                        " is not included in this project rating");
+                }
+            }
+
+            project.MembersYetToRate.Remove(currentUser);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
 
