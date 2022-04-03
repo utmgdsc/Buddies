@@ -16,6 +16,7 @@ public class User : IdentityUser<int>
         Email = email;
         Projects = new List<Project>();
         InvitedTo = new List<Project>();
+        Notifications = new List<Notification>();
     }
     public sealed override string Email
     {

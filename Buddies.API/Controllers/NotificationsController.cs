@@ -30,30 +30,40 @@ namespace Buddies.API.Controllers
         /// <summary>
         /// API route GET /api/v1/notifications/page/results for fetching profile.
         /// </summary>
-        [HttpGet("{page}/{results}")]
-        public async Task<ActionResult> GetNotis(int page, float results)
+        [HttpGet("{page}/{size}")]
+        [Authorize]
+        public async Task<ActionResult> GetNotifications(int page, float size)
         {
-            var pagedNotificationsResponse = new PagedNotificationsResponse
-            {
-                Notifications = new List<NotificationResponse>(),
-                TotalPages = 1,
-                CurrentPage = 1
-            };
-            var currentUser = _userManager.GetUserAsync(User).Result;
+            var notifications = new List<NotificationResponse>();
+            var currentUserId = _userManager.GetUserId(User);
+
+            var currentUser = _context.Users
+                .Include(user => user.Profile)
+                .Include(user => user.Notifications)
+                .ThenInclude(n => n.Project)
+                .Where(u => u.Id.ToString() == currentUserId)
+                .FirstOrDefault();
 
             foreach (var notification in currentUser.Notifications)
             {
 
-                pagedNotificationsResponse.Notifications.Add(new NotificationResponse()
+                notifications.Add(new NotificationResponse()
                 {
                     Noti_id = notification.Id,
                     Message = notification.NotificationMessage,
-                    Sender_id = notification.Sender.Id,
-                    Sender_name = notification.Sender.Profile.FirstName,
+                    Sender_id = notification.SenderId,
+                    Sender_name = notification.SenderName,
                     Project_id = notification.Project.ProjectId
                 }
-                );
+                ); 
             }
+
+            var pagedNotificationsResponse = new PagedNotificationsResponse
+            {
+                Notifications = notifications,
+                TotalPages = (int) Math.Ceiling(notifications.Count() / size),
+                CurrentPage = page
+            };
             return Ok(pagedNotificationsResponse);
         }
 

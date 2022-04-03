@@ -176,9 +176,9 @@ namespace Buddies.API.Controllers
             {
                 return Ok(badResponse);
             }
-            
+
             var categoryList = await _context.Categories.ToListAsync();
-            int tolerance = 0; 
+            int tolerance = 0;
             var matchingCategories = categoryList.Where(p =>
             {
                 //Check Contains
@@ -187,9 +187,9 @@ namespace Buddies.API.Controllers
 
                 //Check LongestCommonSubsequence
                 string output = "";
-                bool subsequenceTolerated = FuzzySearchService.LongestCommonSubsequence(p.Name.ToLower(), search.ToLower(), out output) >= search.Length - tolerance; 
-                                                                                                                        // if substring matches at least
-                                                                                                                        // this many characters.
+                bool subsequenceTolerated = FuzzySearchService.LongestCommonSubsequence(p.Name.ToLower(), search.ToLower(), out output) >= search.Length - tolerance;
+                // if substring matches at least
+                // this many characters.
                 return subsequenceTolerated;
             }).ToList();
 
@@ -286,7 +286,7 @@ namespace Buddies.API.Controllers
                 return Ok(badResponse);
             }
             const int TOLERANCE = 0;
-            var matchingPeople = emailsList.Where(p =>  
+            var matchingPeople = emailsList.Where(p =>
             {
                 //Check Contains
                 bool contains = p.Email.ToLower().Contains(search.ToLower());
@@ -331,12 +331,12 @@ namespace Buddies.API.Controllers
                 .ThenInclude(owner => owner.Profile)
                 .Where(project => project.ProjectId == id)
                 .FirstOrDefault();
-                
+
             if (project == null)
             {
                 return NotFound("PROJECT PROFILE NOT FOUND");
             }
-            var profileResponse = new ProjectProfileResponse{
+            var profileResponse = new ProjectProfileResponse {
                 Title = project.Title,
                 Description = project.Description,
                 Location = project.Location,
@@ -492,17 +492,94 @@ namespace Buddies.API.Controllers
             {
                 return NotFound("PROFILE NOT FOUND");
             }
-            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
+            var currentUserId = _userManager.GetUserId(User);
+
+            var currentUser = _context.Users
+                .Include(user => user.Profile)
+                .Where(u => u.Id.ToString() == currentUserId)
+                .FirstOrDefault();
+
+            if (project.Owner != currentUser) { return Unauthorized(); }
 
             var invitedUser = _context.Users.FindAsync(uid).Result;
 
-            if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)){
+            if (invitedUser == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)) {
                 project.InvitedUsers.Add(invitedUser);
+
+                var inviteRequest = new Notification(currentUser.Profile.FirstName + " invited you to join " + project.Title);
+                inviteRequest.SenderId = currentUser.Id;
+                inviteRequest.SenderName = currentUser.Profile.FirstName + " " + currentUser.Profile.LastName;
+                inviteRequest.Recipient = invitedUser;
+                inviteRequest.Project = project;
+                await _context.Notifications.AddAsync(inviteRequest);
+
+                invitedUser.Notifications.Add(inviteRequest);
+
                 await _context.SaveChangesAsync();
                 return Ok();
             }
 
+
+
             return NotFound("User not found");
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/join/ for sending the project own
+        /// </summary>
+        [HttpPost("{pid}/joinrequest/")]
+        [Authorize]
+        public async Task<ActionResult> JoinProjectRequest(int pid)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("Project not found");
+            }
+
+            if (project.Members.Count >= project.MaxMembers)
+            {
+                return BadRequest("There are no more space in this project!");
+            }
+
+            var currentUserId = _userManager.GetUserId(User);
+
+            var currentUser = _context.Users
+                .Include(user => user.Profile)
+                .Where(u => u.Id.ToString() == currentUserId)
+                .FirstOrDefault();
+
+            if (project.Members.Contains(currentUser))
+            {
+                return BadRequest("You are already a member!");
+            }
+
+            if (project.InvitedUsers.Contains(currentUser))
+            {
+                return BadRequest("You are already invited!");
+            }
+
+            var joinRequest = new Notification(currentUser.Profile.FirstName + " requested to join " + project.Title);
+            joinRequest.SenderId = currentUser.Id;
+            joinRequest.SenderName = currentUser.Profile.FirstName + " " + currentUser.Profile.LastName;
+            joinRequest.Recipient = project.Owner;
+            joinRequest.Project = project;
+            await _context.Notifications.AddAsync(joinRequest);
+
+            project.Owner.Notifications.Add(joinRequest);
+            await _context.SaveChangesAsync();
+
+            return Ok("join request added");
         }
 
         /// <summary>
@@ -527,9 +604,9 @@ namespace Buddies.API.Controllers
             {
                 return BadRequest("There are no more space in this project!");
             }
-            if (project.Owner == _userManager.GetUserAsync(User).Result) 
-            { 
-                return BadRequest("Cannot remove owner from project"); 
+            if (project.Owner == _userManager.GetUserAsync(User).Result)
+            {
+                return BadRequest("Cannot remove owner from project");
             }
 
             var currentUser = _userManager.GetUserAsync(User).Result;
@@ -625,11 +702,11 @@ namespace Buddies.API.Controllers
                 if (request.BuddyScores.TryGetValue(member.Id, out int score))
                 {
                     var n = member.Profile.ProjectCount;
-                    member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n - 1))) / n;                  
+                    member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n - 1))) / n;
                 }
                 else
                 {
-                    return BadRequest( "Member: " + member.Profile.FirstName + " " + member.Profile.LastName + 
+                    return BadRequest("Member: " + member.Profile.FirstName + " " + member.Profile.LastName +
                         " is not included in this project rating");
                 }
             }
@@ -642,4 +719,4 @@ namespace Buddies.API.Controllers
 
 
     }
-}
+} 
