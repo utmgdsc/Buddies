@@ -147,4 +147,9 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     /// to a User Profile.
     /// </summary>
     public DbSet<Skill> Skills { get; set; } = null!;
+
+    /// </summary>
+    /// Collection of all Notifications
+    /// </summary>
+    public DbSet<Notification> Notifications { get; set; } = null!;
 }

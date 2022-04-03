@@ -19,8 +19,5 @@ namespace Buddies.API.IO
         [Required]
         public int Project_id { get; set; } = default!;
 
-        [Required]
-        public string Noti_type { get; set; } = default!;
-
     }
 }

@@ -43,4 +43,9 @@ public class User : IdentityUser<int>
     /// Projects User is invited to
     /// </summary>
     public List<Project> InvitedTo { get; set; }
+
+    /// <summary>
+    /// Projects User is invited to
+    /// </summary>
+    public List<Notification> Notifications { get; set; }
 }
