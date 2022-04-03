@@ -595,5 +595,27 @@ namespace Buddies.API.Controllers
         }
 
 
-    }
+        /// <summary>
+        /// API route GET /api/v1/projects/:id for fetching project profile.
+        /// </summary>
+        [HttpGet("recs/{id}")]
+        public async Task<ActionResult> GetRecommendations(int id)
+        {
+            var project = _context.Projects
+                .Include(project => project.Owner)
+                .Include(project => project.Skills)
+                .Where(project => project.ProjectId == id)
+                .FirstOrDefault();
+
+            var user = _userManager.GetUserAsync(User).Result;
+            var profile = await _context.Profiles
+                .Include(profile => profile.Skills)
+                .ToListAsync();
+            if (project == null)
+            {
+                return BadRequest("No such project exists :(");
+            }
+            var recs = KnnService.KNearestUsers(project, profile, 5);
+            return Ok(recs);
+        }
 }
