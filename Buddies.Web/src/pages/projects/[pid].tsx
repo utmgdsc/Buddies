@@ -7,7 +7,7 @@ import axios from 'axios';
 import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
 import {
-  getProject, addMember, getUsers, inviteMember, removeMember, terminateProject, rateMembers,
+  getProject, addMember, getUsers, inviteMember, removeMember, terminateProject, rateMembers, joinRequest,
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
@@ -111,6 +111,19 @@ const Project: React.VFC = () => {
       .catch((err) => displayErrorNotif(err));
   };
 
+  const requestToJoin = async () => {
+    if (!(typeof projectId === 'string')) {
+      alert('error');
+      return;
+    }
+    const res = await joinRequest(projectId)
+      .catch((error) => alert(error));
+
+    if (res) {
+      getAndMakeProject();
+    }
+  };
+
   const [tab, setTab] = useState<Tabs>('Dashboard');
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -140,6 +153,7 @@ const Project: React.VFC = () => {
             setSidebarOpen={setSidebarOpen}
             getUsers={getUsers}
             submitInvite={submitInvite}
+            requestToJoin={requestToJoin}
             isOwner={isOwner}
           />
         );
