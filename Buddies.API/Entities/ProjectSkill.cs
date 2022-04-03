@@ -20,6 +20,6 @@ namespace Buddies.API.Entities
         public string Name { get; set; }
 
         public int ProjectId { get; set; }
-        public Profile Project { get; set; } = null!;
+        public Project Project { get; set; } = null!;
     }
 }
