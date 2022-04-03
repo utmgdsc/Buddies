@@ -160,7 +160,6 @@ namespace Buddies.API.Controllers
         /// API route PUT /api/v1/projects/skills for updating project skills.
         /// </summary>
         [HttpPut("skills/{id}")]
-        [Authorize]
         public async Task<ActionResult> UpdateProjectProfile(int id, UpdateProjectSkillRequest skills)
         {
             var project = _context.Projects
@@ -174,7 +173,7 @@ namespace Buddies.API.Controllers
                 return NotFound("PROFILE NOT FOUND");
             }
 
-            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized("You must be the owner"); }
+            //if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized("You must be the owner"); }
             var i = 0;
             for (i = 0; i < skills.Skills.Count; i++)
             {
@@ -189,12 +188,14 @@ namespace Buddies.API.Controllers
                 }
                 if (i == 2)
                 {
+                    i++;
                     break;
                 }
             }
-            for (var j = i; j < project.Skills.Count; j++)
+            var n = project.Skills.Count;
+            for (var j = i; j < n; j++)
             {
-                project.Skills.RemoveAt(j);
+                project.Skills.RemoveAt(i);
             }
 
             await _context.SaveChangesAsync();

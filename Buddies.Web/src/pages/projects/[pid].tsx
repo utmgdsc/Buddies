@@ -6,11 +6,12 @@ import axios from 'axios';
 import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
 import {
-  getProject, addMember, getUsers, inviteMember, removeMember,
+  getProject, addMember, getUsers, inviteMember, removeMember, updateProjectSkills
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
 import { InviteUserRequest } from '../../api/model/inviteUserRequest';
+import { Skillobject } from '../profiles/[pid]';
 
 export type UserInfo = {
   FirstName: string,
@@ -28,6 +29,7 @@ export type ProjectProfile = {
   MaxMembers: number
   Category: string,
   MemberLst: UserInfo[],
+  skills: Skillobject[],
   InvitedLst: UserInfo[]
 };
 
@@ -39,7 +41,7 @@ const memberLst: UserInfo[] = [{
   UserId: -1,
   Email: 'test@test.com',
 }];
-
+const SkillLst: Skillobject[] = [];
 // default project that loads when project id is not found
 const defaultProject: ProjectProfile = {
   Title: 'Not Found',
@@ -50,6 +52,7 @@ const defaultProject: ProjectProfile = {
   MaxMembers: 1,
   Category: 'Not Found',
   MemberLst: memberLst,
+  skills: SkillLst,
   InvitedLst: [],
 };
 
@@ -110,9 +113,12 @@ const Project: React.VFC = () => {
         MaxMembers: res.data.maxMembers,
         Category: res.data.category,
         MemberLst: newMemberLst,
+        skills: res.data.skills || SkillLst,
         InvitedLst: newInvitedLst,
       };
       setProject(newProject);
+      console.log(res.data.skills);
+      console.log(newProject);
       // console.log(`${memberIds.length} ${project.MaxMembers}`);
     }).catch((error) => {
       alert(error);
@@ -165,6 +171,22 @@ const Project: React.VFC = () => {
       });
   };
 
+  const clone: ProjectProfile = JSON.parse(JSON.stringify(project));
+  
+  const updateUserProfile: VoidFunction = async () => {
+    if (!(typeof projectId === 'string')) {
+      alert('error');
+      return;
+    }
+    
+    const res = await updateProjectSkills(clone.skills, projectId).catch((error) => {
+      alert(error);
+    });
+    if (res) {
+      setProject(clone);
+    }
+  };
+
   useEffect(() => {
     if (!router.isReady) return;
     const { pid } = router.query;
@@ -207,6 +229,8 @@ const Project: React.VFC = () => {
             setSidebarOpen={setSidebarOpen}
             getUsers={getUsers}
             submitInvite={submitInvite}
+            addSkills={updateUserProfile}
+            projectprofile = {clone}
           />
         );
       case 'Buddies':

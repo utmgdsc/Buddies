@@ -6,10 +6,12 @@ import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 import type { UpdateProf } from '../pages/profiles/[pid]';
 import Skillform from './Skillform';
+import { ProjectProfile } from '../pages/projects/[pid]';
 
 /* Skills component. */
 const Skills = ({ updateFunc, newProfile, logCheck }: { updateFunc: VoidFunction,
-  newProfile: UpdateProf, logCheck: boolean | null }) => {
+  newProfile: UpdateProf | ProjectProfile, logCheck: boolean | null }) => {
+  let userOrProject: boolean = newProfile.MemberLst ? true : false
   return (
     <Card sx={{
       width: '100%', height: '30%', border: 1, alignItems: 'center', padding: 2, boxShadow: 12,
@@ -18,7 +20,7 @@ const Skills = ({ updateFunc, newProfile, logCheck }: { updateFunc: VoidFunction
       <Grid container>
         <Grid item xs={11}>
           <Typography color="inherit" variant="h6" gutterBottom>
-            Skills
+            {userOrProject ? 'Skills Required' : 'Skills'}
           </Typography>
         </Grid>
         <Grid item xs={1}>
@@ -49,13 +51,13 @@ const Skills = ({ updateFunc, newProfile, logCheck }: { updateFunc: VoidFunction
                   sx={{
                     border: 1,
                     borderRadius: 8,
-                    height: '10%',
+                    height: userOrProject ? '50%' : '10%',
                     paddingTop: 0,
-                    marginBottom: -2,
+                    marginBottom: userOrProject ? 0 : -2,
                     marginRight: 0,
                   }}
                 >
-                  <Typography variant="h6" gutterBottom fontSize={12}>
+                  <Typography variant="h6" gutterBottom fontSize={userOrProject ? 25 : 12}>
                     {skill.name}
                   </Typography>
                 </Box>

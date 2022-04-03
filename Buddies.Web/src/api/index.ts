@@ -8,7 +8,7 @@ import { authStore, AuthState } from '../stores/authStore';
 import { CreateProjectRequest } from './model/createProjectRequest';
 import { SearchResponse } from './model/searchResponse';
 import { InviteUserRequest } from './model/inviteUserRequest';
-import { UpdateProf } from '../pages/profiles/[pid]';
+import { Skillobject, UpdateProf } from '../pages/profiles/[pid]';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -82,6 +82,10 @@ export async function inviteMember(projectId: string, req: InviteUserRequest) {
 export async function removeMember(projectId: string, userId: number) {
   return axios.post(`/api/v1/projects/${projectId}/delete/${userId}`);
 }
+
+export async function updateProjectSkills(skills: Skillobject[], projectId: string | string[] | undefined){
+  return axios.put(`/api/v1/projects/skills/${projectId}`, {'skills': skills});
+};
 
 export async function getProfile(profileId: string | string[] | undefined){
   return await axios.get(`/api/v1/Profiles/${profileId}`);

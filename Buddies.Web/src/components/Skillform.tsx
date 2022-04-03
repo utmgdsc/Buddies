@@ -5,10 +5,11 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import type { UpdateProf, Skillobject } from '../pages/Profiles/[pid]';
 import SkillList from './SkillList';
+import { ProjectProfile } from '../pages/projects/[pid]';
 
 /* Skill Form. Allows the user to update his skills */
 const Skillform = ({ submitFunc, profileData }: { submitFunc: VoidFunction,
-  profileData: UpdateProf }) => {
+  profileData: UpdateProf | ProjectProfile }) => {
   const [skills, setSkills] = useState<Skillobject[]>([]);
   const skillNameRef = useRef<HTMLInputElement | null>(null);
 
@@ -57,6 +58,8 @@ const Skillform = ({ submitFunc, profileData }: { submitFunc: VoidFunction,
     profileData.skills = skills; // eslint-disable-line no-param-reassign
     submitFunc();
   }, [skills]);
+
+  let canAdd: boolean = profileData.Title ? (skills.length < 3 ? true : false) : true
   return (
     <>
       <SkillList skills={skills} toggleSkill={toggleSkill} />
@@ -64,9 +67,11 @@ const Skillform = ({ submitFunc, profileData }: { submitFunc: VoidFunction,
       <input ref={skillNameRef} type="text" style={{ width: '100%', padding: 20, marginBottom: 3 }} />
       <br />
       <Grid container spacing={1} direction="row" alignItems="center" justifyContent="center">
+        {canAdd &&
         <Grid item>
           <Button variant="contained" onClick={handleAddSkill} style={{ backgroundColor: 'black', color: 'white' }}> Add Skill</Button>
         </Grid>
+        }
         <Grid item>
           <Button variant="contained" onClick={handleClearSkills} style={{ backgroundColor: 'black', color: 'white' }}>Clear Skills</Button>
         </Grid>
