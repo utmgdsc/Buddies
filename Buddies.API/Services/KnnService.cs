@@ -30,7 +30,7 @@ namespace Buddies.API.Services
                 foreach (var projectSkill in a.Skills)
                 {
                     string output = "";
-                    double subsequenceTolerated = (double) FuzzySearchService.LongestCommonSubsequence(projectSkill.Name.ToLower(), skill.Name.ToLower(), out output) / skill.Name.Length;
+                    double subsequenceTolerated = FuzzySearchService.LongestCommonSubsequence(projectSkill.Name.ToLower(), skill.Name.ToLower(), out output) / (double)projectSkill.Name.Length;
                     if (subsequenceTolerated > vector[i])
                     {
                         vector[i] = subsequenceTolerated;

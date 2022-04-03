@@ -598,8 +598,8 @@ namespace Buddies.API.Controllers
         /// <summary>
         /// API route GET /api/v1/projects/:id for fetching project profile.
         /// </summary>
-        [HttpGet("recs/{id}")]
-        public async Task<ActionResult> GetRecommendations(int id)
+        [HttpGet("recs/{id}/{k}")]
+        public async Task<ActionResult> GetRecommendations(int id, int k)
         {
             var project = _context.Projects
                 .Include(project => project.Owner)
@@ -615,7 +615,21 @@ namespace Buddies.API.Controllers
             {
                 return BadRequest("No such project exists :(");
             }
-            var recs = KnnService.KNearestUsers(project, profile, 5);
-            return Ok(recs);
+            var recs = KnnService.KNearestUsers(project, profile, k);
+            var ret = new List<UserProfileResponse>();
+            foreach (var rec in recs)
+            {
+                var profResponse = new UserProfileResponse()
+                {
+                    FirstName = rec.FirstName,
+                    LastName = rec.LastName,
+                    Headline = rec.Headline,
+                    AboutMe = rec.AboutMe,
+                    Skills = new List<SkillResponse>()
+                };
+                ret.Add(profResponse);
+            }
+            return Ok(ret);
         }
+    }
 }
