@@ -175,16 +175,26 @@ namespace Buddies.API.Controllers
             }
 
             if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized("You must be the owner"); }
-
             var i = 0;
-            foreach (var skill in project.Skills)
+            for (i = 0; i < skills.Skills.Count; i++)
             {
-                skill.Name = skills.Skills[i].Name;
-                i++;
-                if (i == 3)
+                if (i >= project.Skills.Count)
+                {
+                    var newSkill = new ProjectSkill(skills.Skills[i].Name);
+                    project.Skills.Add(newSkill);
+                }
+                else
+                {
+                    project.Skills[i].Name = skills.Skills[i].Name;
+                }
+                if (i == 2)
                 {
                     break;
                 }
+            }
+            for (var j = i; j < project.Skills.Count; j++)
+            {
+                project.Skills.RemoveAt(j);
             }
 
             await _context.SaveChangesAsync();
