@@ -157,6 +157,42 @@ namespace Buddies.API.Controllers
         }
 
         /// <summary>
+        /// API route PUT /api/v1/projects/skills for updating project skills.
+        /// </summary>
+        [HttpPut("skills/{id}")]
+        [Authorize]
+        public async Task<ActionResult> UpdateProjectProfile(int id, UpdateProjectSkillRequest skills)
+        {
+            var project = _context.Projects
+                .Include(project => project.Owner)
+                .Include(project => project.Skills)
+                .Where(project => project.ProjectId == id)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized("You must be the owner"); }
+
+            var i = 0;
+            foreach (var skill in project.Skills)
+            {
+                skill.Name = skills.Skills[i].Name;
+                i++;
+                if (i == 3)
+                {
+                    break;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        /// <summary>
         /// API route GET /api/v1/projects/category for fetching categories.
         /// </summary>
         /// <param name="search">Category to search for</param>
@@ -326,6 +362,7 @@ namespace Buddies.API.Controllers
             var project = _context.Projects
                 .Include(project => project.Members)
                 .Include(project => project.InvitedUsers)
+                .Include(project => project.Skills)
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile)
                 .Where(project => project.ProjectId == id)
@@ -373,6 +410,17 @@ namespace Buddies.API.Controllers
                 userInfo.Email = invitedUser.Email;
                 userInfo.UserId = invitedUser.Id;
                 profileResponse.InvitedUsers.Add(userInfo);
+            }
+
+            foreach (ProjectSkill skill in project.Skills)
+            {
+                var skillInfo = new SkillResponse()
+                {
+                    Id = skill.Id,
+                    Name = skill.Name,
+                    Delete = false
+                };
+                profileResponse.Skills.Add(skillInfo);
             }
 
             return Ok(profileResponse);

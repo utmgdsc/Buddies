@@ -13,6 +13,7 @@ namespace Buddies.API.Entities
         {
             Members = new List<User>();
             InvitedUsers = new List<User>();
+            Skills = new List<ProjectSkill>();
         }
 
         /// <summary>
@@ -43,6 +44,11 @@ namespace Buddies.API.Entities
         /// Type of project
         /// </summary>
         public string Category { get; set; } = null!;
+
+        /// <summary>
+        /// Required Skills
+        /// </summary>
+        public List<ProjectSkill> Skills { get; set; }
 
         /// <summary>
         /// Group capacity

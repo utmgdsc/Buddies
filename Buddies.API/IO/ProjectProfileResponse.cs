@@ -31,6 +31,9 @@ namespace Buddies.API.IO
         [Required(ErrorMessage = "A list of project members is required.")]
         public List<UserInfoResponse> Members { get; set; } = new List<UserInfoResponse>();
 
+        [Required(ErrorMessage = "A list of project members is required.")]
+        public List<SkillResponse> Skills { get; set; } = new List<SkillResponse>();
+
 
     }
 }
