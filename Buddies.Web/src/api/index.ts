@@ -8,7 +8,8 @@ import { authStore, AuthState } from '../stores/authStore';
 import { CreateProjectRequest } from './model/createProjectRequest';
 import { SearchResponse } from './model/searchResponse';
 import { InviteUserRequest } from './model/inviteUserRequest';
-import { UpdateProf } from '../pages/profiles/[pid]';
+import { RateBuddiesRequest } from './model/rateBuddiesRequest';
+import type { UpdateProf } from '../pages/Profiles/[pid]';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -90,3 +91,11 @@ export async function getProfile(profileId: string | string[] | undefined){
 export async function updateProfile(profileToUpdate: UpdateProf){
   return axios.put('/api/v1/Profiles/', profileToUpdate);
 };
+
+export async function terminateProject(projectId: string) {
+  return axios.post(`/api/v1/projects/${projectId}/terminate`);
+}
+
+export async function rateMembers(projectId: string, ratings: RateBuddiesRequest) {
+  return axios.post(`/api/v1/projects/${projectId}/ratebuddies`, ratings);
+}

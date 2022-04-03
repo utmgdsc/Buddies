@@ -9,7 +9,7 @@ import Aboutme from '../../components/Aboutme';
 import Projects from '../../components/Projects';
 import Skills from '../../components/Skills';
 import Websites from '../../components/Websites';
-import { getProfile, updateProfile } from '../../api/index';
+import { getProfile, updateProfile } from '../../api';
 import { authStore } from '../../stores/authStore';
 
 let profileId: string | string[] | undefined = '';
