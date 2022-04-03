@@ -639,8 +639,11 @@ namespace Buddies.API.Controllers
             var project = _context.Projects
                 .Include(project => project.Members)
                 .ThenInclude(member => member.Profile)
+                .Include(project => project.Members)
+                .ThenInclude(member => member.Notifications)
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile)
+                
                 .Where(project => project.ProjectId == pid)
                 .FirstOrDefault();
 
@@ -653,14 +656,25 @@ namespace Buddies.API.Controllers
             {
                 return BadRequest("Project already terminated");
             }
-
-            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
-
+            var currentUser = _userManager.GetUserAsync(User).Result;
+            if (project.Owner != currentUser) { return Unauthorized(); }
+            
             project.IsFinished = true;
             project.MembersYetToRate = project.Members;
             foreach (var member in project.Members)
             {
                 member.Profile.ProjectCount += 1;
+                var terminateNotification = new Notification(project.Title + " has terminated! Make sure to go rate your teammates!");
+                terminateNotification.SenderId = currentUser.Id;
+                terminateNotification.SenderName = currentUser.Profile.FirstName + " " + currentUser.Profile.LastName;
+                terminateNotification.Recipient = member;
+                terminateNotification.Project = project;
+                await _context.Notifications.AddAsync(terminateNotification);
+
+                member.Notifications.Add(terminateNotification);
+                await _context.SaveChangesAsync();
+
+
             }
             await _context.SaveChangesAsync();
             return Ok();
