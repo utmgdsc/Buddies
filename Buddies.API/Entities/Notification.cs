@@ -47,6 +47,11 @@ namespace Buddies.API.Entities
         /// </summary>
         public Project Project { get; set; } = null!;
 
+        /// <summary>
+        /// If the notification has been read
+        /// </summary>
+        public bool IsRead { get; set; } = false;
+
 
     }
 }

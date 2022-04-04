@@ -49,24 +49,47 @@ namespace Buddies.API.Controllers
 
                 notifications.Add(new NotificationResponse()
                 {
-                    Noti_id = notification.Id,
+                    NotificationId = notification.Id,
                     Message = notification.NotificationMessage,
-                    Sender_id = notification.SenderId,
-                    Sender_name = notification.SenderName,
-                    Project_id = notification.Project.ProjectId
+                    SenderId = notification.SenderId,
+                    SenderName = notification.SenderName,
+                    ProjectId = notification.Project.ProjectId,
+                    IsRead = notification.IsRead
                 }
                 ); 
             }
-
             var pagedNotificationsResponse = new PagedNotificationsResponse
             {
-                Notifications = notifications,
+                Notifications = notifications.Skip((page - 1) * (int)size).Take((int)size).ToList(),
                 TotalPages = (int) Math.Ceiling(notifications.Count() / size),
                 CurrentPage = page
             };
             return Ok(pagedNotificationsResponse);
         }
 
+
+        [HttpPut("read/{nid}")]
+        [Authorize]
+        public async Task<ActionResult> ReadNotification(int nid)
+        {
+            var notifications = new List<NotificationResponse>();
+            var currentUserId = _userManager.GetUserId(User);
+
+            var currentUser = _context.Users
+                .Include(user => user.Notifications)
+                .Where(u => u.Id.ToString() == currentUserId)
+                .FirstOrDefault();
+
+            var noti = currentUser.Notifications.Find(n => n.Id == nid);
+            if (noti == null)
+            {
+                return BadRequest("notification not found");
+            }
+            noti.IsRead = true;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 }
 
