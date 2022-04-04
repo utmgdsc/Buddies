@@ -4,21 +4,14 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 
-const getapi = axios.create({
-    baseURL: '/api/v1/notifications/',
-    headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-    },
-});
-
 type notiObject = {
-    'noti_id': number,
+    'notificationId': number,
     'message': string,
-    'sender_id': number,
-    'sender_name': string,
-    'project_id': number,
-    'noti_type': string,
+    'senderId': number,
+    'senderName': string,
+    'projectId': number,
+    'isRead': boolean,
+    'timeCreated': string,
 };
 
 type notiList = {
@@ -32,11 +25,15 @@ export default function NotificationBell() {
     
     const checkNew = () => {
         const currNoti:notiObject[] = [];
-        getapi
-        .get(`${1}/${1}/`)
+        axios
+        .get(`/api/v1/notifications/1/1/`)
         .then(({ data } : any) => {
-            if (data.totalPages != 0) {
-                setActive(true);
+            if (data.notifications.length != 0) {
+                if (data.notifications[0].isRead == false) {
+                    setActive(true);
+                } else {
+                    setActive(false);
+                }
             } else {
                 setActive(false);
             }
@@ -44,15 +41,13 @@ export default function NotificationBell() {
         .catch((error) => {
             alert(error);
           });
-        
-        console.log("HI");
       };
 
       useEffect(() => {
         checkNew();
       }, []);
 
-      setInterval(checkNew, 20000);
+      setInterval(checkNew, 10000);
    
     return (
         <>

@@ -7,23 +7,25 @@ import Grid from '@mui/material/Grid';
 import axios from "axios";
 import { useEffect, useState } from "react";
 import CardContent from '@mui/material/CardContent';
+import CardActionArea from '@mui/material/CardActionArea';
 
 
-const getapi = axios.create({
-    baseURL: '/api/v1/notifications/',
-    headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-    },
-});
+// const getapi = axios.create({
+//     baseURL: '/api/v1/notifications/',
+//     headers: {
+//         Accept: 'application/json',
+//         'Content-type': 'application/json',
+//     },
+// });
 
 type notiObject = {
-    'noti_id': number,
+    'notificationId': number,
     'message': string,
-    'sender_id': number,
-    'sender_name': string,
-    'project_id': number,
-    'noti_type': string,
+    'senderId': number,
+    'senderName': string,
+    'projectId': number,
+    'isRead': boolean,
+    'timeCreated': string
 };
 
 type notiList = {
@@ -33,14 +35,19 @@ type notiList = {
 }
 
 export default function Notifications() {
-    let currentPage = 0;
+    let currentPage = 1;
     let size = 20;
-    const [notis, setNotis] = useState([]);
+    const [notis, setNotis] = useState<notiObject[]>([]); 
+    console.log(notis)
+    const [bot, setBot] = useState<boolean>(false);
     const loadNotis = () => {
         const currNoti:notiObject[] = [];
-        getapi
-        .get(`${currentPage}/${size}/`)
+        axios
+        .get(`/api/v1/notifications/${currentPage}/${size}/`)
         .then(({ data } : any) => {
+            if (data.totalPages == data.currentPage) {
+                setBot(true);
+            }
             data.notifications.forEach((p: notiObject) => currNoti.push(p));
             setNotis((noti) => [...noti, ...currNoti]);
         })
@@ -51,18 +58,21 @@ export default function Notifications() {
       };
 
     const handleScroll = (e:any) => {
+        if (bot) {
+            return;
+        }
         if (Math.ceil(e.target.documentElement.scrollTop + window.innerHeight)
             >= e.target.documentElement.scrollHeight) {
             loadNotis();
         }
     };
 
-    const deleteNoti = (id:number) => {
-        fetch('/api/v1/notifications/' + id,
-        {
-            method: 'DELETE'
-        }).then(() => {
-            const newNotis = notis.filter((noti: notiObject) => noti.noti_id != id);
+    const deleteNoti = (id:number, e:notiObject, index:number) => {
+        axios.put('/api/v1/notifications/read/' + id)
+        .then(() => {
+            let newNotis:notiObject[] = [...notis];
+            e.isRead = true;
+            newNotis[index] = e;
             setNotis((newNotis))
         })
     };
@@ -81,36 +91,41 @@ export default function Notifications() {
                     </Typography>
                     <NotificationsIcon sx={{marginTop: 1.25, fontSize: 40}}/>
                 </Container>
-                {notis.map((p:notiObject) => {
+                {notis.map((p:notiObject, index) => {
                     return (
-                    <Card sx={{marginBottom: 2, marginTop: 5}}>
+                    <Card sx={{marginBottom: 2, marginTop: 5, color: p.isRead ? "gray" : "default"}}>
                         <Container sx={{display: 'flex', marginLeft: 0}}>
                             <Grid item xs={11}>
-                            <Container sx={{display: 'flex', marginLeft: 0}}>
-                                <a href={`../Profiles/${p.sender_id}`}>
-                                <Avatar sx={{marginRight: 1}}/>
+                            <Container sx={{display: 'flex', marginLeft: -2}}>
+                                <a href={`../Profiles/${p.senderId}`}>
+                                <Avatar sx={{marginTop: 2}}/>
                                 </a>
-                                <Typography variant="h6" sx={{marginTop: 1}}>
-                                    {p.sender_name}
-                                </Typography>
+                                <Container>
+                                    <Typography variant="h6" sx={{marginTop: 1}}>
+                                        {p.senderName}
+                                    </Typography>
+                                    <Typography variant="caption" >
+                                        {p.timeCreated}
+                                    </Typography>
                                 </Container>
+                            </Container>
                             </Grid>
+                            {
+                            p.isRead == false &&
                             <Button variant="outlined" color="secondary" onClick={
-                                () => deleteNoti(p.noti_id)}
+                                () => deleteNoti(p.notificationId, p, index)}
                             >Read</Button>
+                            }
                         </Container>
-                        <CardContent>
+                        <CardContent sx={{marginLeft: 2}}>
                             <Typography variant="subtitle2" sx={{marginTop: 1}}>
                                 {p.message}
                             </Typography>
-                            {
-                            p.noti_type == 'Project' &&
-                            <Typography variant="subtitle2">
-                                <a href={`../Projects/${p.project_id}`}>
+                            <CardActionArea href={`../projects/${p.projectId}`}>
+                                <Typography variant="subtitle2" >
                                     Project Link
-                                </a>
-                            </Typography>
-                            } 
+                                </Typography>
+                            </CardActionArea>
                         </CardContent>
                     </Card>
                     );
