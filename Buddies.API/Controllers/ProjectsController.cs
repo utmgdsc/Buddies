@@ -490,9 +490,9 @@ namespace Buddies.API.Controllers
         /// <summary>
         /// API route PUT /api/v1/projects/{pid}/delete/{uid} for updating profile.
         /// </summary>
-        [HttpPost("{pid}/invite/{uid}")]
+        [HttpPost("{pid}/invite")]
         [Authorize]
-        public async Task<ActionResult> InviteProjectMember(int pid, int uid)
+        public async Task<ActionResult> InviteProjectMember(int pid, [FromBody] InviteUserRequest request)
         {
             var project = _context.Projects
                 .Include(project => project.Members)
@@ -513,7 +513,7 @@ namespace Buddies.API.Controllers
 
             if (project.Owner != currentUser) { return Unauthorized(); }
 
-            var invitedUser = _context.Users.FindAsync(uid).Result;
+            var invitedUser = await _context.Users.FirstOrDefaultAsync(user => user.Email == request.UserEmail);
 
 
             if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)) {
