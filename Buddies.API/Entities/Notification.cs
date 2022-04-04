@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Buddies.API.Entities
@@ -52,6 +53,11 @@ namespace Buddies.API.Entities
         /// </summary>
         public bool IsRead { get; set; } = false;
 
+
+        /// <summary>
+        /// If the notification has been read
+        /// </summary>
+        public DateTime TimeCreated { get; set; } = DateTime.Now;
 
     }
 }

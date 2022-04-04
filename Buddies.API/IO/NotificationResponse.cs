@@ -22,5 +22,8 @@ namespace Buddies.API.IO
         [Required]
         public bool IsRead { get; set; } = default!;
 
+        [Required]
+        public string TimeCreated { get; set; } = default!;
+
     }
 }

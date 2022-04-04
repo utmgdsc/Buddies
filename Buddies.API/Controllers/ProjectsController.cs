@@ -106,11 +106,12 @@ namespace Buddies.API.Controllers
         [Authorize]
         public async Task<ActionResult> CreateProject(CreateProjectRequest project)
         {
-            var userEntity = _userManager.GetUserAsync(User).Result;
-            if (userEntity == null)
-            {
-                return Unauthorized();
-            }
+            var currentUserId = _userManager.GetUserId(User);
+
+            var userEntity = _context.Users
+                .Include(user => user.Profile)
+                .Where(u => u.Id.ToString() == currentUserId)
+                .FirstOrDefault();
 
             var dbLocation = await _context.Locations.FirstOrDefaultAsync(x => x.Address == project.Location);
 
@@ -139,12 +140,23 @@ namespace Buddies.API.Controllers
             {
                 if (invitation != userEntity.Email)
                 {
-                    var dbProfile = await _context.Users.FirstOrDefaultAsync(user => user.Email == invitation);
-                    if (dbProfile == null)
+                    var invitedUser = await _context.Users.FirstOrDefaultAsync(user => user.Email == invitation);
+                    if (invitedUser == null)
                     {
                         return NotFound("No such user");
                     }
-                    dbProject.InvitedUsers.Add(dbProfile);
+                    dbProject.InvitedUsers.Add(invitedUser);
+
+                    var inviteRequest = new Notification(userEntity.Profile.FirstName + " invited you to join " + project.Title);
+                    inviteRequest.SenderId = userEntity.Id;
+                    inviteRequest.SenderName = userEntity.Profile.FirstName + " " + userEntity.Profile.LastName;
+                    inviteRequest.Recipient = invitedUser;
+                    inviteRequest.Project = dbProject;
+                    await _context.Notifications.AddAsync(inviteRequest);
+
+                    invitedUser.Notifications.Add(inviteRequest);
+
+
 
                 }
             }
@@ -503,10 +515,6 @@ namespace Buddies.API.Controllers
 
             var invitedUser = _context.Users.FindAsync(uid).Result;
 
-            if (invitedUser == null)
-            {
-                return BadRequest("User not found");
-            }
 
             if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)) {
                 project.InvitedUsers.Add(invitedUser);

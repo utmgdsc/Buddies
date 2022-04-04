@@ -6,6 +6,8 @@ using Buddies.API.IO;
 using Buddies.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
+
 namespace Buddies.API.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
@@ -44,8 +46,34 @@ namespace Buddies.API.Controllers
                 .Where(u => u.Id.ToString() == currentUserId)
                 .FirstOrDefault();
 
-            foreach (var notification in currentUser.Notifications)
+            foreach (var notification in currentUser.Notifications.OrderByDescending(n => n.TimeCreated).ToList())
             {
+                TimeSpan ts = DateTime.Now.Subtract(notification.TimeCreated);
+                StringBuilder sb = new StringBuilder();
+                if (ts.TotalMinutes < 1)
+                {
+                    sb.AppendFormat("{0} seconds ago", ts.Seconds);
+                }
+                if (ts.TotalHours < 1)
+                {
+                    sb.AppendFormat("{0} minutes ago", ts.Minutes);
+                }
+                else if (ts.TotalDays < 1)
+                {
+                    sb.AppendFormat("{0} hours ago", ts.Hours);
+                }
+                else if (ts.TotalDays < 2)
+                {
+                    sb.Append("yesterday");
+                }
+                else if (ts.TotalDays < 28)
+                {
+                    sb.AppendFormat("{0} weeks ago", (int)(ts.Days / 7));
+                }
+                else 
+                {
+                    sb.AppendFormat("{0} months ago", (int)(ts.Days / 30));
+                }
 
                 notifications.Add(new NotificationResponse()
                 {
@@ -54,7 +82,8 @@ namespace Buddies.API.Controllers
                     SenderId = notification.SenderId,
                     SenderName = notification.SenderName,
                     ProjectId = notification.Project.ProjectId,
-                    IsRead = notification.IsRead
+                    IsRead = notification.IsRead,
+                    TimeCreated = sb.ToString(),
                 }
                 ); 
             }
