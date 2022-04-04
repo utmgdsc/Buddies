@@ -43,7 +43,7 @@ namespace Buddies.API.Services
             return vector;
         }
 
-        public static List<Profile> KNearestUsers(Project a, List<Profile> users, int k)
+        public static List<(Profile, double)> KNearestUsers(Project a, List<Profile> users, int k)
         {
 
             List<(double, Profile)> recommendations = new List<(double, Profile)>();
@@ -54,10 +54,16 @@ namespace Buddies.API.Services
                 recommendations.Add((dist, user));
             }
             recommendations.Sort((a, b) => a.Item1.CompareTo(b.Item1));
-            var kNearest = new List<Profile>();
-            for (var i = 0; i < k; i++)
+            var kNearest = new List<(Profile, double)>();
+            for (var i = 0; i < Math.Min(k, recommendations.Count); i++)
             {
-                kNearest.Add(recommendations[i].Item2);
+                if (!a.Members.Contains(recommendations[i].Item2.User))
+                {
+                    var sim = 1 - (recommendations[i].Item1 / 3);
+                    kNearest.Add((recommendations[i].Item2, sim));
+
+                }
+               
             }
             return kNearest;
         }

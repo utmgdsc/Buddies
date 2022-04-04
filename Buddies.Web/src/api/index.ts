@@ -87,6 +87,10 @@ export async function updateProjectSkills(skills: Skillobject[], projectId: stri
   return axios.put(`/api/v1/projects/skills/${projectId}`, {'skills': skills});
 };
 
+export async function getRecommendations(projectId: string | string[] | undefined, k: number){
+  return await axios.get(`/api/v1/projects/recs/${projectId}/${k}`);
+};
+
 export async function getProfile(profileId: string | string[] | undefined){
   return await axios.get(`/api/v1/Profiles/${profileId}`);
 };

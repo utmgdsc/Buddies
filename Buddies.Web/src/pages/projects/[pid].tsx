@@ -6,7 +6,7 @@ import axios from 'axios';
 import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
 import {
-  getProject, addMember, getUsers, inviteMember, removeMember, updateProjectSkills
+  getProject, addMember, getUsers, inviteMember, removeMember, updateProjectSkills, getRecommendations
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
@@ -19,6 +19,14 @@ export type UserInfo = {
   UserId: number,
   Email: string,
 };
+
+export type RecommendedUser = {
+  email: string,
+  userId: number
+  buddyScore: number,
+  skills: Skillobject[],
+  match: string
+}
 
 export type ProjectProfile = {
   Title: string,
@@ -35,6 +43,7 @@ export type ProjectProfile = {
 
 export type Tabs = 'Dashboard' | 'Buddies';
 
+let recommendedUserlst: RecommendedUser[] = [];
 const memberLst: UserInfo[] = [{
   FirstName: 'John',
   LastName: 'Doe',
@@ -173,7 +182,7 @@ const Project: React.VFC = () => {
 
   const clone: ProjectProfile = JSON.parse(JSON.stringify(project));
   
-  const updateUserProfile: VoidFunction = async () => {
+  const addSkills: VoidFunction = async () => {
     if (!(typeof projectId === 'string')) {
       alert('error');
       return;
@@ -187,10 +196,23 @@ const Project: React.VFC = () => {
     }
   };
 
+  function getAllRecommendations() {
+    if (!(typeof projectId === 'string')) {
+      alert('error');
+      return;
+    }
+    getRecommendations(projectId, 5).then((res) => {
+      recommendedUserlst = res.data;
+    }).catch((error) => {
+      alert(error);
+    });
+  }
+
   useEffect(() => {
     if (!router.isReady) return;
     const { pid } = router.query;
     projectId = pid; /* id of user */
+    getAllRecommendations();
     getAndMakeProject(); /* When the page loads, a get request is made to populate
         the project profile page accordingly */
   }, [router.isReady]);
@@ -229,7 +251,7 @@ const Project: React.VFC = () => {
             setSidebarOpen={setSidebarOpen}
             getUsers={getUsers}
             submitInvite={submitInvite}
-            addSkills={updateUserProfile}
+            addSkills={addSkills}
             projectprofile = {clone}
           />
         );
@@ -244,6 +266,7 @@ const Project: React.VFC = () => {
             submitInvite={submitInvite}
             submitRemoval={submitRemoval}
             isFull={isFull}
+            recommendations={recommendedUserlst}
           />
         );
       default:

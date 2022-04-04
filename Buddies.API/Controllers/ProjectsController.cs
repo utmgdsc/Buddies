@@ -604,6 +604,7 @@ namespace Buddies.API.Controllers
             var project = _context.Projects
                 .Include(project => project.Owner)
                 .Include(project => project.Skills)
+                .Include(project => project.Members)
                 .Where(project => project.ProjectId == id)
                 .FirstOrDefault();
 
@@ -616,17 +617,29 @@ namespace Buddies.API.Controllers
                 return BadRequest("No such project exists :(");
             }
             var recs = KnnService.KNearestUsers(project, profile, k);
-            var ret = new List<UserProfileResponse>();
+            var ret = new List<RecommendationResponse>();
             foreach (var rec in recs)
             {
-                var profResponse = new UserProfileResponse()
+
+                var userSkills = await _context.Skills.Where(s => s.ProfileId == rec.Item1.UserId).ToListAsync();
+                var currUser = _userManager.FindByIdAsync(rec.Item1.UserId.ToString()).Result;
+                var profResponse = new RecommendationResponse()
                 {
-                    FirstName = rec.FirstName,
-                    LastName = rec.LastName,
-                    Headline = rec.Headline,
-                    AboutMe = rec.AboutMe,
-                    Skills = new List<SkillResponse>()
+                    Email = currUser.Email,
+                    UserId = rec.Item1.UserId,
+                    BuddyScore = 0,
+                    Skills = new List<SkillResponse>(),
+                    Match = String.Format("{0:P2}.", rec.Item2)
                 };
+           
+                foreach (var skill in userSkills)
+                {
+                    var newSkill = new SkillResponse();
+                    newSkill.Id = skill.Id;
+                    newSkill.Name = skill.Name;
+                    newSkill.Delete = false;
+                    profResponse.Skills.Add(newSkill);
+                }
                 ret.Add(profResponse);
             }
             return Ok(ret);
