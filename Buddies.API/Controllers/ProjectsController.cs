@@ -68,7 +68,7 @@ namespace Buddies.API.Controllers
                         Description = project.Description,
                         Location = project.Location,
                         Username = String.Format("{0} {1}", owner.FirstName, owner.LastName),
-                        BuddyScore = 0,
+                        BuddyScore = owner.BuddyScore,
                         MaxMembers = project.MaxMembers,
                         CurrentMembers = _context.Projects.Where(p => p.ProjectId == project.ProjectId).SelectMany(p => p.Members).ToList().Count,
                         Category = project.Category,
