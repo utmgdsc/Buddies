@@ -34,20 +34,6 @@ interface Props extends ProjectProfile {
 
 export type Dialogs = '' | 'Invite' | 'Remove';
 
-let data: UpdateProf[] = [];
-for (let i = 0; i < 5; i += 1) {
-  data.push({
-  'firstName': 'man@gmail.com',
-  'lastName': 'Ali',
-  'userId': 1,
-  'headline': 'bob',
-  'aboutMe': 'job',
-  'skills': [{ id: 1, name: 'Data Structures', delete: false },
-  { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }],
-  'projects': []
-  });
-}
-
 const ProjectBuddies: React.VFC<Props> = ({
   setSidebarOpen,
   MemberLst,

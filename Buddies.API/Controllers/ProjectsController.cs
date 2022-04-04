@@ -607,10 +607,15 @@ namespace Buddies.API.Controllers
                 .Include(project => project.Members)
                 .Where(project => project.ProjectId == id)
                 .FirstOrDefault();
-
+            if (project == null)
+            {
+                return NotFound("Project not found");
+            }
             var user = _userManager.GetUserAsync(User).Result;
             var profile = await _context.Profiles
                 .Include(profile => profile.Skills)
+                .Include(profile => profile.User)
+                .Where(profile => !project.Members.Contains(profile.User))
                 .ToListAsync();
             if (project == null)
             {

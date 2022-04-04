@@ -6,23 +6,25 @@ namespace Buddies.API.Services
     public class KnnService
     {
         /// <summary>
-        /// Return the larger of a and b.
+        /// Calculate distance between vector and project vector
         /// </summary>
-        public static double Distance(double[] vector)
+        public static (double, double) Distance(double[] vector)
         {
             
             double distance = 0;
-            foreach (int vectorItem in vector)
+            double sim = 0;
+            foreach (double vectorItem in vector)
             {
                 distance += Math.Pow((vectorItem - 1), 2);
+                sim += vectorItem;
             }
-            return Math.Pow(distance, 0.5);
+            return (Math.Pow(distance, 0.5), (double)sim/vector.Count());
         }
 
         public static double[] GetVector(Project a, Profile b)
         {
 
-            double[] vector = new double[] {0, 0, 0};
+            double[] vector = new double[a.Skills.Count];
             var TOLERANCE = 0;
             foreach (var skill in b.Skills)
             {
@@ -46,23 +48,19 @@ namespace Buddies.API.Services
         public static List<(Profile, double)> KNearestUsers(Project a, List<Profile> users, int k)
         {
 
-            List<(double, Profile)> recommendations = new List<(double, Profile)>();
+            List<(double, (Profile, double))> recommendations = new List<(double, (Profile, double))>();
             foreach (var user in users)
             {
                 var vector = GetVector(a, user);
-                var dist = Distance(vector);
-                recommendations.Add((dist, user));
+                var (dist, sim) = Distance(vector);
+                recommendations.Add((dist, (user, sim)));
             }
             recommendations.Sort((a, b) => a.Item1.CompareTo(b.Item1));
             var kNearest = new List<(Profile, double)>();
             for (var i = 0; i < Math.Min(k, recommendations.Count); i++)
             {
-                if (!a.Members.Contains(recommendations[i].Item2.User))
-                {
-                    var sim = 1 - (recommendations[i].Item1 / 3);
-                    kNearest.Add((recommendations[i].Item2, sim));
+                kNearest.Add(recommendations[i].Item2);
 
-                }
                
             }
             return kNearest;
