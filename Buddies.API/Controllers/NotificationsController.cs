@@ -54,7 +54,7 @@ namespace Buddies.API.Controllers
                 {
                     sb.AppendFormat("{0} seconds ago", ts.Seconds);
                 }
-                if (ts.TotalHours < 1)
+                else if (ts.TotalHours < 1)
                 {
                     sb.AppendFormat("{0} minutes ago", ts.Minutes);
                 }
