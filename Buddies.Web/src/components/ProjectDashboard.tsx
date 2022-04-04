@@ -25,6 +25,7 @@ interface Props extends ProjectProfileResponse {
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   getUsers: SearchFunc;
   submitInvite: (req: InviteUserRequest) => void;
+  requestToJoin: VoidFunction;
 }
 
 /* Displays all the necessary information for the project profile page
@@ -45,6 +46,7 @@ const ProjectDashboard: React.VFC<Props> = ({
   setSidebarOpen,
   getUsers,
   submitInvite,
+  requestToJoin,
   isFinished,
   isOwner,
 }) => {
@@ -168,7 +170,7 @@ const ProjectDashboard: React.VFC<Props> = ({
                   && (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
-                      <CardActionArea>
+                      <CardActionArea onClick={requestToJoin}>
                         <EmailIcon sx={{ marginLeft: '40%', marginTop: 1, cursor: 'pointer' }} />
                         <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
                           Request to Join
