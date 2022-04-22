@@ -741,44 +741,5 @@ namespace Buddies.API.Controllers
         }
 
 
-        /// <summary>
-        /// API route GET /api/v1/postings/{filters}/... for fetching all projects
-        /// that pass the filters.
-        /// </summary>
-        [HttpGet("leaderboard/{page}/{results}")]
-        public async Task<ActionResult> GetLeaderboard(int page, float results)
-        {
-            var userList = await _context.Users
-                .Include(u => u.Profile).ToListAsync();
-
-            var response = new LeaderboardResponse();
-
-            foreach (User user in userList.OrderByDescending(u => u.Profile.BuddyScore).ToList())
-            {
-
-                var userResponse = new UserInfoResponse()
-                {
-                    FirstName = user.Profile.FirstName,
-                    LastName = user.Profile.LastName,
-                    BuddyScore = user.Profile.BuddyScore,
-                    Email = user.Email,
-                    UserId = user.Id
-                };
-                response.Users.Add(userResponse);
-
-            }
-
-            var pageCount = Math.Ceiling(response.Users.Count() / results);
-            response.Users = response.Users
-                .Skip((page - 1) * (int)results)
-                .Take((int)results)
-                .ToList();
-
-            response.TotalPages = (int)pageCount;
-            response.CurrentPage = page;
-
-            return Ok(response);
-        }
-
     }
 } 
