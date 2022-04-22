@@ -48,7 +48,7 @@ namespace Buddies.API.Controllers
             profileResponse.AboutMe = profile.AboutMe;
             profileResponse.Headline = profile.Headline;
             profileResponse.ProjectCount = profile.ProjectCount;
-            profileResponse.BuddyScore = profile.BuddyScore;
+            profileResponse.BuddyScore = (float)Math.Round((decimal)profile.BuddyScore,1);
 
 
             foreach (Skill s in userSkills)

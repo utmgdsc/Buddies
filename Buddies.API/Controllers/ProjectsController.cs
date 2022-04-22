@@ -68,7 +68,7 @@ namespace Buddies.API.Controllers
                         Description = project.Description,
                         Location = project.Location,
                         Username = String.Format("{0} {1}", owner.FirstName, owner.LastName),
-                        BuddyScore = owner.BuddyScore,
+                        BuddyScore = (float) Math.Round(owner.BuddyScore,1),
                         MaxMembers = project.MaxMembers,
                         CurrentMembers = _context.Projects.Where(p => p.ProjectId == project.ProjectId).SelectMany(p => p.Members).ToList().Count,
                         Category = project.Category,
@@ -698,6 +698,7 @@ namespace Buddies.API.Controllers
         {
             var project = _context.Projects
                 .Include(project => project.MembersYetToRate)
+                .Include(project => project.Members)
                 .ThenInclude(member => member.Profile)
                 .Where(project => project.ProjectId == pid)
                 .FirstOrDefault();
@@ -714,7 +715,7 @@ namespace Buddies.API.Controllers
                 return BadRequest("You have already rated this project or are not a part of this project");
             }
 
-            foreach (var member in project.MembersYetToRate)
+            foreach (var member in project.Members)
             {
                 if (member == currentUser)
                 {
@@ -739,6 +740,45 @@ namespace Buddies.API.Controllers
             return Ok();
         }
 
+
+        /// <summary>
+        /// API route GET /api/v1/postings/{filters}/... for fetching all projects
+        /// that pass the filters.
+        /// </summary>
+        [HttpGet("leaderboard/{page}/{results}")]
+        public async Task<ActionResult> GetLeaderboard(int page, float results)
+        {
+            var userList = await _context.Users
+                .Include(u => u.Profile).ToListAsync();
+
+            var response = new LeaderboardResponse();
+
+            foreach (User user in userList.OrderByDescending(u => u.Profile.BuddyScore).ToList())
+            {
+
+                var userResponse = new UserInfoResponse()
+                {
+                    FirstName = user.Profile.FirstName,
+                    LastName = user.Profile.LastName,
+                    BuddyScore = user.Profile.BuddyScore,
+                    Email = user.Email,
+                    UserId = user.Id
+                };
+                response.Users.Add(userResponse);
+
+            }
+
+            var pageCount = Math.Ceiling(response.Users.Count() / results);
+            response.Users = response.Users
+                .Skip((page - 1) * (int)results)
+                .Take((int)results)
+                .ToList();
+
+            response.TotalPages = (int)pageCount;
+            response.CurrentPage = page;
+
+            return Ok(response);
+        }
 
     }
 } 

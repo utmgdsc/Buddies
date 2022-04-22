@@ -811,6 +811,46 @@
         }
       }
     },
+    "/api/v{version}/projects/leaderboard/{page}/{results}": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "results",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/v{version}/users/register": {
       "post": {
         "tags": [
@@ -1327,6 +1367,10 @@
           "userId": {
             "type": "integer",
             "format": "int32"
+          },
+          "buddyScore": {
+            "type": "number",
+            "format": "float"
           }
         },
         "additionalProperties": false
