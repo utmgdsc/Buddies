@@ -43,18 +43,18 @@ const Navbar: React.VFC = () => {
         >
           {authState ? (
             <>
-            <NextLink href="/notifications" passHref>
-            <Button color="inherit" sx={{ marginLeft: 'auto' }}><NotificationBell/></Button>
-            </NextLink>
-            <AccountTab
-              authState={authState}
-              logout={() => {
-                router.push('/').then(() => logoutUser());
-              }}
-              profile={() => {
-                router.push(`/Profiles/${parseInt(authState.nameid, 10)}`).then(() => router.reload());
-              }}
-            />
+              <NextLink href="/notifications" passHref>
+                <Button color="inherit" sx={{ marginLeft: 'auto' }}><NotificationBell /></Button>
+              </NextLink>
+              <AccountTab
+                authState={authState}
+                logout={() => {
+                  router.push('/').then(() => logoutUser());
+                }}
+                profile={() => {
+                  router.push(`/Profiles/${parseInt(authState.nameid, 10)}`).then(() => router.reload());
+                }}
+              />
             </>
           )
             : (
