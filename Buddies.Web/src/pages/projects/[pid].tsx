@@ -24,7 +24,7 @@ export type Tabs = 'Dashboard' | 'Buddies';
 const Project: React.VFC = () => {
   const [projectId, setProjectId] = useState<string>();
   const [project, setProject] = useState<ProjectProfileResponse>();
-  const authState = authStore((state) => state.authState)!;
+  const authState = authStore((state) => state.authState);
   const router = useRouter();
 
   /* Gets project by id and then creates necessary global data structures.
@@ -53,7 +53,7 @@ const Project: React.VFC = () => {
   }, [projectId]);
 
   const addMemberToProject = async () => {
-    if (!(typeof projectId === 'string')) {
+    if (!(typeof projectId === 'string') || !authState) {
       alert('error');
       return;
     }
@@ -116,14 +116,14 @@ const Project: React.VFC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const inGroup = useMemo(() => {
-    return !!project?.members.find((member) => member.userId.toString() === authState.nameid);
+    return !!project?.members.find((member) => member.userId.toString() === authState?.nameid);
   }, [project, authState]);
 
   const isInvited = useMemo(() => {
-    return !!project?.invitedUsers.find((member) => member.userId.toString() === authState.nameid);
+    return !!project?.invitedUsers.find((member) => member.userId.toString() === authState?.nameid);
   }, [project, authState]);
 
-  const isOwner = useMemo(() => project?.email === authState.email, [project, authState]);
+  const isOwner = useMemo(() => project?.email === authState?.email, [project, authState]);
 
   const isFull = useMemo(() => project?.members.length === project?.maxMembers, [project]);
 
