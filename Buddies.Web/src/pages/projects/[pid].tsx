@@ -7,7 +7,8 @@ import axios from 'axios';
 import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
 import {
-  getProject, addMember, getUsers, inviteMember, removeMember, terminateProject, rateMembers, joinRequest,
+  getProject, addMember, getUsers, inviteMember, removeMember,
+  terminateProject, rateMembers, joinRequest,
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
