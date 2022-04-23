@@ -31,8 +31,8 @@ const CreateProject: NextPage = () => {
 
   const onSubmit: SubmitHandler<CreateProjectRequest> = async (data) => {
     try {
-      const res = await createProject(data);
-      router.push(`/projects/${res.data}`).then();
+      const { data: projectId } = await createProject(data);
+      router.push(`/projects/${projectId}`).then();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response
           && error.response.status === StatusCodes.BAD_REQUEST) {
