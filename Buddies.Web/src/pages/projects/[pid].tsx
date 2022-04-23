@@ -39,7 +39,7 @@ const Project: React.VFC = () => {
     getProject(projectId).then((res) => {
       setProject(res.data);
     }).catch(() => {
-      alert("Uh oh, something went wrong...");
+      alert('Uh oh, something went wrong...');
     });
   }
 

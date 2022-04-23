@@ -1,4 +1,4 @@
-import React, { UIEvent } from 'react';
+import React, { UIEvent, useEffect, useState } from 'react';
 import { Card, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+
 import CardContent from '@mui/material/CardContent';
 import CardActionArea from '@mui/material/CardActionArea';
 
@@ -41,7 +41,7 @@ const Notifications = () => {
         setNotis((noti : NotiObject[]) => [...noti, ...currNoti]);
       })
       .catch(() => {
-        alert("Uh oh, something went wrong...");
+        alert('Uh oh, something went wrong...');
       });
     currentPage += 1;
   };
