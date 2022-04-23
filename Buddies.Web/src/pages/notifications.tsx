@@ -24,7 +24,6 @@ const Notifications = () => {
   let currentPage = 1;
   const size = 20;
   const [notis, setNotis] = useState<NotiObject[]>([]);
-  console.log(notis);
   const [bot, setBot] = useState<boolean>(false);
   const loadNotis = () => {
     const currNoti:NotiObject[] = [];
