@@ -33,7 +33,7 @@ const Project: React.VFC = () => {
   */
   function getAndMakeProject() {
     if (!(typeof projectId === 'string')) {
-      alert('error');
+      alert('Uh oh, something went wrong...');
       return;
     }
     getProject(projectId).then((res) => {
@@ -55,11 +55,11 @@ const Project: React.VFC = () => {
 
   const addMemberToProject = async () => {
     if (!(typeof projectId === 'string')) {
-      alert('error');
+      alert('Uh oh, something went wrong...');
       return;
     }
     const res = await addMember(projectId, parseInt(authState.nameid, 10))
-      .catch((error) => alert(error));
+      .catch(() => alert('Uh oh, something went wrong...'));
 
     if (res) {
       getAndMakeProject();
@@ -114,11 +114,11 @@ const Project: React.VFC = () => {
 
   const requestToJoin = async () => {
     if (!(typeof projectId === 'string')) {
-      alert('error');
+      alert('Uh oh, something went wrong...');
       return;
     }
     const res = await joinRequest(projectId)
-      .catch((error) => alert(error));
+      .catch(() => alert('Uh oh, something went wrong...'));
 
     if (res) {
       getAndMakeProject();
