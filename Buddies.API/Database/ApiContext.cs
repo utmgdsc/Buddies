@@ -122,6 +122,15 @@ public class ApiContext : IdentityDbContext<User, Role, int>
             .HasMany(p => p.InvitedUsers)
             .WithMany(u => u.InvitedTo);
 
+
+            builder.Entity<User>()
+                .HasMany(u => u.Notifications)
+                .WithOne(n => n.Recipient)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<Notification>().HasOne(n => n.Project);
+
+
         }
     }
 
@@ -150,4 +159,9 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     /// to a User Profile.
     /// </summary>
     public DbSet<Skill> Skills { get; set; } = null!;
+
+    /// </summary>
+    /// Collection of all Notifications
+    /// </summary>
+    public DbSet<Notification> Notifications { get; set; } = null!;
 }

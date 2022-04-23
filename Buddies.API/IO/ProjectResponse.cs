@@ -11,7 +11,7 @@
 
         public string Username { get; init; } = default!;
 
-        public int BuddyScore  { get; init; } = default!;
+        public float BuddyScore  { get; init; } = default!;
 
         public int MaxMembers { get; init; } = default!;
 
