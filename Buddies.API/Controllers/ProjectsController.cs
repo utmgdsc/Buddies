@@ -153,7 +153,7 @@ namespace Buddies.API.Controllers
             await _context.SaveChangesAsync();
 
 
-            return Ok();
+            return StatusCode(StatusCodes.Status201Created, dbProject.ProjectId);
         }
 
         /// <summary>
