@@ -9,13 +9,6 @@ import { useEffect, useState } from 'react';
 import CardContent from '@mui/material/CardContent';
 import CardActionArea from '@mui/material/CardActionArea';
 
-// const getapi = axios.create({
-//     baseURL: '/api/v1/notifications/',
-//     headers: {
-//         Accept: 'application/json',
-//         'Content-type': 'application/json',
-//     },
-// });
 
 type NotiObject = {
   'notificationId': number,
