@@ -54,10 +54,12 @@ const Project: React.VFC = () => {
   }, [projectId]);
 
   const addMemberToProject = async () => {
+
     if (!(typeof projectId === 'string')) {
       alert('error');
       return;
     }
+    
     const res = await addMember(projectId, parseInt(authState.nameid, 10))
       .catch((error) => alert(error));
 
