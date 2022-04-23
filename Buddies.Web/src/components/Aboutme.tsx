@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 import Aboutmeform from './Aboutmeform';
-import type { UpdateProf } from '../pages/Profiles/[pid]';
+import type { UpdateProf } from '../pages/profiles/[pid]';
 
 /* About me component. */
 const Aboutme = ({

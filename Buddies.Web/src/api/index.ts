@@ -8,6 +8,8 @@ import { authStore, AuthState } from '../stores/authStore';
 import { CreateProjectRequest } from './model/createProjectRequest';
 import { SearchResponse } from './model/searchResponse';
 import { InviteUserRequest } from './model/inviteUserRequest';
+import { RateBuddiesRequest } from './model/rateBuddiesRequest';
+import type { UpdateProf } from '../pages/Profiles/[pid]';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -62,9 +64,13 @@ export const getUsers: SearchFunc = async (search, page, count) => {
   return res.data;
 };
 
-export async function getProject(projectId: string | string[] | undefined) {
-  return axios.get(`/api/v1/projects/${projectId}`);
-}
+export async function getPostings(path: string, page: number, results: number){
+  return await axios.get(`/api/v1/projects/postings/${path}/${page}/${results}`);
+};
+
+export async function getProject(projectId: string | string[] | undefined){
+  return await axios.get(`/api/v1/projects/${projectId}`);
+};
 
 export async function addMember(projectId: string | string[] | undefined, userId: number) {
   return axios.post(`/api/v1/projects/${projectId}/join/`, userId);
@@ -76,4 +82,20 @@ export async function inviteMember(projectId: string, req: InviteUserRequest) {
 
 export async function removeMember(projectId: string, userId: number) {
   return axios.post(`/api/v1/projects/${projectId}/delete/${userId}`);
+}
+
+export async function getProfile(profileId: string | string[] | undefined){
+  return await axios.get(`/api/v1/Profiles/${profileId}`);
+};
+
+export async function updateProfile(profileToUpdate: UpdateProf){
+  return axios.put('/api/v1/Profiles/', profileToUpdate);
+};
+
+export async function terminateProject(projectId: string) {
+  return axios.post(`/api/v1/projects/${projectId}/terminate`);
+}
+
+export async function rateMembers(projectId: string, ratings: RateBuddiesRequest) {
+  return axios.post(`/api/v1/projects/${projectId}/ratebuddies`, ratings);
 }

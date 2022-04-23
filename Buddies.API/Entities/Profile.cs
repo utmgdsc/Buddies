@@ -36,6 +36,16 @@ public class Profile
     public int UserId { get; init; }
 
     /// <summary>
+    /// BuddyScore of the user the profile belongs to.
+    /// </summary>
+    public float BuddyScore { get; set; }
+
+    /// <summary>
+    /// Number of the projects this user has been a part of.
+    /// </summary>
+    public int ProjectCount { get; set; }
+
+    /// <summary>
     /// headline on the profile
     /// </summary>
     [MaxLength(50)]

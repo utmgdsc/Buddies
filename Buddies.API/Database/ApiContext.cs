@@ -112,6 +112,9 @@ public class ApiContext : IdentityDbContext<User, Role, int>
             .HasOne(p => p.Owner);
 
             builder.Entity<Project>()
+            .HasMany(p => p.MembersYetToRate);
+
+            builder.Entity<Project>()
             .HasMany(p => p.Members)
             .WithMany(u => u.Projects);
 

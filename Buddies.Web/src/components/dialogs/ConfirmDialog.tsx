@@ -9,24 +9,24 @@ interface Props {
   open: boolean;
   closeDialog: () => void;
   onSubmit: () => void;
-  name: string;
+  title: string;
+  content: string;
 }
 
-const RemoveDialog: React.VFC<Props> = ({
+const ConfirmDialog: React.VFC<Props> = ({
   open,
   closeDialog,
   onSubmit,
-  name,
+  title,
+  content,
 }) => {
   return (
     <Dialog
       open={open}
       onClose={closeDialog}
     >
-      <DialogTitle>Remove User</DialogTitle>
-      <DialogContent>
-        {`Are you sure you want to remove ${name} from your group?`}
-      </DialogContent>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>{content}</DialogContent>
       <DialogActions>
         <Button onClick={() => {
           onSubmit();
@@ -41,4 +41,4 @@ const RemoveDialog: React.VFC<Props> = ({
   );
 };
 
-export default RemoveDialog;
+export default ConfirmDialog;

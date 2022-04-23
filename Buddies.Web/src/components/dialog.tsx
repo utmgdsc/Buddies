@@ -40,9 +40,6 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
           aria-label="close"
           onClick={onClose}
           sx={{
-            position: 'absolute',
-            top: 4,
-            left: 10,
             color: (theme) => theme.palette.grey[500],
           }}
         >
