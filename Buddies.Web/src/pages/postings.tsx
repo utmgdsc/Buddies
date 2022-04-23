@@ -105,7 +105,6 @@ const PostingsTable = () => {
   }, [page]);
 
   const handleChangePage = (e: unknown, newPage: number) => {
-    console.log(newPage);
     setPage(newPage);
     getAndMakePostings();
   };

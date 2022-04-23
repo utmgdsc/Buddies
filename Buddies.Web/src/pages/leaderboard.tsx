@@ -14,16 +14,15 @@ import EmailIcon from '@mui/icons-material/Email';
 import TablePagination from '@mui/material/TablePagination';
 import { useEffect } from 'react';
 import CardActionArea from '@mui/material/CardActionArea';
-import { getLeaderboard, getPostings } from '../api';
+import { getLeaderboard } from '../api';
 
 type User = {
-    firstName: string,
-    lastName: string,
-    email: string,
-    userId: number,
-    buddyScore: number
-}
-
+  firstName: string,
+  lastName: string,
+  email: string,
+  userId: number,
+  buddyScore: number
+};
 
 let totalUsers: number = 0;
 
@@ -40,9 +39,7 @@ const Leaderboard = () => {
      creates necessary global vars  and states.
   */
   function getAndMakeLeaderboard() {
-
     getLeaderboard(page + 1, rowsPerPage).then((res) => {
-      
       totalUsers = res.data.totalPages * rowsPerPage;
       setLeaderboard(res.data.users);
     }).catch((error) => {
@@ -55,7 +52,6 @@ const Leaderboard = () => {
   }, [page]);
 
   const handleChangePage = (e: unknown, newPage: number) => {
-    console.log(newPage);
     setPage(newPage);
     getAndMakeLeaderboard();
   };
@@ -99,43 +95,41 @@ const Leaderboard = () => {
                       <CardActionArea href={`/Profiles/${row.userId}`}>
                         <Grid container>
                           <Grid item>
-                           
+
                             <Grid container>
-                            <Typography sx={{ marginTop: 2, marginLeft: 1 }} variant="subtitle2">
-                                {((page) * 5)+index + 1}. 
+                              <Typography sx={{ marginTop: 2, marginLeft: 1 }} variant="subtitle2">
+                                {((page) * 5) + index + 1}
+                                .
 
                               </Typography>
                               <Avatar />
                               <Typography sx={{ marginTop: 2, marginLeft: 1 }} variant="subtitle2">
-                                {row.firstName + " " + row.lastName} 
+                                {`${row.firstName} ${row.lastName}`}
 
                               </Typography>
-                              
-                              
+
                             </Grid>
                           </Grid>
                         </Grid>
                       </CardActionArea>
                     </TableCell>
                     <TableCell component="th" scope="row">
-                        <Grid container>
-                          <Grid item>
-                           
-                            <Grid container>
-                              
-                              
-                              <EmailIcon sx={{ marginTop: 1.35 }} />
-                              <Typography sx={{ marginTop: 1.85 }} variant="subtitle2">
-                                {row.email}
-                              </Typography>
-                            </Grid>
+                      <Grid container>
+                        <Grid item>
+
+                          <Grid container>
+
+                            <EmailIcon sx={{ marginTop: 1.35 }} />
+                            <Typography sx={{ marginTop: 1.85 }} variant="subtitle2">
+                              {row.email}
+                            </Typography>
                           </Grid>
                         </Grid>
+                      </Grid>
                     </TableCell>
                     <TableCell>
                       <Grid container>
-                        
-                        
+
                         <Button
                           disabled
                           variant="contained"
@@ -150,9 +144,9 @@ const Leaderboard = () => {
                             marginTop: 8,
                           }}
                         >
-                                {row.buddyScore}
+                          {row.buddyScore}
                         </Button>
-                       
+
                       </Grid>
 
                     </TableCell>
