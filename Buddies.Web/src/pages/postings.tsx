@@ -171,6 +171,7 @@ const PostingsTable = () => {
 
                               </Typography>
                               <Button
+                                disabled
                                 variant="contained"
                                 style={{
                                   color: 'white',
