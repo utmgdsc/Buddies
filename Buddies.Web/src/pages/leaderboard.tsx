@@ -27,17 +27,17 @@ type User = {
 
 let totalUsers: number = 0;
 
-/* Project postings page. Responsible for putting all the components that make up the
-  page together. It also sends GET requests to get all project based on filtered
-  values.
+/* Leaderboard page. Responsible for putting all the components that make up the
+  page together. It also sends GET requests to get all the users with the top
+  buddy score
 */
 const Leaderboard = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [leaderboard, setLeaderboard] = React.useState<User[]>([]);
 
-  /* Gets project by id and then creates necessary global data structures.
-     (memberLst, invitedLst, project object)
+  /* Gets leaderboard info and then
+     creates necessary global vars  and states.
   */
   function getAndMakeLeaderboard() {
 
