@@ -15,6 +15,7 @@ import InviteDialog from './dialogs/InviteDialog';
 import { SearchFunc } from '../api';
 import { InviteUserRequest } from '../api/model/inviteUserRequest';
 import { ProjectProfileResponse } from '../api/model/projectProfileResponse';
+import { authStore } from '../stores/authStore';
 
 interface Props extends ProjectProfileResponse {
   inGroup: boolean;
@@ -51,6 +52,8 @@ const ProjectDashboard: React.VFC<Props> = ({
   isOwner,
 }) => {
   const [inviteOpen, setInviteOpen] = useState(false);
+
+  const authState = authStore((state) => state.authState);
 
   return (
     <>
@@ -166,7 +169,7 @@ const ProjectDashboard: React.VFC<Props> = ({
                   </Grid>
                   )}
 
-              {!isInvited && !inGroup && !isFull && !isFinished
+              {!!authState && !isInvited && !inGroup && !isFull && !isFinished
                   && (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>

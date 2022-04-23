@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { StatusCodes } from 'http-status-codes';
+import { useRouter } from 'next/router';
 import CreateProjectForm from '../components/CreateProjectForm';
 import { CreateProjectRequest } from '../api/model/createProjectRequest';
 import {
@@ -26,10 +27,12 @@ const CreateProject: NextPage = () => {
     },
   });
 
+  const router = useRouter();
+
   const onSubmit: SubmitHandler<CreateProjectRequest> = async (data) => {
     try {
-      await createProject(data);
-      // todo: redirect to project page when it has been made
+      const { data: projectId } = await createProject(data);
+      router.push(`/projects/${projectId}`).then();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response
           && error.response.status === StatusCodes.BAD_REQUEST) {
