@@ -153,4 +153,9 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     /// to a Project.
     /// </summary>
     public DbSet<ProjectSkill> ProjectSkills { get; set; } = null!;
+
+    /// </summary>
+    /// Collection of all the user to user ratings
+    /// </summary>
+    public DbSet<UserRating> Ratings { get; set; } = null!;
 }
