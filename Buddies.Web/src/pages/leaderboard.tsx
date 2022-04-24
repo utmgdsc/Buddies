@@ -1,5 +1,5 @@
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
+
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -36,7 +36,7 @@ const Leaderboard = () => {
       totalUsers = res.data.totalPages * rowsPerPage;
       setLeaderboard(res.data.users);
     }).catch(() => {
-      alert("Uh oh, something went wrong...");
+      alert('Uh oh, something went wrong...');
     });
   }
 
@@ -137,7 +137,7 @@ const Leaderboard = () => {
                             marginTop: 8,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            display: 'flex'
+                            display: 'flex',
                           }}
                         >
                           {row.buddyScore}

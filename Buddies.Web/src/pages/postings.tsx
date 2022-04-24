@@ -96,7 +96,7 @@ const PostingsTable = () => {
       totalProjects = res.data.totalPages * rowsPerPage;
       setProjects(DATA);
     }).catch(() => {
-      alert("Uh oh, something went wrong...");
+      alert('Uh oh, something went wrong...');
     });
   }
 
@@ -182,7 +182,7 @@ const PostingsTable = () => {
                                   marginTop: 8,
                                   alignItems: 'center',
                                   justifyContent: 'center',
-                                  display: 'flex'
+                                  display: 'flex',
                                 }}
                               >
                                 {row.BuddyScore}

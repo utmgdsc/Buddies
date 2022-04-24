@@ -23,22 +23,22 @@ const BScore = ({ score }: { score: number }) => {
           </Typography>
         </Grid>
         <Grid item xs={1}>
-        <Card
-          variant="contained"
-          style={{
-            color: 'white',
-            backgroundColor: 'green',
-            maxWidth: '30px',
-            maxHeight: '30px',
-            minWidth: '30px',
-            minHeight: '30px',
-            alignItems: 'center',
-            justifyContent: 'center',
-            display: 'flex'
-          }}
-        >
-          {score}
-        </Card>
+          <Card
+            variant="contained"
+            style={{
+              color: 'white',
+              backgroundColor: 'green',
+              maxWidth: '30px',
+              maxHeight: '30px',
+              minWidth: '30px',
+              minHeight: '30px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              display: 'flex',
+            }}
+          >
+            {score}
+          </Card>
         </Grid>
       </Grid>
     </Card>
