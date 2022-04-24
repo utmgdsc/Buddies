@@ -883,11 +883,6 @@ namespace Buddies.API.Controllers
         [HttpGet("ratings")]
         public async Task<ActionResult> GetRatings()
         {
-            var currentUser = _userManager.GetUserAsync(User).Result;
-            if (currentUser == null || currentUser.Id != 1)
-            {
-                return Unauthorized("You are unauthorized to perform this action.");
-            }
             var ratings = await _context.Ratings.ToListAsync();
 
             var ret = new List<RatingsResponse>();
