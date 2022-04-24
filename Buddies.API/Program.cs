@@ -9,6 +9,8 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net;
+using Microsoft.Extensions.ML;
+using Buddies.API.DataModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +68,10 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
+
+// prediction engine
+builder.Services.AddPredictionEnginePool<BuddyRating, BuddyRatingPrediction>()
+    .FromFile(modelName: "BuddyRecommenderModel", filePath: "MLModels/BuddyRecommenderModel.zip", watchForChanges: true);
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

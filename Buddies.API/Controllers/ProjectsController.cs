@@ -6,6 +6,8 @@ using Buddies.API.IO;
 using Buddies.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.ML;
+using Buddies.API.DataModels;
 
 namespace Buddies.API.Controllers
 {
@@ -15,16 +17,18 @@ namespace Buddies.API.Controllers
     {
         private readonly ApiContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly PredictionEnginePool<BuddyRating, BuddyRatingPrediction> _predictionEnginePool;
 
         /// <summary>
         /// Initializes a new ProjectController.
         /// </summary>
         /// <param name="userManager">UserManager from ASP.NET Core Identity.</param>
         /// /// <param name="context">database context from Buddies.API.Database.</param>
-        public ProjectsController(ApiContext context, UserManager<User> userManager)
+        public ProjectsController(ApiContext context, UserManager<User> userManager, PredictionEnginePool<BuddyRating, BuddyRatingPrediction> predictionEnginePool)
         {
             _context = context;
             _userManager = userManager;
+            _predictionEnginePool = predictionEnginePool;
 
         }
 
@@ -596,11 +600,17 @@ namespace Buddies.API.Controllers
 
 
         /// <summary>
-        /// API route GET /api/v1/projects/:id for fetching project profile.
+        /// API route GET /api/v1/projects/:id for 
+        /// fetching project recommendations.
         /// </summary>
         [HttpGet("recs/{id}/{k}")]
         public async Task<ActionResult> GetRecommendations(int id, int k)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
             var project = _context.Projects
                 .Include(project => project.Owner)
                 .Include(project => project.Skills)
@@ -611,17 +621,15 @@ namespace Buddies.API.Controllers
             {
                 return NotFound("Project not found");
             }
-            var user = _userManager.GetUserAsync(User).Result;
+
             var profile = await _context.Profiles
                 .Include(profile => profile.Skills)
                 .Include(profile => profile.User)
                 .Where(profile => !project.Members.Contains(profile.User))
                 .ToListAsync();
-            if (project == null)
-            {
-                return BadRequest("No such project exists :(");
-            }
-            var recs = KnnService.KNearestUsers(project, profile, k);
+            
+
+            var recs = KnnService.KNearestUsers(project, profile, k, _predictionEnginePool);
             var ret = new List<RecommendationResponse>();
             foreach (var rec in recs)
             {

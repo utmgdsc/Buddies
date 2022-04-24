@@ -1,5 +1,6 @@
 ﻿using Buddies.API.Entities;
-using System.Collections.Generic;
+using Microsoft.Extensions.ML;
+using Buddies.API.DataModels;
 
 namespace Buddies.API.Services
 {
@@ -45,7 +46,7 @@ namespace Buddies.API.Services
             return vector;
         }
 
-        public static List<(Profile, double)> KNearestUsers(Project a, List<Profile> users, int k)
+        public static List<(Profile, double)> KNearestUsers(Project a, List<Profile> users, int k, PredictionEnginePool<BuddyRating, BuddyRatingPrediction> predictionEnginePool)
         {
 
             List<(double, (Profile, double))> recommendations = new List<(double, (Profile, double))>();
@@ -53,7 +54,9 @@ namespace Buddies.API.Services
             {
                 var vector = GetVector(a, user);
                 var (dist, sim) = Distance(vector);
-                recommendations.Add((dist, (user, sim)));
+                var input = new BuddyRating { RaterId = a.Owner.Id, BeingRatedId = user.UserId };
+                BuddyRatingPrediction prediction = predictionEnginePool.Predict(modelName: "BuddyRecommenderModel", example: input);
+                recommendations.Add((dist + 0.01 * prediction.Score, (user, sim)));
             }
             recommendations.Sort((a, b) => a.Item1.CompareTo(b.Item1));
             var kNearest = new List<(Profile, double)>();
