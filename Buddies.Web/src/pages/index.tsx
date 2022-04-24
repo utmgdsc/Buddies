@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import Typography from '@mui/material/Typography';
 import HomePage from '../components/home';
 
 const Home: NextPage = () => (
@@ -9,7 +8,7 @@ const Home: NextPage = () => (
       <title>Buddies</title>
     </Head>
 
-    <HomePage/>
+    <HomePage />
 
   </>
 );
