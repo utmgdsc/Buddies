@@ -22,7 +22,7 @@ const cards = [
     {id: 3,
     image: 'https://www.insidehighered.com/sites/default/server_files/media/GettyImages-1208313447.jpg',
     title: 'Create your own projects!',
-    body: 'Create projects with custom requirements and get tailored recommendations that match your project needs!'},
+    body: 'Create projects with custom requirements and get tailored buddy recommendations that match your project needs!'},
 
     {id: 4,
     image: 'https://crmgamified.com/wp-content/uploads/2020/09/Sales-Management-drawing-01-e1602347137275.png',
@@ -32,7 +32,7 @@ const cards = [
     {id: 5,
     image: 'https://activeloc.com/wp-content/uploads/2021/01/istockphoto-1070519266-612x612-1.jpg',
     title: 'Join Projects!',
-    body: 'Found a project you like? Let the project owner by requesting to join. Don\'t be shy!'},
+    body: 'Found a project you like? Let the project owner know by requesting to join. Don\'t be shy!'},
 
     {id: 6,
     image: 'https://png.pngtree.com/element_our/20190602/ourlarge/pngtree-team-staff-and-light-bulb-illustration-image_1385479.jpg',
