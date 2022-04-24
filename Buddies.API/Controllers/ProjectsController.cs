@@ -778,7 +778,7 @@ namespace Buddies.API.Controllers
                 return BadRequest("You have already rated this project or are not a part of this project");
             }
 
-            foreach (var member in project.MembersYetToRate)
+            foreach (var member in project.Members)
             {
                 if (member == currentUser)
                 {
