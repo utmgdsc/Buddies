@@ -38,6 +38,7 @@ type UpdateProf = {
   'userId': number,
   'headline': string,
   'aboutMe': string,
+  'buddyScore': number,
   'skills': Skillobject[],
   'projects': Projectobject[]
 };
@@ -54,6 +55,7 @@ const Profile: React.VFC = () => {
     userId: -1,
     headline: 'n/a',
     aboutMe: 'n/a',
+    buddyScore: 0,
     skills: [{ id: 1, name: 'Data Structures', delete: false },
       { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }],
     projects: [],
@@ -78,6 +80,7 @@ const Profile: React.VFC = () => {
     userId: userProfile.userId,
     headline: userProfile.headline,
     aboutMe: userProfile.aboutMe,
+    buddyScore: userProfile.buddyScore,
     skills: userProfile.skills,
     projects: userProfile.projects,
   };
@@ -124,7 +127,7 @@ const Profile: React.VFC = () => {
             hline={userProfile.headline}
           />
           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-            <BScore score={0} />
+            <BScore score={userProfile.buddyScore} />
             <br />
             <Skills
               updateFunc={updateUserProfile}

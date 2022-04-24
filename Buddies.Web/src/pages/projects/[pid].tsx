@@ -7,7 +7,8 @@ import axios from 'axios';
 import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
 import {
-  getProject, addMember, getUsers, inviteMember, removeMember, terminateProject, rateMembers,
+  getProject, addMember, getUsers, inviteMember, removeMember,
+  terminateProject, rateMembers, joinRequest,
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
@@ -32,13 +33,13 @@ const Project: React.VFC = () => {
   */
   function getAndMakeProject() {
     if (!(typeof projectId === 'string')) {
-      alert('error');
+      alert('Uh oh, something went wrong...');
       return;
     }
     getProject(projectId).then((res) => {
       setProject(res.data);
-    }).catch((error) => {
-      alert(error);
+    }).catch(() => {
+      alert('Uh oh, something went wrong...');
     });
   }
 
@@ -53,12 +54,13 @@ const Project: React.VFC = () => {
   }, [projectId]);
 
   const addMemberToProject = async () => {
+
     if (!(typeof projectId === 'string') || !authState) {
-      alert('error');
+      alert('Uh oh, something went wrong...');
       return;
     }
     const res = await addMember(projectId, parseInt(authState.nameid, 10))
-      .catch((error) => alert(error));
+      .catch(() => alert('Uh oh, something went wrong...'));
 
     if (res) {
       getAndMakeProject();
@@ -111,6 +113,19 @@ const Project: React.VFC = () => {
       .catch((err) => displayErrorNotif(err));
   };
 
+  const requestToJoin = async () => {
+    if (!(typeof projectId === 'string')) {
+      alert('Uh oh, something went wrong...');
+      return;
+    }
+    const res = await joinRequest(projectId)
+      .catch(() => alert('Uh oh, something went wrong...'));
+
+    if (res) {
+      getAndMakeProject();
+    }
+  };
+
   const [tab, setTab] = useState<Tabs>('Dashboard');
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -140,6 +155,7 @@ const Project: React.VFC = () => {
             setSidebarOpen={setSidebarOpen}
             getUsers={getUsers}
             submitInvite={submitInvite}
+            requestToJoin={requestToJoin}
             isOwner={isOwner}
           />
         );

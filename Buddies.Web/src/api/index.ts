@@ -99,3 +99,7 @@ export async function terminateProject(projectId: string) {
 export async function rateMembers(projectId: string, ratings: RateBuddiesRequest) {
   return axios.post(`/api/v1/projects/${projectId}/ratebuddies`, ratings);
 }
+
+export async function joinRequest(projectId: string | string[] | undefined) {
+  return axios.post(`/api/v1/projects/${projectId}/joinrequest`);
+}
