@@ -787,6 +787,19 @@ namespace Buddies.API.Controllers
 
                 if (request.BuddyScores.TryGetValue(member.Id, out int score))
                 {
+                    
+                    var rating = await _context.Ratings
+                        .Where(s => s.RaterId == currentUser.Id && s.BeingRatedId == member.Id)
+                        .FirstOrDefaultAsync();
+                    if (rating == null)
+                    {
+                        var newRating = new UserRating(currentUser.Id, member.Id, score);
+                        await _context.Ratings.AddAsync(newRating);
+                    } else
+                    {
+                        rating.Score = ((rating.Score*rating.RatingCount) + score) / (rating.RatingCount+1);
+                        rating.RatingCount++;
+                    }
                     var n = member.Profile.ProjectCount;
                     member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n - 1))) / n;
                 }
@@ -860,6 +873,35 @@ namespace Buddies.API.Controllers
                 }
                 ret.Add(profResponse);
             }
+            return Ok(ret);
+        }
+
+        /// <summary>
+        /// API route GET /api/v1/ratings/
+        /// fetching all user ratings.
+        /// </summary>
+        [HttpGet("ratings")]
+        public async Task<ActionResult> GetRatings()
+        {
+            var currentUser = _userManager.GetUserAsync(User).Result;
+            if (currentUser == null || currentUser.Id != 1)
+            {
+                return Unauthorized("You are unauthorized to perform this action.");
+            }
+            var ratings = await _context.Ratings.ToListAsync();
+
+            var ret = new List<RatingsResponse>();
+            foreach (var rating in ratings)
+            {
+                var ratingResponse = new RatingsResponse()
+                {
+                    RaterId = rating.RaterId,
+                    BeingRatedId = rating.BeingRatedId,
+                    Score = rating.Score
+                };
+                ret.Add(ratingResponse);
+            }
+
             return Ok(ret);
         }
     }
