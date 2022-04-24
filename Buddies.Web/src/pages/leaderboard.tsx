@@ -10,19 +10,12 @@ import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { Box, Button, Container, Card } from '@mui/material';
+import { Box, Container, Card } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import TablePagination from '@mui/material/TablePagination';
 import CardActionArea from '@mui/material/CardActionArea';
 import { getLeaderboard } from '../api';
-
-type User = {
-  firstName: string,
-  lastName: string,
-  email: string,
-  userId: number,
-  buddyScore: number
-};
+import { UserInfoResponse } from '../api/model/userInfoResponse';
 
 let totalUsers: number = 0;
 
@@ -33,7 +26,7 @@ let totalUsers: number = 0;
 const Leaderboard = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [leaderboard, setLeaderboard] = React.useState<User[]>([]);
+  const [leaderboard, setLeaderboard] = React.useState<UserInfoResponse[]>([]);
 
   /* Gets leaderboard info and then
      creates necessary global vars  and states.

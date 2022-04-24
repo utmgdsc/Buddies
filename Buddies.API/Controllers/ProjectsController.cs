@@ -371,6 +371,7 @@ namespace Buddies.API.Controllers
                 userInfo.LastName = userprofile.LastName;
                 userInfo.Email = member.Email;
                 userInfo.UserId = member.Id;
+                userInfo.BuddyScore = userprofile.BuddyScore;
                 profileResponse.Members.Add(userInfo);
             }
 
@@ -386,6 +387,7 @@ namespace Buddies.API.Controllers
                 userInfo.LastName = userprofile.LastName;
                 userInfo.Email = invitedUser.Email;
                 userInfo.UserId = invitedUser.Id;
+                userInfo.BuddyScore = userprofile.BuddyScore;
                 profileResponse.InvitedUsers.Add(userInfo);
             }
 
@@ -401,6 +403,7 @@ namespace Buddies.API.Controllers
                 userInfo.LastName = userprofile.LastName;
                 userInfo.Email = invitedUser.Email;
                 userInfo.UserId = invitedUser.Id;
+                userInfo.BuddyScore = userprofile.BuddyScore;
                 profileResponse.MembersYetToRate.Add(userInfo);
             }
 

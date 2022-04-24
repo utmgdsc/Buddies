@@ -15,4 +15,5 @@ export interface UserInfoResponse {
   lastName: string;
   email: string;
   userId: number;
+  buddyScore?: number;
 }
