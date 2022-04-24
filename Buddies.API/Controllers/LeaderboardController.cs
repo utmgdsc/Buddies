@@ -33,13 +33,16 @@ namespace Buddies.API.Controllers
         public async Task<ActionResult> GetLeaderboard(int page, float results)
         {
             var userList = await _context.Users
-                .Include(u => u.Profile).ToListAsync();
+                .Include(u => u.Profile)
+                .OrderByDescending(u => u.Profile.BuddyScore)
+                .Skip((page - 1) * (int)results)
+                .Take((int)results)
+                .ToListAsync();
 
             var response = new LeaderboardResponse();
 
-            foreach (User user in userList.OrderByDescending(u => u.Profile.BuddyScore).ToList())
+            foreach (User user in userList)
             {
-
                 var userResponse = new UserInfoResponse()
                 {
                     FirstName = user.Profile.FirstName,
@@ -53,10 +56,6 @@ namespace Buddies.API.Controllers
             }
 
             var pageCount = Math.Ceiling(response.Users.Count() / results);
-            response.Users = response.Users
-                .Skip((page - 1) * (int)results)
-                .Take((int)results)
-                .ToList();
 
             response.TotalPages = (int)pageCount;
             response.CurrentPage = page;
