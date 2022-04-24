@@ -6,12 +6,12 @@ import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 import type { UpdateProf } from '../pages/profiles/[pid]';
 import Skillform from './Skillform';
-import { ProjectProfile } from '../pages/projects/[pid]';
+import { ProjectProfileResponse } from '../api/model/projectProfileResponse';
 
 /* Skills component. */
 const Skills = ({ updateFunc, newProfile, logCheck }: { updateFunc: VoidFunction,
-  newProfile: UpdateProf | ProjectProfile, logCheck: boolean | null }) => {
-  let userOrProject: boolean = newProfile.MemberLst ? true : false
+  newProfile: UpdateProf | ProjectProfileResponse, logCheck: boolean | null }) => {
+  let userOrProject: boolean = newProfile.members ? true : false
   return (
     <Card sx={{
       width: '100%', height: '30%', border: 1, alignItems: 'center', padding: 2, boxShadow: 12,

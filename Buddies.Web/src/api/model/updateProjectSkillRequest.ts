@@ -10,19 +10,7 @@
  * Do not edit the class manually.
  */
 import { SkillResponse } from './skillResponse';
-import { UserInfoResponse } from './userInfoResponse';
 
-export interface ProjectProfileResponse {
-  title: string;
-  description: string;
-  location: string;
-  username: string;
-  email: string;
-  category: string;
-  maxMembers: number;
-  invitedUsers: Array<UserInfoResponse>;
-  members: Array<UserInfoResponse>;
+export interface UpdateProjectSkillRequest {
   skills: Array<SkillResponse>;
-  membersYetToRate: Array<UserInfoResponse>;
-  isFinished: boolean;
 }

@@ -103,11 +103,19 @@ namespace Buddies.API.Controllers
         {
             var notifications = new List<NotificationResponse>();
             var currentUserId = _userManager.GetUserId(User);
-
+            if (currentUserId == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
             var currentUser = _context.Users
                 .Include(user => user.Notifications)
                 .Where(u => u.Id.ToString() == currentUserId)
                 .FirstOrDefault();
+
+            if (currentUser == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
 
             var noti = currentUser.Notifications.Find(n => n.Id == nid);
             if (noti == null)

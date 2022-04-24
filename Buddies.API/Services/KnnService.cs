@@ -26,7 +26,7 @@ namespace Buddies.API.Services
         {
 
             double[] vector = new double[a.Skills.Count];
-            var TOLERANCE = 0;
+       
             foreach (var skill in b.Skills)
             {
                 var i = 0;
