@@ -54,7 +54,6 @@ const Project: React.VFC = () => {
   }, [projectId]);
 
   const addMemberToProject = async () => {
-
     if (!(typeof projectId === 'string') || !authState) {
       alert('Uh oh, something went wrong...');
       return;
