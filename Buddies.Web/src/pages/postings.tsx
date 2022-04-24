@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { Box, Button, Container } from '@mui/material';
+import { Box, Card, Container } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import TablePagination from '@mui/material/TablePagination';
@@ -95,8 +95,8 @@ const PostingsTable = () => {
       }
       totalProjects = res.data.totalPages * rowsPerPage;
       setProjects(DATA);
-    }).catch((error) => {
-      alert(error);
+    }).catch(() => {
+      alert('Uh oh, something went wrong...');
     });
   }
 
@@ -105,7 +105,6 @@ const PostingsTable = () => {
   }, [page]);
 
   const handleChangePage = (e: unknown, newPage: number) => {
-    console.log(newPage);
     setPage(newPage);
     getAndMakePostings();
   };
@@ -170,21 +169,24 @@ const PostingsTable = () => {
                                 {row.Username}
 
                               </Typography>
-                              <Button
+                              <Card
                                 variant="contained"
                                 style={{
                                   color: 'white',
                                   backgroundColor: 'green',
-                                  maxWidth: '25px',
+                                  maxWidth: '30px',
                                   maxHeight: '25px',
-                                  minWidth: '25px',
+                                  minWidth: '30px',
                                   minHeight: '25px',
-                                  marginLeft: 5,
-                                  marginTop: 10,
+                                  marginLeft: 20,
+                                  marginTop: 8,
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  display: 'flex',
                                 }}
                               >
                                 {row.BuddyScore}
-                              </Button>
+                              </Card>
                               <LocationOnIcon sx={{ marginTop: 1.35, marginLeft: 2 }} />
                               <Typography sx={{ marginTop: 2 }} variant="subtitle2">
                                 {row.Location}

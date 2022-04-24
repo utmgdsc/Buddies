@@ -1,3 +1,4 @@
+import React, { UIEvent, useEffect, useState } from 'react';
 import { Card, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
@@ -5,17 +6,13 @@ import Button from '@mui/material/Button';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+
 import CardContent from '@mui/material/CardContent';
 import CardActionArea from '@mui/material/CardActionArea';
 
-// const getapi = axios.create({
-//     baseURL: '/api/v1/notifications/',
-//     headers: {
-//         Accept: 'application/json',
-//         'Content-type': 'application/json',
-//     },
-// });
+/* Notification page. Displays a list of notifications
+   for the logged in user.
+*/
 
 type NotiObject = {
   'notificationId': number,
@@ -31,27 +28,26 @@ const Notifications = () => {
   let currentPage = 1;
   const size = 20;
   const [notis, setNotis] = useState<NotiObject[]>([]);
-  console.log(notis);
-  const [bot, setBot] = useState<boolean>(false);
+  const [isBot, setIsBot] = useState<boolean>(false);
   const loadNotis = () => {
     const currNoti:NotiObject[] = [];
     axios
       .get(`/api/v1/notifications/${currentPage}/${size}/`)
       .then(({ data } : any) => {
         if (data.totalPages === data.currentPage) {
-          setBot(true);
+          setIsBot(true);
         }
         data.notifications.forEach((p: NotiObject) => currNoti.push(p));
-        setNotis((noti) => [...noti, ...currNoti]);
+        setNotis((noti : NotiObject[]) => [...noti, ...currNoti]);
       })
-      .catch((error) => {
-        alert(error);
+      .catch(() => {
+        alert('Uh oh, something went wrong...');
       });
     currentPage += 1;
   };
 
-  const handleScroll = (e:any) => {
-    if (bot) {
+  const handleScroll = (e: UIEvent<HTMLDivElement>) => {
+    if (isBot) {
       return;
     }
     if (Math.ceil(e.target.documentElement.scrollTop + window.innerHeight)

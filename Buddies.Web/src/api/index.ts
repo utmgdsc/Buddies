@@ -103,3 +103,7 @@ export async function rateMembers(projectId: string, ratings: RateBuddiesRequest
 export async function joinRequest(projectId: string | string[] | undefined) {
   return axios.post(`/api/v1/projects/${projectId}/joinrequest`);
 }
+
+export async function getLeaderboard(page: number, results: number){
+  return await axios.get(`/api/v1/leaderboard/${page}/${results}`);
+};
