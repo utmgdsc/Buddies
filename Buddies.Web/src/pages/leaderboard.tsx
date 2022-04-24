@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,10 +10,9 @@ import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { Box, Button, Container } from '@mui/material';
+import { Box, Button, Container, Card } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import TablePagination from '@mui/material/TablePagination';
-import { useEffect } from 'react';
 import CardActionArea from '@mui/material/CardActionArea';
 import { getLeaderboard } from '../api';
 
@@ -42,8 +42,8 @@ const Leaderboard = () => {
     getLeaderboard(page + 1, rowsPerPage).then((res) => {
       totalUsers = res.data.totalPages * rowsPerPage;
       setLeaderboard(res.data.users);
-    }).catch((error) => {
-      alert(error);
+    }).catch(() => {
+      alert("Uh oh, something went wrong...");
     });
   }
 
@@ -130,22 +130,25 @@ const Leaderboard = () => {
                     <TableCell>
                       <Grid container>
 
-                        <Button
+                        <Card
                           disabled
                           variant="contained"
                           style={{
                             color: 'white',
                             backgroundColor: 'green',
-                            maxWidth: '25px',
+                            maxWidth: '30px',
                             maxHeight: '25px',
-                            minWidth: '25px',
+                            minWidth: '30px',
                             minHeight: '25px',
                             marginLeft: 25,
                             marginTop: 8,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            display: 'flex'
                           }}
                         >
                           {row.buddyScore}
-                        </Button>
+                        </Card>
 
                       </Grid>
 
