@@ -72,7 +72,7 @@ namespace Buddies.API.Controllers
                         Description = project.Description,
                         Location = project.Location,
                         Username = String.Format("{0} {1}", owner.FirstName, owner.LastName),
-                        BuddyScore = 0,
+                        BuddyScore = owner.BuddyScore,
                         MaxMembers = project.MaxMembers,
                         CurrentMembers = _context.Projects.Where(p => p.ProjectId == project.ProjectId).SelectMany(p => p.Members).ToList().Count,
                         Category = project.Category,
@@ -110,11 +110,12 @@ namespace Buddies.API.Controllers
         [Authorize]
         public async Task<ActionResult> CreateProject(CreateProjectRequest project)
         {
-            var userEntity = _userManager.GetUserAsync(User).Result;
-            if (userEntity == null)
-            {
-                return Unauthorized();
-            }
+            var currentUserId = _userManager.GetUserId(User);
+
+            var userEntity = _context.Users
+                .Include(user => user.Profile)
+                .Where(u => u.Id.ToString() == currentUserId)
+                .FirstOrDefault();
 
             var dbLocation = await _context.Locations.FirstOrDefaultAsync(x => x.Address == project.Location);
 
@@ -143,12 +144,23 @@ namespace Buddies.API.Controllers
             {
                 if (invitation != userEntity.Email)
                 {
-                    var dbProfile = await _context.Users.FirstOrDefaultAsync(user => user.Email == invitation);
-                    if (dbProfile == null)
+                    var invitedUser = await _context.Users.FirstOrDefaultAsync(user => user.Email == invitation);
+                    if (invitedUser == null)
                     {
                         return NotFound("No such user");
                     }
-                    dbProject.InvitedUsers.Add(dbProfile);
+                    dbProject.InvitedUsers.Add(invitedUser);
+
+                    var inviteRequest = new Notification(userEntity.Profile.FirstName + " invited you to join " + project.Title);
+                    inviteRequest.SenderId = userEntity.Id;
+                    inviteRequest.SenderName = userEntity.Profile.FirstName + " " + userEntity.Profile.LastName;
+                    inviteRequest.Recipient = invitedUser;
+                    inviteRequest.Project = dbProject;
+                    await _context.Notifications.AddAsync(inviteRequest);
+
+                    invitedUser.Notifications.Add(inviteRequest);
+
+
 
                 }
             }
@@ -157,7 +169,7 @@ namespace Buddies.API.Controllers
             await _context.SaveChangesAsync();
 
 
-            return Ok();
+            return StatusCode(StatusCodes.Status201Created, dbProject.ProjectId);
         }
 
         /// <summary>
@@ -228,9 +240,9 @@ namespace Buddies.API.Controllers
             {
                 return Ok(badResponse);
             }
-            
+
             var categoryList = await _context.Categories.ToListAsync();
-            int tolerance = 0; 
+            int tolerance = 0;
             var matchingCategories = categoryList.Where(p =>
             {
                 //Check Contains
@@ -239,9 +251,9 @@ namespace Buddies.API.Controllers
 
                 //Check LongestCommonSubsequence
                 string output = "";
-                bool subsequenceTolerated = FuzzySearchService.LongestCommonSubsequence(p.Name.ToLower(), search.ToLower(), out output) >= search.Length - tolerance; 
-                                                                                                                        // if substring matches at least
-                                                                                                                        // this many characters.
+                bool subsequenceTolerated = FuzzySearchService.LongestCommonSubsequence(p.Name.ToLower(), search.ToLower(), out output) >= search.Length - tolerance;
+                // if substring matches at least
+                // this many characters.
                 return subsequenceTolerated;
             }).ToList();
 
@@ -338,7 +350,7 @@ namespace Buddies.API.Controllers
                 return Ok(badResponse);
             }
             const int TOLERANCE = 0;
-            var matchingPeople = emailsList.Where(p =>  
+            var matchingPeople = emailsList.Where(p =>
             {
                 //Check Contains
                 bool contains = p.Email.ToLower().Contains(search.ToLower());
@@ -373,22 +385,23 @@ namespace Buddies.API.Controllers
         /// API route GET /api/v1/projects/:id for fetching project profile.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetProfile(int id)
+        public async Task<ActionResult<ProjectProfileResponse>> GetProfile(int id)
         {
             var project = _context.Projects
                 .Include(project => project.Members)
                 .Include(project => project.InvitedUsers)
                 .Include(project => project.Skills)
+                .Include(project => project.MembersYetToRate)
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile)
                 .Where(project => project.ProjectId == id)
                 .FirstOrDefault();
-                
+
             if (project == null)
             {
                 return NotFound("PROJECT PROFILE NOT FOUND");
             }
-            var profileResponse = new ProjectProfileResponse{
+            var profileResponse = new ProjectProfileResponse {
                 Title = project.Title,
                 Description = project.Description,
                 Location = project.Location,
@@ -396,6 +409,7 @@ namespace Buddies.API.Controllers
                 Email = project.Owner.Email,
                 Category = project.Category,
                 MaxMembers = project.MaxMembers,
+                IsFinished = project.IsFinished
             };
 
             foreach (User member in project.Members)
@@ -437,6 +451,21 @@ namespace Buddies.API.Controllers
                     Delete = false
                 };
                 profileResponse.Skills.Add(skillInfo);
+            }
+            
+            foreach (User invitedUser in project.MembersYetToRate)
+            {
+                var userInfo = new UserInfoResponse();
+                var userprofile = await _context.Profiles.FindAsync(invitedUser.Id);
+                if (userprofile == null)
+                {
+                    return NotFound("USER PROFILE NOT FOUND");
+                }
+                userInfo.FirstName = userprofile.FirstName;
+                userInfo.LastName = userprofile.LastName;
+                userInfo.Email = invitedUser.Email;
+                userInfo.UserId = invitedUser.Id;
+                profileResponse.MembersYetToRate.Add(userInfo);
             }
 
             return Ok(profileResponse);
@@ -539,16 +568,90 @@ namespace Buddies.API.Controllers
             {
                 return NotFound("PROFILE NOT FOUND");
             }
-            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized(); }
+            var currentUserId = _userManager.GetUserId(User);
+
+            var currentUser = _context.Users
+                .Include(user => user.Profile)
+                .Where(u => u.Id.ToString() == currentUserId)
+                .FirstOrDefault();
+
+            if (project.Owner != currentUser) { return Unauthorized(); }
+
             var invitedUser = await _context.Users.FirstOrDefaultAsync(user => user.Email == request.UserEmail);
 
-            if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)){
+
+            if (invitedUser != null && !project.InvitedUsers.Contains(invitedUser)) {
                 project.InvitedUsers.Add(invitedUser);
+
+                var inviteRequest = new Notification(currentUser.Profile.FirstName + " invited you to join " + project.Title);
+                inviteRequest.SenderId = currentUser.Id;
+                inviteRequest.SenderName = currentUser.Profile.FirstName + " " + currentUser.Profile.LastName;
+                inviteRequest.Recipient = invitedUser;
+                inviteRequest.Project = project;
+                await _context.Notifications.AddAsync(inviteRequest);
+
+                invitedUser.Notifications.Add(inviteRequest);
+
                 await _context.SaveChangesAsync();
                 return Ok();
             }
 
+
+
             return NotFound("User not found");
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/join/ for sending the project own
+        /// </summary>
+        [HttpPost("{pid}/joinrequest/")]
+        [Authorize]
+        public async Task<ActionResult> JoinProjectRequest(int pid)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .Include(project => project.InvitedUsers)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("Project not found");
+            }
+
+            if (project.Members.Count >= project.MaxMembers)
+            {
+                return BadRequest("There are no more space in this project!");
+            }
+
+            var currentUserId = _userManager.GetUserId(User);
+
+            var currentUser = _context.Users
+                .Include(user => user.Profile)
+                .Where(u => u.Id.ToString() == currentUserId)
+                .FirstOrDefault();
+
+            if (project.Members.Contains(currentUser))
+            {
+                return BadRequest("You are already a member!");
+            }
+
+            if (project.InvitedUsers.Contains(currentUser))
+            {
+                return BadRequest("You are already invited!");
+            }
+
+            var joinRequest = new Notification(currentUser.Profile.FirstName + " requested to join " + project.Title);
+            joinRequest.SenderId = currentUser.Id;
+            joinRequest.SenderName = currentUser.Profile.FirstName + " " + currentUser.Profile.LastName;
+            joinRequest.Recipient = project.Owner;
+            joinRequest.Project = project;
+            await _context.Notifications.AddAsync(joinRequest);
+
+            project.Owner.Notifications.Add(joinRequest);
+            await _context.SaveChangesAsync();
+
+            return Ok("join request added");
         }
 
         /// <summary>
@@ -573,9 +676,9 @@ namespace Buddies.API.Controllers
             {
                 return BadRequest("There are no more space in this project!");
             }
-            if (project.Owner == _userManager.GetUserAsync(User).Result) 
-            { 
-                return BadRequest("Cannot remove owner from project"); 
+            if (project.Owner == _userManager.GetUserAsync(User).Result)
+            {
+                return BadRequest("Cannot remove owner from project");
             }
 
             var currentUser = _userManager.GetUserAsync(User).Result;
@@ -596,6 +699,108 @@ namespace Buddies.API.Controllers
             }
 
             return NotFound("User not found");
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/terminate/ for terminating a project.
+        /// </summary>
+        [HttpPost("{pid}/terminate/")]
+        [Authorize]
+        public async Task<ActionResult> TermintateProject(int pid)
+        {
+            var project = _context.Projects
+                .Include(project => project.Members)
+                .ThenInclude(member => member.Profile)
+                .Include(project => project.Members)
+                .ThenInclude(member => member.Notifications)
+                .Include(project => project.Owner)
+                .ThenInclude(owner => owner.Profile)
+                
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
+            if (project.IsFinished)
+            {
+                return BadRequest("Project already terminated");
+            }
+            var currentUser = _userManager.GetUserAsync(User).Result;
+            if (project.Owner != currentUser) { return Unauthorized(); }
+            
+            project.IsFinished = true;
+            project.MembersYetToRate = project.Members;
+            foreach (var member in project.Members)
+            {
+                member.Profile.ProjectCount += 1;
+                var terminateNotification = new Notification(project.Title + " has terminated! Make sure to go rate your teammates!");
+                terminateNotification.SenderId = currentUser.Id;
+                terminateNotification.SenderName = currentUser.Profile.FirstName + " " + currentUser.Profile.LastName;
+                terminateNotification.Recipient = member;
+                terminateNotification.Project = project;
+                await _context.Notifications.AddAsync(terminateNotification);
+
+                member.Notifications.Add(terminateNotification);
+                await _context.SaveChangesAsync();
+
+
+            }
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/{pid}/ratebuddies/ for joining profile IF you're on the invited list.
+        /// </summary>
+        [HttpPost("{pid}/ratebuddies/")]
+        [Authorize]
+        public async Task<ActionResult> RateBuddies(int pid, RateBuddiesRequest request)
+        {
+            var project = _context.Projects
+                .Include(project => project.MembersYetToRate)
+                .ThenInclude(member => member.Profile)
+                .Where(project => project.ProjectId == pid)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
+            var currentUser = _userManager.GetUserAsync(User).Result;
+
+            if (!project.MembersYetToRate.Contains(currentUser))
+            {
+                return BadRequest("You have already rated this project or are not a part of this project");
+            }
+
+            foreach (var member in project.MembersYetToRate)
+            {
+                if (member == currentUser)
+                {
+                    continue;
+                }
+
+                if (request.BuddyScores.TryGetValue(member.Id, out int score))
+                {
+                    var n = member.Profile.ProjectCount;
+                    member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n - 1))) / n;
+                }
+                else
+                {
+                    return BadRequest("Member: " + member.Profile.FirstName + " " + member.Profile.LastName +
+                        " is not included in this project rating");
+                }
+            }
+
+            project.MembersYetToRate.Remove(currentUser);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
 
@@ -658,4 +863,4 @@ namespace Buddies.API.Controllers
             return Ok(ret);
         }
     }
-}
+} 

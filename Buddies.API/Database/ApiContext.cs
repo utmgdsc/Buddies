@@ -112,12 +112,24 @@ public class ApiContext : IdentityDbContext<User, Role, int>
             .HasOne(p => p.Owner);
 
             builder.Entity<Project>()
+            .HasMany(p => p.MembersYetToRate);
+
+            builder.Entity<Project>()
             .HasMany(p => p.Members)
             .WithMany(u => u.Projects);
 
             builder.Entity<Project>()
             .HasMany(p => p.InvitedUsers)
             .WithMany(u => u.InvitedTo);
+
+
+            builder.Entity<User>()
+                .HasMany(u => u.Notifications)
+                .WithOne(n => n.Recipient)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<Notification>().HasOne(n => n.Project);
+
 
         }
     }
@@ -158,4 +170,9 @@ public class ApiContext : IdentityDbContext<User, Role, int>
     /// Collection of all the user to user ratings
     /// </summary>
     public DbSet<UserRating> Ratings { get; set; } = null!;
+    
+    /// </summary>
+    /// Collection of all Notifications
+    /// </summary>
+    public DbSet<Notification> Notifications { get; set; } = null!;
 }

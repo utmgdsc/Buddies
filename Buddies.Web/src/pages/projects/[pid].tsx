@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Container from '@mui/material/Container';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
 import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
 import {
-  getProject, addMember, getUsers, inviteMember, removeMember, updateProjectSkills, getRecommendations
+  getProject, addMember, getUsers, inviteMember, removeMember,
+  terminateProject, rateMembers, joinRequest, updateProjectSkills,
+  getRecommendations
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
 import { InviteUserRequest } from '../../api/model/inviteUserRequest';
+import { ProjectProfileResponse } from '../../api/model/projectProfileResponse';
+import { RateBuddiesRequest } from '../../api/model/rateBuddiesRequest';
 import { Skillobject } from '../profiles/[pid]';
 
-export type UserInfo = {
-  FirstName: string,
-  LastName: string,
-  UserId: number,
-  Email: string,
-};
+export type Tabs = 'Dashboard' | 'Buddies';
 
 export type RecommendedUser = {
   email: string,
@@ -28,55 +28,15 @@ export type RecommendedUser = {
   match: string
 }
 
-export type ProjectProfile = {
-  Title: string,
-  Description: string,
-  Location: string,
-  ProjectOwner: string,
-  ProjectOwnerEmail: string,
-  MaxMembers: number
-  Category: string,
-  MemberLst: UserInfo[],
-  skills: Skillobject[],
-  InvitedLst: UserInfo[]
-};
-
-export type Tabs = 'Dashboard' | 'Buddies';
-
-let recommendedUserlst: RecommendedUser[] = [];
-const memberLst: UserInfo[] = [{
-  FirstName: 'John',
-  LastName: 'Doe',
-  UserId: -1,
-  Email: 'test@test.com',
-}];
-const SkillLst: Skillobject[] = [];
-// default project that loads when project id is not found
-const defaultProject: ProjectProfile = {
-  Title: 'Not Found',
-  Description: 'This error means the project that you are searching for was not found. There are many causes for this. First, check if the url is correct. Second, if the url is correct, it means the project owner has most likely deleted his account!',
-  Location: 'Unknown',
-  ProjectOwner: 'D.N.E',
-  ProjectOwnerEmail: 'D.N.E',
-  MaxMembers: 1,
-  Category: 'Not Found',
-  MemberLst: memberLst,
-  skills: SkillLst,
-  InvitedLst: [],
-};
-
-let projectId: string | string[] | undefined = '';
-let currId: number; // id of the user viewing the page
-const invitedIds: number[] = []; // list of userId's in the invited list
-const memberIds: number[] = []; // list of userId's in the member list
-let ownerId: number; // Id of the owner of the project
 
 /* Project profile page. Responsible for putting all the components that make up the
   page together. It also sends GET requests to get a project by its id. And a
   PUT request, to let invited users join the project.
 */
 const Project: React.VFC = () => {
-  const [project, setProject] = React.useState<ProjectProfile>(defaultProject);
+  const [projectId, setProjectId] = useState<string>();
+  const [project, setProject] = useState<ProjectProfileResponse>();
+  const [recommendations, setRecommendations] = useState<RecommendedUser>();
   const authState = authStore((state) => state.authState);
   const router = useRouter();
 
@@ -85,63 +45,38 @@ const Project: React.VFC = () => {
   */
   function getAndMakeProject() {
     if (!(typeof projectId === 'string')) {
-      alert('error');
+      console.log('hdasdsahj')
+      alert('Uh oh, something went wrong...');
       return;
     }
     getProject(projectId).then((res) => {
-      const newMemberLst = [];
-      for (let i = 0; i < res.data.members.length; i += 1) {
-        newMemberLst.push({
-          FirstName: res.data.members[i].firstName,
-          LastName: res.data.members[i].lastName,
-          UserId: res.data.members[i].userId,
-          Email: res.data.members[i].email,
-        });
-        memberIds.push(res.data.members[i].userId);
-        if (res.data.email === res.data.members[i].email) {
-          ownerId = res.data.members[i].userId;
-        }
-      }
-      const newInvitedLst = [];
-      for (let i = 0; i < res.data.invitedUsers.length; i += 1) {
-        newInvitedLst.push({
-          FirstName: res.data.invitedUsers[i].firstName,
-          LastName: res.data.invitedUsers[i].lastName,
-          UserId: res.data.invitedUsers[i].userId,
-          Email: res.data.invitedUsers[i].email,
-        });
-        invitedIds.push(res.data.invitedUsers[i].userId);
-      }
-
-      const newProject = {
-        Title: res.data.title,
-        Description: res.data.description,
-        Location: res.data.location,
-        ProjectOwner: res.data.username,
-        ProjectOwnerEmail: res.data.email,
-        MaxMembers: res.data.maxMembers,
-        Category: res.data.category,
-        MemberLst: newMemberLst,
-        skills: res.data.skills || SkillLst,
-        InvitedLst: newInvitedLst,
-      };
-      setProject(newProject);
-      console.log(res.data.skills);
-      console.log(newProject);
-      // console.log(`${memberIds.length} ${project.MaxMembers}`);
-    }).catch((error) => {
-      alert(error);
+      setProject(res.data);
+    }).catch(() => {
+      alert('Uh oh, something went wrong...');
     });
   }
 
+  useEffect(() => {
+    if (!router.isReady) return;
+    const { pid } = router.query;
+    setProjectId(pid as string);
+  }, [router.isReady]);
+
+  useEffect(() => {
+    if (typeof projectId === 'string') {
+      getAllRecommendations();
+      getAndMakeProject();
+    }
+  }, [projectId]);
+
   const addMemberToProject = async () => {
-    if (!(typeof projectId === 'string')) {
-      alert('error');
+
+    if (!(typeof projectId === 'string') || !authState) {
+      alert('Uh oh, something went wrong...');
       return;
     }
-    const res = await addMember(projectId, currId).catch((error) => {
-      alert(error);
-    });
+    const res = await addMember(projectId, parseInt(authState.nameid, 10))
+      .catch(() => alert('Uh oh, something went wrong...'));
 
     if (res) {
       getAndMakeProject();
@@ -150,37 +85,65 @@ const Project: React.VFC = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const displayErrorNotif = (err: any) => {
+    if (axios.isAxiosError(err) && err.response) {
+      enqueueSnackbar(err.response.data, { variant: 'error' });
+    } else {
+      enqueueSnackbar(err, { variant: 'error' });
+    }
+  };
+
   const submitInvite = (req: InviteUserRequest) => {
-    inviteMember(projectId as string, req)
+    inviteMember(projectId!, req)
       .then(() => {
         getAndMakeProject();
         enqueueSnackbar('User invited.', { variant: 'success' });
       })
-      .catch((err) => {
-        if (axios.isAxiosError(err) && err.response) {
-          enqueueSnackbar(err.response.data, { variant: 'error' });
-        } else {
-          enqueueSnackbar(err, { variant: 'error' });
-        }
-      });
+      .catch((err) => displayErrorNotif(err));
   };
 
   const submitRemoval = (userId: number) => {
-    removeMember(projectId as string, userId)
+    removeMember(projectId!, userId)
       .then(() => {
         getAndMakeProject();
         enqueueSnackbar('User removed.', { variant: 'success' });
       })
-      .catch((err) => {
-        if (axios.isAxiosError(err) && err.response) {
-          enqueueSnackbar(err.response.data, { variant: 'error' });
-        } else {
-          enqueueSnackbar(err, { variant: 'error' });
-        }
-      });
+      .catch((err) => displayErrorNotif(err));
   };
 
-  const clone: ProjectProfile = JSON.parse(JSON.stringify(project));
+  const submitTerminate = () => {
+    terminateProject(projectId!)
+      .then(() => {
+        getAndMakeProject();
+        enqueueSnackbar('Project terminated.', { variant: 'success' });
+      })
+      .catch((err) => displayErrorNotif(err));
+  };
+
+  
+  const submitRatings = (req: RateBuddiesRequest) => {
+    rateMembers(projectId!, req)
+      .then(() => {
+        getAndMakeProject();
+        enqueueSnackbar('Members rated.', { variant: 'success' });
+      })
+      .catch((err) => displayErrorNotif(err));
+  };
+
+  const requestToJoin = async () => {
+    if (!(typeof projectId === 'string')) {
+      alert('Uh oh, something went wrong...');
+      return;
+    }
+    const res = await joinRequest(projectId)
+      .catch(() => alert('Uh oh, something went wrong...'));
+
+    if (res) {
+      getAndMakeProject();
+    }
+  };
+
+  const clone: ProjectProfileResponse = project ? JSON.parse(JSON.stringify(project)) : {};
   
   const addSkills: VoidFunction = async () => {
     if (!(typeof projectId === 'string')) {
@@ -202,40 +165,28 @@ const Project: React.VFC = () => {
       return;
     }
     getRecommendations(projectId, 5).then((res) => {
-      recommendedUserlst = res.data;
+      setRecommendations(res.data);
     }).catch((error) => {
       alert(error);
     });
   }
 
-  useEffect(() => {
-    if (!router.isReady) return;
-    const { pid } = router.query;
-    projectId = pid; /* id of user */
-    getAllRecommendations();
-    getAndMakeProject(); /* When the page loads, a get request is made to populate
-        the project profile page accordingly */
-  }, [router.isReady]);
-
-  // checks if owner of the project is on the page
-  // if this is null, then it means the user is not logged in.
-  const authentication: boolean | null = (authState
-        && parseInt(authState.nameid, 10) === ownerId);
-
-  // gets the Id of the user viewing the page
-  currId = (authState ? parseInt(authState.nameid, 10) : -1);
-
-  // checks if the user has been invited to the project
-  const isInvited: boolean = invitedIds.includes(currId);
-
-  // checks if the user is a member of the project
-  const inGroup: boolean = memberIds.includes(currId);
-
-  const isFull: boolean = memberIds.length === project.MaxMembers;
 
   const [tab, setTab] = useState<Tabs>('Dashboard');
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const inGroup = useMemo(() => {
+    return !!project?.members.find((member) => member.userId.toString() === authState?.nameid);
+  }, [project, authState]);
+
+  const isInvited = useMemo(() => {
+    return !!project?.invitedUsers.find((member) => member.userId.toString() === authState?.nameid);
+  }, [project, authState]);
+
+  const isOwner = useMemo(() => project?.email === authState?.email, [project, authState]);
+
+  const isFull = useMemo(() => project?.members.length === project?.maxMembers, [project]);
 
   const getTabComponent = () => {
     switch (tab) {
@@ -243,8 +194,7 @@ const Project: React.VFC = () => {
         return (
           <ProjectDashboard
             inGroup={inGroup}
-            {...project}
-            authentication={authentication}
+            {...project!}
             isInvited={isInvited}
             isFull={isFull}
             addMemberToProject={addMemberToProject}
@@ -253,20 +203,22 @@ const Project: React.VFC = () => {
             submitInvite={submitInvite}
             addSkills={addSkills}
             projectprofile = {clone}
+            requestToJoin={requestToJoin}
+            isOwner={isOwner}
           />
         );
       case 'Buddies':
         return (
           <ProjectBuddies
-            {...project}
+            {...project!}
             setSidebarOpen={setSidebarOpen}
-            isOwner={ownerId.toString() === authState?.nameid}
-            ownerId={ownerId}
+            isOwner={isOwner}
             getUsers={getUsers}
             submitInvite={submitInvite}
             submitRemoval={submitRemoval}
             isFull={isFull}
-            recommendations={recommendedUserlst}
+            recommendations={recommendations}
+            submitRatings={submitRatings}
           />
         );
       default:
@@ -276,13 +228,20 @@ const Project: React.VFC = () => {
 
   return (
     <Container>
-      <Sidebar
-        name={project.ProjectOwner}
-        open={sidebarOpen}
-        setOpen={setSidebarOpen}
-        setTab={setTab}
-      />
-      {getTabComponent()}
+      {project ? (
+        <>
+          <Sidebar
+            name={project.username}
+            open={sidebarOpen}
+            setOpen={setSidebarOpen}
+            setTab={setTab}
+            isOwner={isOwner}
+            submitTerminate={submitTerminate}
+            projFinished={project.isFinished}
+          />
+          {getTabComponent()}
+        </>
+      ) : <CircularProgress />}
     </Container>
   );
 };

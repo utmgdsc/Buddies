@@ -3,6 +3,7 @@ using System;
 using Buddies.API.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Buddies.API.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    partial class ApiContextModelSnapshot : ModelSnapshot
+    [Migration("20220325232217_AddBuddyScore")]
+    partial class AddBuddyScore
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8815,46 +8817,6 @@ namespace Buddies.API.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Buddies.API.Entities.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("NotificationMessage")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RecipientId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SenderId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SenderName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("TimeCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("RecipientId");
-
-                    b.ToTable("Notifications");
-                });
-
             modelBuilder.Entity("Buddies.API.Entities.Profile", b =>
                 {
                     b.Property<int>("UserId")
@@ -8930,28 +8892,6 @@ namespace Buddies.API.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("Buddies.API.Entities.ProjectSkill", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectSkills");
                 });
 
             modelBuilder.Entity("Buddies.API.Entities.Role", b =>
@@ -9211,25 +9151,6 @@ namespace Buddies.API.Migrations
                     b.ToTable("ProjectUser1");
                 });
 
-            modelBuilder.Entity("Buddies.API.Entities.Notification", b =>
-                {
-                    b.HasOne("Buddies.API.Entities.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Buddies.API.Entities.User", "Recipient")
-                        .WithMany("Notifications")
-                        .HasForeignKey("RecipientId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-
-                    b.Navigation("Recipient");
-                });
-
             modelBuilder.Entity("Buddies.API.Entities.Profile", b =>
                 {
                     b.HasOne("Buddies.API.Entities.User", "User")
@@ -9250,17 +9171,6 @@ namespace Buddies.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("Buddies.API.Entities.ProjectSkill", b =>
-                {
-                    b.HasOne("Buddies.API.Entities.Project", "Project")
-                        .WithMany("Skills")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Buddies.API.Entities.Skill", b =>
@@ -9374,8 +9284,6 @@ namespace Buddies.API.Migrations
 
             modelBuilder.Entity("Buddies.API.Entities.User", b =>
                 {
-                    b.Navigation("Notifications");
-
                     b.Navigation("Profile")
                         .IsRequired();
                 });

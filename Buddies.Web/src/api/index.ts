@@ -8,7 +8,9 @@ import { authStore, AuthState } from '../stores/authStore';
 import { CreateProjectRequest } from './model/createProjectRequest';
 import { SearchResponse } from './model/searchResponse';
 import { InviteUserRequest } from './model/inviteUserRequest';
-import { Skillobject, UpdateProf } from '../pages/profiles/[pid]';
+import { RateBuddiesRequest } from './model/rateBuddiesRequest';
+import type { UpdateProf, Skillobject } from '../pages/Profiles/[pid]';
+import { SkillResponse } from './model/skillResponse';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -83,7 +85,7 @@ export async function removeMember(projectId: string, userId: number) {
   return axios.post(`/api/v1/projects/${projectId}/delete/${userId}`);
 }
 
-export async function updateProjectSkills(skills: Skillobject[], projectId: string | string[] | undefined){
+export async function updateProjectSkills(skills: Skillobject[] | SkillResponse[], projectId: string | string[] | undefined){
   return axios.put(`/api/v1/projects/skills/${projectId}`, {'skills': skills});
 };
 
@@ -98,3 +100,15 @@ export async function getProfile(profileId: string | string[] | undefined){
 export async function updateProfile(profileToUpdate: UpdateProf){
   return axios.put('/api/v1/Profiles/', profileToUpdate);
 };
+
+export async function terminateProject(projectId: string) {
+  return axios.post(`/api/v1/projects/${projectId}/terminate`);
+}
+
+export async function rateMembers(projectId: string, ratings: RateBuddiesRequest) {
+  return axios.post(`/api/v1/projects/${projectId}/ratebuddies`, ratings);
+}
+
+export async function joinRequest(projectId: string | string[] | undefined) {
+  return axios.post(`/api/v1/projects/${projectId}/joinrequest`);
+}

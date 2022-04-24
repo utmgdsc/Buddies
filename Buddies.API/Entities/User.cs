@@ -16,6 +16,7 @@ public class User : IdentityUser<int>
         Email = email;
         Projects = new List<Project>();
         InvitedTo = new List<Project>();
+        Notifications = new List<Notification>();
     }
     public sealed override string Email
     {
@@ -43,4 +44,9 @@ public class User : IdentityUser<int>
     /// Projects User is invited to
     /// </summary>
     public List<Project> InvitedTo { get; set; }
+
+    /// <summary>
+    /// Projects User is invited to
+    /// </summary>
+    public List<Notification> Notifications { get; set; }
 }
