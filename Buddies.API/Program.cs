@@ -25,9 +25,7 @@ builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true
 builder.Services.AddApiVersioning();
 
 // Postgres DB connection
-
 var connectionString = builder.Configuration.GetConnectionString("ApiContext");
-
 builder.Services.AddDbContext<ApiContext>(options => options.UseNpgsql(connectionString));
 
 // set up authentication

@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 import CardActionArea from '@mui/material/CardActionArea';
 import Typography from '@mui/material/Typography';
 import LocationOnSharpIcon from '@mui/icons-material/LocationOnSharp';
-import type { Projectobject } from '../pages/Profiles/[pid]';
+import type { Projectobject } from '../pages/profiles/[pid]';
 /* Projects section */
 const Projects = ({ projectlist }: { projectlist: Projectobject[] }) => {
   return (

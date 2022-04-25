@@ -52,7 +52,7 @@ const Navbar: React.VFC = () => {
                   router.push('/').then(() => logoutUser());
                 }}
                 profile={() => {
-                  router.push(`/Profiles/${parseInt(authState.nameid, 10)}`).then(() => router.reload());
+                  router.push(`/profiles/${parseInt(authState.nameid, 10)}`).then(() => router.reload());
                 }}
               />
             </>

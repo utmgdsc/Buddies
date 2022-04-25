@@ -19,9 +19,6 @@ const NotificationBell = () => {
         } else {
           setActive(false);
         }
-      })
-      .catch((error) => {
-        alert(error);
       });
   };
 
