@@ -9,7 +9,7 @@ import { CreateProjectRequest } from './model/createProjectRequest';
 import { SearchResponse } from './model/searchResponse';
 import { InviteUserRequest } from './model/inviteUserRequest';
 import { RateBuddiesRequest } from './model/rateBuddiesRequest';
-import type { UpdateProf } from '../pages/Profiles/[pid]';
+import type { UpdateProf } from '../pages/profiles/[pid]';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -85,11 +85,11 @@ export async function removeMember(projectId: string, userId: number) {
 }
 
 export async function getProfile(profileId: string | string[] | undefined){
-  return await axios.get(`/api/v1/Profiles/${profileId}`);
+  return await axios.get(`/api/v1/profiles/${profileId}`);
 };
 
 export async function updateProfile(profileToUpdate: UpdateProf){
-  return axios.put('/api/v1/Profiles/', profileToUpdate);
+  return axios.put('/api/v1/profiles/', profileToUpdate);
 };
 
 export async function terminateProject(projectId: string) {
