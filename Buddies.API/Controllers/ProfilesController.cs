@@ -61,6 +61,7 @@ namespace Buddies.API.Controllers
             }
 
             var allProjects = await _context.Projects
+                .OrderByDescending(p => p.TimeCreated)
                 .Include(project => project.Members)
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile).ToListAsync();

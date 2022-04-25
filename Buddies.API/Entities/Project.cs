@@ -81,6 +81,11 @@ namespace Buddies.API.Entities
         /// </summary>
         public List<User> MembersYetToRate { get; set; }
 
+        /// <summary>
+        /// If the notification has been read
+        /// </summary>
+        public DateTime TimeCreated { get; set; } = DateTime.Now;
+
     }
 
 }
