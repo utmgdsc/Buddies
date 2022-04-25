@@ -149,4 +149,4 @@ const Profile: React.VFC = () => {
 };
 
 export default Profile;
-export type { UpdateProf };
+export type { UpdateProf, Projectobject };
