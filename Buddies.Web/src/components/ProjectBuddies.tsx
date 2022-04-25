@@ -73,7 +73,7 @@ const ProjectBuddies: React.VFC<Props> = ({
                 Invite User
               </Button>
             )}
-            {isFinished && (
+            {isFinished && members.length > 1 && (
               <Button
                 onClick={() => setDialog('Rate')}
                 variant="outlined"
