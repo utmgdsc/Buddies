@@ -25,6 +25,9 @@ public record UserProfileResponse
     public string AboutMe { get; set; } = default!;
 
     [Required]
+    public string Email { get; set; } = default!;
+
+    [Required]
     public float BuddyScore { get; set;} = default!;
 
     [Required]
