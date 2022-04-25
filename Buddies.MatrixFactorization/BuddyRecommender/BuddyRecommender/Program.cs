@@ -81,8 +81,8 @@ static void UseModelForSinglePrediction(MLContext mlContext, ITransformer model,
     Console.WriteLine("=============== Making a prediction ===============");
     var predictionEngine = mlContext.Model.CreatePredictionEngine<BuddyRating, BuddyRatingPrediction>(model);
     var testInput = new BuddyRating { RaterId = rater, BeingRatedId = rated };
-    var movieRatingPrediction = predictionEngine.Predict(testInput);
-    Console.WriteLine("User " + testInput.BeingRatedId + " is recommended for user " + testInput.RaterId + " with rating " + movieRatingPrediction.Score);
+    var RatingPrediction = predictionEngine.Predict(testInput);
+    Console.WriteLine("User " + testInput.BeingRatedId + " is recommended for user " + testInput.RaterId + " with rating " + RatingPrediction.Score);
 }
 
 /// <summary>
