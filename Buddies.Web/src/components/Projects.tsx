@@ -49,7 +49,7 @@ const Projects = ({ projectlist }: { projectlist: Projectobject[] }) => {
                     marginLeft={2}
                     marginRight={2}
                     style={{
-                      textOverflow: 'ellipsis', overflow: 'hidden'
+                      textOverflow: 'ellipsis', overflow: 'hidden',
                     }}
                   >
                     {project.description}
