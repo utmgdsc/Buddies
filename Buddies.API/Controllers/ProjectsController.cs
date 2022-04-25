@@ -45,7 +45,9 @@ namespace Buddies.API.Controllers
                 .Include(project => project.Members)
                 .Include(project => project.InvitedUsers)
                 .Include(project => project.Owner)
-                .ThenInclude(owner => owner.Profile).ToListAsync();
+                .ThenInclude(owner => owner.Profile)
+                .Where(project => !project.IsFinished && project.Members.Count != project.MaxMembers)
+                .ToListAsync();
 
             var response = new ProjectListingsResponse();
             var locationList = new List<String>();
