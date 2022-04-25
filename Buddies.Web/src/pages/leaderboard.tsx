@@ -85,7 +85,7 @@ const Leaderboard = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      <CardActionArea href={`/Profiles/${row.userId}`}>
+                      <CardActionArea href={`/profiles/${row.userId}`}>
                         <Grid container>
                           <Grid item>
 

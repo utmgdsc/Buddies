@@ -9,7 +9,7 @@ import { CreateProjectRequest } from './model/createProjectRequest';
 import { SearchResponse } from './model/searchResponse';
 import { InviteUserRequest } from './model/inviteUserRequest';
 import { RateBuddiesRequest } from './model/rateBuddiesRequest';
-import type { UpdateProf, Skillobject } from '../pages/Profiles/[pid]';
+import type { UpdateProf, Skillobject } from '../pages/profiles/[pid]';
 import { SkillResponse } from './model/skillResponse';
 
 export async function registerUser(request: RegisterRequest) {
