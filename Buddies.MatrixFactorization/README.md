@@ -25,7 +25,7 @@ cd into data folder then,
 - Employs both collaborative and content based approaches:
     - ![PNG](./images/Model.PNG "image of model")
     - Matrix factorization is a collaborative approach
-    - KNN (K Nearest Neighbors) is a content based approach (coded in Buddies.API/Services)
+    - KNN (K Nearest Neighbors) is a content based approach (coded in `Buddies.API/Services`)
 
 
 

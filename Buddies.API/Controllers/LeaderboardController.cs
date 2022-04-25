@@ -47,7 +47,7 @@ namespace Buddies.API.Controllers
                 {
                     FirstName = user.Profile.FirstName,
                     LastName = user.Profile.LastName,
-                    BuddyScore = user.Profile.BuddyScore,
+                    BuddyScore = (float) Math.Round(user.Profile.BuddyScore, 1),
                     Email = user.Email,
                     UserId = user.Id
                 };
@@ -56,7 +56,6 @@ namespace Buddies.API.Controllers
             }
 
             var pageCount = Math.Ceiling(_context.Users.Count() / results);
-
             response.TotalPages = (int)pageCount;
             response.CurrentPage = page;
 
