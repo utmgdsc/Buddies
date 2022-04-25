@@ -2,7 +2,6 @@ import React from 'react';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 
 /* Buddy Score component. */
 const BScore = ({ score }: { score: number }) => {
@@ -24,7 +23,7 @@ const BScore = ({ score }: { score: number }) => {
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          <Button
+          <Card
             variant="contained"
             style={{
               color: 'white',
@@ -33,10 +32,13 @@ const BScore = ({ score }: { score: number }) => {
               maxHeight: '30px',
               minWidth: '30px',
               minHeight: '30px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              display: 'flex',
             }}
           >
             {score}
-          </Button>
+          </Card>
         </Grid>
       </Grid>
     </Card>

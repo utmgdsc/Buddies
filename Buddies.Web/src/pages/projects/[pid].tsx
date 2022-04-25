@@ -70,11 +70,11 @@ const Project: React.VFC = () => {
   }, [projectId]);
 
   const addMemberToProject = async () => {
-
     if (!(typeof projectId === 'string') || !authState) {
       alert('Uh oh, something went wrong...');
       return;
     }
+
     const res = await addMember(projectId, parseInt(authState.nameid, 10))
       .catch(() => alert('Uh oh, something went wrong...'));
 

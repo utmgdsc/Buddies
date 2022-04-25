@@ -152,7 +152,7 @@ const ProjectDashboard: React.VFC<Props> = ({
                 return (
                   <Grid item xs={2}>
                     <Card sx={{ border: 1, height: 80 }}>
-                      <CardActionArea href={`../Profiles/${member.userId}`}>
+                      <CardActionArea href={`../profiles/${member.userId}`}>
                         <Avatar sx={{ margin: 'auto', marginTop: 1 }} />
                         <Typography color="inherit" variant="subtitle2" gutterBottom align="center" mt={1}>
                           {`${member.firstName} ${member.lastName}`}

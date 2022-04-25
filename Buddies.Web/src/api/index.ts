@@ -94,11 +94,11 @@ export async function getRecommendations(projectId: string | string[] | undefine
 };
 
 export async function getProfile(profileId: string | string[] | undefined){
-  return await axios.get(`/api/v1/Profiles/${profileId}`);
+  return await axios.get(`/api/v1/profiles/${profileId}`);
 };
 
 export async function updateProfile(profileToUpdate: UpdateProf){
-  return axios.put('/api/v1/Profiles/', profileToUpdate);
+  return axios.put('/api/v1/profiles/', profileToUpdate);
 };
 
 export async function terminateProject(projectId: string) {
@@ -112,3 +112,7 @@ export async function rateMembers(projectId: string, ratings: RateBuddiesRequest
 export async function joinRequest(projectId: string | string[] | undefined) {
   return axios.post(`/api/v1/projects/${projectId}/joinrequest`);
 }
+
+export async function getLeaderboard(page: number, results: number){
+  return await axios.get(`/api/v1/leaderboard/${page}/${results}`);
+};

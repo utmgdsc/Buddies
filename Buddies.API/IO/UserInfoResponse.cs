@@ -19,5 +19,6 @@ public record UserInfoResponse
     [Required(ErrorMessage = "")]
     public int UserId { get; set; } = default!;
 
+    public float BuddyScore { get; set; } = default!;
 
 }
