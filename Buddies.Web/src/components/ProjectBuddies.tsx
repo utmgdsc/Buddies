@@ -8,12 +8,11 @@ import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import type { RecommendedUser } from '../pages/projects/[pid]';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import { Container } from '@mui/material';
 import CardActionArea from '@mui/material/CardActionArea';
-import { UpdateProf } from '../pages/profiles/[pid]';
+import type { RecommendedUser } from '../pages/projects/[pid]';
 import InviteDialog from './dialogs/InviteDialog';
 import { SearchFunc } from '../api';
 import { InviteUserRequest } from '../api/model/inviteUserRequest';
@@ -150,17 +149,17 @@ const ProjectBuddies: React.VFC<Props> = ({
           </Grid>
         </Container>
         {recommendations.map((user: RecommendedUser) => {
-            return ( 
-              <Container sx={{margin: 1}} key={user.userId}>
-                <CardActionArea href={`/Profiles/${user.userId}`}>
-                  <Grid container>
-                    <Grid item xs={4}>
-                      <Grid container>
-                        <Avatar />
-                        <Typography variant="body1" sx={{ marginTop: 1, marginLeft: 1 }}>
-                            {user.email}
-                        </Typography>
-                        <Card
+          return (
+            <Container sx={{ margin: 1 }} key={user.userId}>
+              <CardActionArea href={`/Profiles/${user.userId}`}>
+                <Grid container>
+                  <Grid item xs={4}>
+                    <Grid container>
+                      <Avatar />
+                      <Typography variant="body1" sx={{ marginTop: 1, marginLeft: 1 }}>
+                        {user.email}
+                      </Typography>
+                      <Card
                         style={{
                           color: 'white',
                           backgroundColor: 'green',
@@ -171,35 +170,44 @@ const ProjectBuddies: React.VFC<Props> = ({
                           alignItems: 'center',
                           justifyContent: 'center',
                           display: 'flex',
-                          marginLeft: 5
+                          marginLeft: 5,
                         }}
-                        >
+                      >
                         {user.buddyScore}
-                        </Card>
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <div className="skills">
-                          {' '}
-                          {/* We have another list that is being rendered in the skilllist
-                          component. So to make the keys different for this list,
-                          we can just add one to each id.  */}
-                          
-                            <Typography variant="body1" noWrap gutterBottom sx={{ marginTop: 1}}> 
-                              {user.skills.map((skill) => {return <>{skill.name}, </>})}
-                            </Typography>
-                      
-                        </div>
-                    </Grid>
-                    <Grid item xs={1} />
-                    <Grid item xs={4} sx={{color: 'green', marginTop: 1}}>
-                      {user.match}
+                      </Card>
                     </Grid>
                   </Grid>
-                </CardActionArea>
-              </Container>
-            );})}
-        
+                  <Grid item xs={3}>
+                    <div className="skills">
+                      {' '}
+                      {/* We have another list that is being rendered in the skilllist
+                          component. So to make the keys different for this list,
+                          we can just add one to each id.  */}
+
+                      <Typography variant="body1" noWrap gutterBottom sx={{ marginTop: 1 }}>
+                        {user.skills.map((skill) => {
+                          return (
+                            <>
+                              {skill.name}
+                              ,
+                              {' '}
+                            </>
+                          );
+                        })}
+                      </Typography>
+
+                    </div>
+                  </Grid>
+                  <Grid item xs={1} />
+                  <Grid item xs={4} sx={{ color: 'green', marginTop: 1 }}>
+                    {user.match}
+                  </Grid>
+                </Grid>
+              </CardActionArea>
+            </Container>
+          );
+        })}
+
       </Card>
       <InviteDialog
         open={dialog === 'Invite'}
