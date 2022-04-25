@@ -18,7 +18,7 @@ const Skills = ({ updateFunc, newProfile, logCheck }: { updateFunc: VoidFunction
   const userOrProject: boolean = !(isUpdateProf(newProfile));
   return (
     <Card sx={{
-      width: '100%', height: '30%', border: 1, alignItems: 'center', padding: 2, boxShadow: 12,
+      width: '100%', height: '40%', border: 1, alignItems: 'center', padding: 2, boxShadow: 12,
     }}
     >
       <Grid container>

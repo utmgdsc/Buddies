@@ -58,7 +58,7 @@ const cards = [
     id: 6,
     image: 'https://img.freepik.com/free-vector/bulb-with-business-icons-flat-design_1212-121.jpg',
     title: 'Stay up to date!',
-    body: 'Keep up to date with the latest activity on your projects with the notification system. Easily manage you\'re invitations and join requests.',
+    body: 'Keep up to date with the latest activity on your projects with the notification system. Easily manage your invitations and join requests.',
     sourcetext: 'Company team vector created by photoroyalty - www.freepik.com',
     source: 'https://www.freepik.com/vectors/company-team',
   },

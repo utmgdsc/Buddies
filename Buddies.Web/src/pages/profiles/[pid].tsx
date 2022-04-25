@@ -33,6 +33,7 @@ type UpdateProf = {
   'userId': number,
   'headline': string,
   'aboutMe': string,
+  'email': string,
   'buddyScore': number,
   'skills': SkillResponse[],
   'projects': Projectobject[]
@@ -50,6 +51,7 @@ const Profile: React.VFC = () => {
     userId: -1,
     headline: 'n/a',
     aboutMe: 'n/a',
+    email: 'n/a@email.com',
     buddyScore: 0,
     skills: [{ id: 1, name: 'Data Structures', _delete: false },
       { id: 2, name: 'C++', _delete: false }, { id: 3, name: 'Python', _delete: false }],
@@ -75,6 +77,7 @@ const Profile: React.VFC = () => {
     userId: userProfile.userId,
     headline: userProfile.headline,
     aboutMe: userProfile.aboutMe,
+    email: userProfile.email,
     buddyScore: userProfile.buddyScore,
     skills: userProfile.skills,
     projects: userProfile.projects,
@@ -120,6 +123,7 @@ const Profile: React.VFC = () => {
             fName={userProfile.firstName}
             lName={userProfile.lastName}
             hline={userProfile.headline}
+            pageId={profileId}
           />
           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
             <BScore score={userProfile.buddyScore} />
@@ -130,7 +134,7 @@ const Profile: React.VFC = () => {
               logCheck={loggedin}
             />
             <br />
-            <Websites isViewingOwnProfile={loggedin} />
+            <Websites email={userProfile.email} />
           </Grid>
           <Grid item xs={12} sm={12} md={9} lg={9} xl={9}>
             <Aboutme
