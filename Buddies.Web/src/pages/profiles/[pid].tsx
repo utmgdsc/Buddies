@@ -11,14 +11,9 @@ import Skills from '../../components/Skills';
 import Websites from '../../components/Websites';
 import { getProfile, updateProfile } from '../../api';
 import { authStore } from '../../stores/authStore';
+import { SkillResponse } from '../../api/model/skillResponse';
 
 let profileId: string | string[] | undefined = '';
-
-type Skillobject = {
-  'id': number,
-  'name': string,
-  'delete': boolean
-};
 
 type Projectobject = {
   'title': string,
@@ -39,7 +34,7 @@ type UpdateProf = {
   'headline': string,
   'aboutMe': string,
   'buddyScore': number,
-  'skills': Skillobject[],
+  'skills': SkillResponse[],
   'projects': Projectobject[]
 };
 
@@ -56,8 +51,8 @@ const Profile: React.VFC = () => {
     headline: 'n/a',
     aboutMe: 'n/a',
     buddyScore: 0,
-    skills: [{ id: 1, name: 'Data Structures', delete: false },
-      { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }],
+    skills: [{ id: 1, name: 'Data Structures', _delete: false },
+      { id: 2, name: 'C++', _delete: false }, { id: 3, name: 'Python', _delete: false }],
     projects: [],
   }); // default user profile
     // it's used when someone tries to access a profile that does not exist
@@ -154,4 +149,4 @@ const Profile: React.VFC = () => {
 };
 
 export default Profile;
-export type { UpdateProf, Skillobject };
+export type { UpdateProf, Projectobject };

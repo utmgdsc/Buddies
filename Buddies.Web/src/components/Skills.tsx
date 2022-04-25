@@ -10,8 +10,12 @@ import { ProjectProfileResponse } from '../api/model/projectProfileResponse';
 
 /* Skills component. */
 const Skills = ({ updateFunc, newProfile, logCheck }: { updateFunc: VoidFunction,
-  newProfile: UpdateProf | ProjectProfileResponse, logCheck: boolean | null }) => {
-  let userOrProject: boolean = newProfile.members ? true : false
+  newProfile: ProjectProfileResponse | UpdateProf, logCheck: boolean | null }) => {
+  function isUpdateProf(profileob: UpdateProf | ProjectProfileResponse): profileob is UpdateProf {
+    return (profileob as UpdateProf).headline !== undefined;
+  }
+
+  const userOrProject: boolean = !(isUpdateProf(newProfile));
   return (
     <Card sx={{
       width: '100%', height: '30%', border: 1, alignItems: 'center', padding: 2, boxShadow: 12,
@@ -27,7 +31,11 @@ const Skills = ({ updateFunc, newProfile, logCheck }: { updateFunc: VoidFunction
           {logCheck
                         && (
                         <CustomizedDialogs color="inherit" topmarg={0}>
-                          <Skillform submitFunc={updateFunc} profileData={newProfile} />
+                          <Skillform
+                            submitFunc={updateFunc}
+                            profileData={newProfile}
+                            isProject={userOrProject}
+                          />
 
                         </CustomizedDialogs>
                         )}

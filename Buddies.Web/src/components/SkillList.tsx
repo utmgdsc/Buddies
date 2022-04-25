@@ -1,11 +1,11 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import Skill from './Skill';
-import type { Skillobject } from '../pages/profiles/[pid]';
+import { SkillResponse } from '../api/model/skillResponse';
 
 /* returns a list of all the skills in a grid */
 
-const SkillList = ({ skills, toggleSkill }: { skills: Skillobject[],
+const SkillList = ({ skills, toggleSkill }: { skills: SkillResponse[],
   toggleSkill: (id: number) => void }) => {
   return (
     <Grid container>

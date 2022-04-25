@@ -9,14 +9,14 @@ import ProjectDashboard from '../../components/ProjectDashboard';
 import {
   getProject, addMember, getUsers, inviteMember, removeMember,
   terminateProject, rateMembers, joinRequest, updateProjectSkills,
-  getRecommendations
+  getRecommendations,
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
 import { InviteUserRequest } from '../../api/model/inviteUserRequest';
 import { ProjectProfileResponse } from '../../api/model/projectProfileResponse';
 import { RateBuddiesRequest } from '../../api/model/rateBuddiesRequest';
-import { Skillobject } from '../profiles/[pid]';
+import { SkillResponse } from '../../api/model/skillResponse';
 
 export type Tabs = 'Dashboard' | 'Buddies';
 
@@ -24,10 +24,9 @@ export type RecommendedUser = {
   email: string,
   userId: number
   buddyScore: number,
-  skills: Skillobject[],
+  skills: SkillResponse[],
   match: string
-}
-
+};
 
 /* Project profile page. Responsible for putting all the components that make up the
   page together. It also sends GET requests to get a project by its id. And a
@@ -45,7 +44,7 @@ const Project: React.VFC = () => {
   */
   function getAndMakeProject() {
     if (!(typeof projectId === 'string')) {
-      console.log('hdasdsahj')
+      console.log('hdasdsahj');
       alert('Uh oh, something went wrong...');
       return;
     }
@@ -53,6 +52,18 @@ const Project: React.VFC = () => {
       setProject(res.data);
     }).catch(() => {
       alert('Uh oh, something went wrong...');
+    });
+  }
+
+  function getAllRecommendations() {
+    if (!(typeof projectId === 'string')) {
+      alert('error');
+      return;
+    }
+    getRecommendations(projectId, 5).then((res) => {
+      setRecommendations(res.data);
+    }).catch((error) => {
+      alert(error);
     });
   }
 
@@ -120,7 +131,6 @@ const Project: React.VFC = () => {
       .catch((err) => displayErrorNotif(err));
   };
 
-  
   const submitRatings = (req: RateBuddiesRequest) => {
     rateMembers(projectId!, req)
       .then(() => {
@@ -144,13 +154,13 @@ const Project: React.VFC = () => {
   };
 
   const clone: ProjectProfileResponse = project ? JSON.parse(JSON.stringify(project)) : {};
-  
+
   const addSkills: VoidFunction = async () => {
     if (!(typeof projectId === 'string')) {
       alert('error');
       return;
     }
-    
+
     const res = await updateProjectSkills(clone.skills, projectId).catch((error) => {
       alert(error);
     });
@@ -158,19 +168,6 @@ const Project: React.VFC = () => {
       setProject(clone);
     }
   };
-
-  function getAllRecommendations() {
-    if (!(typeof projectId === 'string')) {
-      alert('error');
-      return;
-    }
-    getRecommendations(projectId, 5).then((res) => {
-      setRecommendations(res.data);
-    }).catch((error) => {
-      alert(error);
-    });
-  }
-
 
   const [tab, setTab] = useState<Tabs>('Dashboard');
 
@@ -202,7 +199,7 @@ const Project: React.VFC = () => {
             getUsers={getUsers}
             submitInvite={submitInvite}
             addSkills={addSkills}
-            projectprofile = {clone}
+            projectprofile={clone}
             requestToJoin={requestToJoin}
             isOwner={isOwner}
           />
