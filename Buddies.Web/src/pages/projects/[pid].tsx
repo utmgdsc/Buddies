@@ -58,6 +58,7 @@ const Project: React.VFC = () => {
       alert('Uh oh, something went wrong...');
       return;
     }
+
     const res = await addMember(projectId, parseInt(authState.nameid, 10))
       .catch(() => alert('Uh oh, something went wrong...'));
 

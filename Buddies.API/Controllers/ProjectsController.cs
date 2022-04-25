@@ -68,7 +68,7 @@ namespace Buddies.API.Controllers
                         Description = project.Description,
                         Location = project.Location,
                         Username = String.Format("{0} {1}", owner.FirstName, owner.LastName),
-                        BuddyScore = owner.BuddyScore,
+                        BuddyScore = (float) Math.Round(owner.BuddyScore,1),
                         MaxMembers = project.MaxMembers,
                         CurrentMembers = _context.Projects.Where(p => p.ProjectId == project.ProjectId).SelectMany(p => p.Members).ToList().Count,
                         Category = project.Category,
@@ -371,6 +371,7 @@ namespace Buddies.API.Controllers
                 userInfo.LastName = userprofile.LastName;
                 userInfo.Email = member.Email;
                 userInfo.UserId = member.Id;
+                userInfo.BuddyScore = userprofile.BuddyScore;
                 profileResponse.Members.Add(userInfo);
             }
 
@@ -386,6 +387,7 @@ namespace Buddies.API.Controllers
                 userInfo.LastName = userprofile.LastName;
                 userInfo.Email = invitedUser.Email;
                 userInfo.UserId = invitedUser.Id;
+                userInfo.BuddyScore = userprofile.BuddyScore;
                 profileResponse.InvitedUsers.Add(userInfo);
             }
 
@@ -401,6 +403,7 @@ namespace Buddies.API.Controllers
                 userInfo.LastName = userprofile.LastName;
                 userInfo.Email = invitedUser.Email;
                 userInfo.UserId = invitedUser.Id;
+                userInfo.BuddyScore = userprofile.BuddyScore;
                 profileResponse.MembersYetToRate.Add(userInfo);
             }
 
@@ -698,6 +701,7 @@ namespace Buddies.API.Controllers
         {
             var project = _context.Projects
                 .Include(project => project.MembersYetToRate)
+                .Include(project => project.Members)
                 .ThenInclude(member => member.Profile)
                 .Where(project => project.ProjectId == pid)
                 .FirstOrDefault();
@@ -714,7 +718,7 @@ namespace Buddies.API.Controllers
                 return BadRequest("You have already rated this project or are not a part of this project");
             }
 
-            foreach (var member in project.MembersYetToRate)
+            foreach (var member in project.Members)
             {
                 if (member == currentUser)
                 {
