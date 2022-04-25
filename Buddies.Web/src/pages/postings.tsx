@@ -49,7 +49,6 @@ let memberfilters: string[] = [];
 let locations: string[] = []; // all filters
 let categories: string[] = [];
 let page = 0;
-//let totalProjects: number = 0;
 
 /* Project postings page. Responsible for putting all the components that make up the
   page together. It also sends GET requests to get all project based on filtered
