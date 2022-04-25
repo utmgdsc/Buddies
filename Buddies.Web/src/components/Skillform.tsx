@@ -3,7 +3,7 @@ import {
 } from 'react';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import type { UpdateProf, Skillobject } from '../pages/Profiles/[pid]';
+import type { UpdateProf, Skillobject } from '../pages/profiles/[pid]';
 import SkillList from './SkillList';
 
 /* Skill Form. Allows the user to update his skills */

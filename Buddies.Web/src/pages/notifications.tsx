@@ -86,7 +86,7 @@ const Notifications = () => {
               <Container sx={{ display: 'flex', marginLeft: 0 }}>
                 <Grid item xs={11}>
                   <Container sx={{ display: 'flex', marginLeft: -2 }}>
-                    <a href={`../Profiles/${p.senderId}`}>
+                    <a href={`../profiles/${p.senderId}`}>
                       <Avatar sx={{ marginTop: 2 }} />
                     </a>
                     <Container>
