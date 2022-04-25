@@ -170,7 +170,6 @@ const PostingsTable = () => {
 
                               </Typography>
                               <Card
-                                variant="contained"
                                 style={{
                                   color: 'white',
                                   backgroundColor: 'green',

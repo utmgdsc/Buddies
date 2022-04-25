@@ -24,7 +24,6 @@ const BScore = ({ score }: { score: number }) => {
         </Grid>
         <Grid item xs={1}>
           <Card
-            variant="contained"
             style={{
               color: 'white',
               backgroundColor: 'green',

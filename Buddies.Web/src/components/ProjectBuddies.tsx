@@ -160,21 +160,22 @@ const ProjectBuddies: React.VFC<Props> = ({
                         <Typography variant="body1" sx={{ marginTop: 1, marginLeft: 1 }}>
                             {user.email}
                         </Typography>
-                        <Button
-                        variant="contained"
+                        <Card
                         style={{
                           color: 'white',
                           backgroundColor: 'green',
-                          maxWidth: '25px',
-                          maxHeight: '25px',
-                          minWidth: '25px',
-                          minHeight: '25px',
-                          marginLeft: 5,
-                          marginTop: 5,
+                          maxWidth: '30px',
+                          maxHeight: '30px',
+                          minWidth: '30px',
+                          minHeight: '30px',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          display: 'flex',
+                          marginLeft: 5
                         }}
                         >
                         {user.buddyScore}
-                        </Button>
+                        </Card>
                       </Grid>
                     </Grid>
                     <Grid item xs={3}>

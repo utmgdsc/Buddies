@@ -124,8 +124,6 @@ const Leaderboard = () => {
                       <Grid container>
 
                         <Card
-                          disabled
-                          variant="contained"
                           style={{
                             color: 'white',
                             backgroundColor: 'green',
