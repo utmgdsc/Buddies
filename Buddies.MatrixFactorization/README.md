@@ -7,7 +7,7 @@ We recommend using **Visual Studio 2022**.
 ### How to use
 
 1. Run `dotnet tool restore` to install any necessary CLI tools.
-2. Open `Buddies.sln` using Visual Studio.
+2. Open `./BuddyRecommender/BuddyRecommender.sln` using Visual Studio.
 3. Click the start button to run the program.
     - will train the model with data in data/out-test.csb
 
