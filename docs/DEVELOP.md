@@ -24,7 +24,8 @@ We recommend using **Visual Studio 2022** for the backend and **VS Code** for th
 3. Open `Buddies.sln` using Visual Studio.
 4. Use Debug > Start Debugging or Debug > Start Without Debugging to start the backend.
 5. Open the `Buddies.Web` folder using VS Code.
-6. Run `yarn dev` in the integrated terminal to start the frontend.
+6. Run `yarn` in the integrated terminal to install NPM dependencies.
+7. Run `yarn dev` to start the frontend.
 
 
 ### Migrations
