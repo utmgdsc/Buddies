@@ -55,7 +55,7 @@ namespace Buddies.API.Controllers
 
             }
 
-            var pageCount = Math.Ceiling(response.Users.Count() / results);
+            var pageCount = Math.Ceiling(_context.Users.Count() / results);
 
             response.TotalPages = (int)pageCount;
             response.CurrentPage = page;
