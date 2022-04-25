@@ -48,16 +48,16 @@ let filterTracker: FilterObject = {
 let memberfilters: string[] = [];
 let locations: string[] = []; // all filters
 let categories: string[] = [];
-
-let totalProjects: number = 0;
+let page = 0;
+//let totalProjects: number = 0;
 
 /* Project postings page. Responsible for putting all the components that make up the
   page together. It also sends GET requests to get all project based on filtered
   values.
 */
 const PostingsTable = () => {
-  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [totalProjects, setTotalProjects] = React.useState(0);
   const [projects, setProjects] = React.useState<Project[]>([]);
 
   /* Gets project by id and then creates necessary global data structures.
@@ -93,7 +93,7 @@ const PostingsTable = () => {
         memberfilters = res.data.members;
         categories = res.data.categories;
       }
-      totalProjects = res.data.totalPages * rowsPerPage;
+      setTotalProjects(res.data.totalPages * rowsPerPage);
       setProjects(DATA);
     }).catch(() => {
       alert('Uh oh, something went wrong...');
@@ -102,23 +102,23 @@ const PostingsTable = () => {
 
   useEffect(() => {
     getAndMakePostings();
-  }, [page]);
+  }, []);
 
   const handleChangePage = (e: unknown, newPage: number) => {
-    setPage(newPage);
+    page = newPage;
     getAndMakePostings();
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
-    setPage(0);
+    page = 0;
   };
 
   const applyFilter = (filterType: string, filterValue: string | number) => {
     /// applyFilter...
     filterTracker = { ...filterTracker, [filterType as keyof FilterObject]: filterValue };
+    page = 0;
     getAndMakePostings();
-    setPage(0);
   };
 
   return (
