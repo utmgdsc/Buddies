@@ -23,3 +23,7 @@ Refer to [DEVELOP.md](docs/DEVELOP.md).
 ## Deployment
 
 Refer to [DEPLOY.md](docs/DEPLOY.md).
+
+## Citations
+
+Refer to [CITATIONS.md](docs/CITATIONS.md).
