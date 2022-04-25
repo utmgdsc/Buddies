@@ -35,7 +35,7 @@ export type RecommendedUser = {
 const Project: React.VFC = () => {
   const [projectId, setProjectId] = useState<string>();
   const [project, setProject] = useState<ProjectProfileResponse>();
-  const [recommendations, setRecommendations] = useState<RecommendedUser>();
+  const [recommendations, setRecommendations] = useState<RecommendedUser[]>([]);
   const authState = authStore((state) => state.authState);
   const router = useRouter();
 
