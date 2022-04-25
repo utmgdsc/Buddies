@@ -34,6 +34,20 @@ const Navbar: React.VFC = () => {
               <Tab label="Create Project" />
             </NextLink>
           )}
+          {authState && (
+            // needed to inject value prop to NextLink
+            // @ts-ignore
+            <NextLink href="/postings" passHref value="/postings">
+              <Tab label="Project Postings" />
+            </NextLink>
+          )}
+          {authState && (
+            // needed to inject value prop to NextLink
+            // @ts-ignore
+            <NextLink href="/leaderboard" passHref value="/leaderboard">
+              <Tab label="Leaderboard" />
+            </NextLink>
+          )}
         </Tabs>
         <Stack
           direction="row"
