@@ -11,8 +11,10 @@ import AddIcon from '@mui/icons-material/Add';
 import EmailIcon from '@mui/icons-material/Email';
 import Button from '@mui/material/Button';
 import SettingsIcon from '@mui/icons-material/Settings';
+import type { ProjectProfile } from '../pages/projects/[pid]';
+import Skills from './Skills';
 import InviteDialog from './dialogs/InviteDialog';
-import { SearchFunc } from '../api';
+import { SearchFunc, updateProjectSkills } from '../api';
 import { InviteUserRequest } from '../api/model/inviteUserRequest';
 import { ProjectProfileResponse } from '../api/model/projectProfileResponse';
 import { authStore } from '../stores/authStore';
@@ -26,6 +28,8 @@ interface Props extends ProjectProfileResponse {
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   getUsers: SearchFunc;
   submitInvite: (req: InviteUserRequest) => void;
+  addSkills: VoidFunction;
+  projectprofile: ProjectProfile;
   requestToJoin: VoidFunction;
 }
 
@@ -47,6 +51,8 @@ const ProjectDashboard: React.VFC<Props> = ({
   setSidebarOpen,
   getUsers,
   submitInvite,
+  addSkills,
+  projectprofile,
   requestToJoin,
   isFinished,
   isOwner,
@@ -117,6 +123,22 @@ const ProjectDashboard: React.VFC<Props> = ({
               <Typography variant="subtitle2" color="textSecondary" gutterBottom style={{ wordWrap: 'break-word' }}>
                 {description}
               </Typography>
+            </Container>
+
+          </Card>
+        </Grid>
+      </Grid>
+      <Grid container justifyContent="center" marginTop={3} spacing={3}>
+        <Grid item xs={10}>
+          <Card elevation={10} sx={{ height: '110%' }}>
+      
+
+            <Container sx={{ maxHeight: 200, overflow: 'auto', marginTop: 3 }}>
+              <Skills
+                updateFunc={addSkills}
+                newProfile={projectprofile}
+                logCheck={isOwner}
+              />
             </Container>
 
           </Card>

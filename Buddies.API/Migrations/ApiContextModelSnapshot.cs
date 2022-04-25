@@ -8932,6 +8932,28 @@ namespace Buddies.API.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("Buddies.API.Entities.ProjectSkill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectSkills");
+                });
+
             modelBuilder.Entity("Buddies.API.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -9054,6 +9076,31 @@ namespace Buddies.API.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Buddies.API.Entities.UserRating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BeingRatedId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RaterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RatingCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ratings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -9230,6 +9277,17 @@ namespace Buddies.API.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("Buddies.API.Entities.ProjectSkill", b =>
+                {
+                    b.HasOne("Buddies.API.Entities.Project", "Project")
+                        .WithMany("Skills")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("Buddies.API.Entities.Skill", b =>
                 {
                     b.HasOne("Buddies.API.Entities.Profile", "Profile")
@@ -9337,6 +9395,8 @@ namespace Buddies.API.Migrations
             modelBuilder.Entity("Buddies.API.Entities.Project", b =>
                 {
                     b.Navigation("MembersYetToRate");
+
+                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("Buddies.API.Entities.User", b =>

@@ -8,15 +8,26 @@ import { authStore } from '../../stores/authStore';
 import ProjectDashboard from '../../components/ProjectDashboard';
 import {
   getProject, addMember, getUsers, inviteMember, removeMember,
-  terminateProject, rateMembers, joinRequest,
+  terminateProject, rateMembers, joinRequest, updateProjectSkills,
+  getRecommendations
 } from '../../api';
 import ProjectBuddies from '../../components/ProjectBuddies';
 import Sidebar from '../../components/ProjectSidebar';
 import { InviteUserRequest } from '../../api/model/inviteUserRequest';
 import { ProjectProfileResponse } from '../../api/model/projectProfileResponse';
 import { RateBuddiesRequest } from '../../api/model/rateBuddiesRequest';
+import { Skillobject } from '../profiles/[pid]';
 
 export type Tabs = 'Dashboard' | 'Buddies';
+
+export type RecommendedUser = {
+  email: string,
+  userId: number
+  buddyScore: number,
+  skills: Skillobject[],
+  match: string
+}
+
 
 /* Project profile page. Responsible for putting all the components that make up the
   page together. It also sends GET requests to get a project by its id. And a
@@ -25,6 +36,7 @@ export type Tabs = 'Dashboard' | 'Buddies';
 const Project: React.VFC = () => {
   const [projectId, setProjectId] = useState<string>();
   const [project, setProject] = useState<ProjectProfileResponse>();
+  const [recommendations, setRecommendations] = useState<RecommendedUser>();
   const authState = authStore((state) => state.authState);
   const router = useRouter();
 
@@ -33,6 +45,7 @@ const Project: React.VFC = () => {
   */
   function getAndMakeProject() {
     if (!(typeof projectId === 'string')) {
+      console.log('hdasdsahj')
       alert('Uh oh, something went wrong...');
       return;
     }
@@ -50,7 +63,10 @@ const Project: React.VFC = () => {
   }, [router.isReady]);
 
   useEffect(() => {
-    if (projectId) getAndMakeProject();
+    if (typeof projectId === 'string') {
+      getAllRecommendations();
+      getAndMakeProject();
+    }
   }, [projectId]);
 
   const addMemberToProject = async () => {
@@ -104,6 +120,7 @@ const Project: React.VFC = () => {
       .catch((err) => displayErrorNotif(err));
   };
 
+  
   const submitRatings = (req: RateBuddiesRequest) => {
     rateMembers(projectId!, req)
       .then(() => {
@@ -125,6 +142,35 @@ const Project: React.VFC = () => {
       getAndMakeProject();
     }
   };
+
+  const clone: ProjectProfileResponse = project ? JSON.parse(JSON.stringify(project)) : {};
+  
+  const addSkills: VoidFunction = async () => {
+    if (!(typeof projectId === 'string')) {
+      alert('error');
+      return;
+    }
+    
+    const res = await updateProjectSkills(clone.skills, projectId).catch((error) => {
+      alert(error);
+    });
+    if (res) {
+      setProject(clone);
+    }
+  };
+
+  function getAllRecommendations() {
+    if (!(typeof projectId === 'string')) {
+      alert('error');
+      return;
+    }
+    getRecommendations(projectId, 5).then((res) => {
+      setRecommendations(res.data);
+    }).catch((error) => {
+      alert(error);
+    });
+  }
+
 
   const [tab, setTab] = useState<Tabs>('Dashboard');
 
@@ -155,6 +201,8 @@ const Project: React.VFC = () => {
             setSidebarOpen={setSidebarOpen}
             getUsers={getUsers}
             submitInvite={submitInvite}
+            addSkills={addSkills}
+            projectprofile = {clone}
             requestToJoin={requestToJoin}
             isOwner={isOwner}
           />
@@ -169,6 +217,7 @@ const Project: React.VFC = () => {
             submitInvite={submitInvite}
             submitRemoval={submitRemoval}
             isFull={isFull}
+            recommendations={recommendations}
             submitRatings={submitRatings}
           />
         );

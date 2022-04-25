@@ -9,7 +9,8 @@ import { CreateProjectRequest } from './model/createProjectRequest';
 import { SearchResponse } from './model/searchResponse';
 import { InviteUserRequest } from './model/inviteUserRequest';
 import { RateBuddiesRequest } from './model/rateBuddiesRequest';
-import type { UpdateProf } from '../pages/profiles/[pid]';
+import type { UpdateProf, Skillobject } from '../pages/profiles/[pid]';
+import { SkillResponse } from './model/skillResponse';
 
 export async function registerUser(request: RegisterRequest) {
   return axios.post('/api/v1/users/register', request);
@@ -83,6 +84,14 @@ export async function inviteMember(projectId: string, req: InviteUserRequest) {
 export async function removeMember(projectId: string, userId: number) {
   return axios.post(`/api/v1/projects/${projectId}/delete/${userId}`);
 }
+
+export async function updateProjectSkills(skills: Skillobject[] | SkillResponse[], projectId: string | string[] | undefined){
+  return axios.put(`/api/v1/projects/skills/${projectId}`, {'skills': skills});
+};
+
+export async function getRecommendations(projectId: string | string[] | undefined, k: number){
+  return await axios.get(`/api/v1/projects/recs/${projectId}/${k}`);
+};
 
 export async function getProfile(profileId: string | string[] | undefined){
   return await axios.get(`/api/v1/profiles/${profileId}`);
