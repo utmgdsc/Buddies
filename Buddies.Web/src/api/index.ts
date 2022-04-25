@@ -85,11 +85,11 @@ export async function removeMember(projectId: string, userId: number) {
 }
 
 export async function getProfile(profileId: string | string[] | undefined){
-  return await axios.get(`/api/v1/Profiles/${profileId}`);
+  return await axios.get(`/api/v1/profiles/${profileId}`);
 };
 
 export async function updateProfile(profileToUpdate: UpdateProf){
-  return axios.put('/api/v1/Profiles/', profileToUpdate);
+  return axios.put('/api/v1/profiles/', profileToUpdate);
 };
 
 export async function terminateProject(projectId: string) {
