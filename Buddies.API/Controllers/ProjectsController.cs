@@ -804,7 +804,7 @@ namespace Buddies.API.Controllers
                     } else
                     {
                         rating.Score = ((rating.Score*rating.RatingCount) + score) / (rating.RatingCount+1);
-                        rating.RatingCount++;
+                        rating.RatingCount = rating.RatingCount + 1;
                     }
                     var n = member.Profile.ProjectCount;
                     member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n - 1))) / n;

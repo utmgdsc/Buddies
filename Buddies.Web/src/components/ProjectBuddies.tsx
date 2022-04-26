@@ -185,11 +185,11 @@ const ProjectBuddies: React.VFC<Props> = ({
                           we can just add one to each id.  */}
 
                       <Typography variant="body1" noWrap gutterBottom sx={{ marginTop: 1 }}>
-                        {user.skills.map((skill) => {
+                        {user.skills.map((skill, index) => {
                           return (
                             <>
                               {skill.name}
-                              ,
+                              {user.skills.length-1 != index ? ',' : ''}
                               {' '}
                             </>
                           );
