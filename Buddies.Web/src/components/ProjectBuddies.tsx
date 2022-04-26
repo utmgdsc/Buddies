@@ -189,7 +189,7 @@ const ProjectBuddies: React.VFC<Props> = ({
                           return (
                             <>
                               {skill.name}
-                              {user.skills.length-1 != index ? ',' : ''}
+                              {user.skills.length - 1 !== index ? ',' : ''}
                               {' '}
                             </>
                           );
