@@ -6,26 +6,36 @@ import Typography from '@mui/material/Typography';
 import CustomizedDialogs from './dialog';
 import type { UpdateProf } from '../pages/profiles/[pid]';
 import Skillform from './Skillform';
+import { ProjectProfileResponse } from '../api/model/projectProfileResponse';
 
 /* Skills component. */
 const Skills = ({ updateFunc, newProfile, logCheck }: { updateFunc: VoidFunction,
-  newProfile: UpdateProf, logCheck: boolean | null }) => {
+  newProfile: ProjectProfileResponse | UpdateProf, logCheck: boolean | null }) => {
+  function isUpdateProf(profileob: UpdateProf | ProjectProfileResponse): profileob is UpdateProf {
+    return (profileob as UpdateProf).headline !== undefined;
+  }
+
+  const userOrProject: boolean = !(isUpdateProf(newProfile));
   return (
     <Card sx={{
-      width: '100%', height: '30%', border: 1, alignItems: 'center', padding: 2, boxShadow: 12,
+      width: '100%', height: '40%', border: 1, alignItems: 'center', padding: 2, boxShadow: 12,
     }}
     >
       <Grid container>
         <Grid item xs={11}>
           <Typography color="inherit" variant="h6" gutterBottom>
-            Skills
+            {userOrProject ? 'Skills Required' : 'Skills'}
           </Typography>
         </Grid>
         <Grid item xs={1}>
           {logCheck
                         && (
                         <CustomizedDialogs color="inherit" topmarg={0}>
-                          <Skillform submitFunc={updateFunc} profileData={newProfile} />
+                          <Skillform
+                            submitFunc={updateFunc}
+                            profileData={newProfile}
+                            isProject={userOrProject}
+                          />
 
                         </CustomizedDialogs>
                         )}
@@ -49,13 +59,13 @@ const Skills = ({ updateFunc, newProfile, logCheck }: { updateFunc: VoidFunction
                   sx={{
                     border: 1,
                     borderRadius: 8,
-                    height: '10%',
+                    height: userOrProject ? '50%' : '10%',
                     paddingTop: 0,
-                    marginBottom: -2,
+                    marginBottom: userOrProject ? 0 : -2,
                     marginRight: 0,
                   }}
                 >
-                  <Typography variant="h6" gutterBottom fontSize={12}>
+                  <Typography variant="h6" gutterBottom fontSize={userOrProject ? 25 : 12}>
                     {skill.name}
                   </Typography>
                 </Box>

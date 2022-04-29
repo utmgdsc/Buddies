@@ -6,6 +6,8 @@ using Buddies.API.IO;
 using Buddies.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.ML;
+using Buddies.API.DataModels;
 
 namespace Buddies.API.Controllers
 {
@@ -15,16 +17,18 @@ namespace Buddies.API.Controllers
     {
         private readonly ApiContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly PredictionEnginePool<BuddyRating, BuddyRatingPrediction> _predictionEnginePool;
 
         /// <summary>
         /// Initializes a new ProjectController.
         /// </summary>
         /// <param name="userManager">UserManager from ASP.NET Core Identity.</param>
         /// /// <param name="context">database context from Buddies.API.Database.</param>
-        public ProjectsController(ApiContext context, UserManager<User> userManager)
+        public ProjectsController(ApiContext context, UserManager<User> userManager, PredictionEnginePool<BuddyRating, BuddyRatingPrediction> predictionEnginePool)
         {
             _context = context;
             _userManager = userManager;
+            _predictionEnginePool = predictionEnginePool;
 
         }
 
@@ -41,7 +45,9 @@ namespace Buddies.API.Controllers
                 .Include(project => project.Members)
                 .Include(project => project.InvitedUsers)
                 .Include(project => project.Owner)
-                .ThenInclude(owner => owner.Profile).ToListAsync();
+                .ThenInclude(owner => owner.Profile)
+                .Where(project => !project.IsFinished && project.Members.Count != project.MaxMembers)
+                .ToListAsync();
 
             var response = new ProjectListingsResponse();
             var locationList = new List<String>();
@@ -166,6 +172,49 @@ namespace Buddies.API.Controllers
 
 
             return StatusCode(StatusCodes.Status201Created, dbProject.ProjectId);
+        }
+
+        /// <summary>
+        /// API route PUT /api/v1/projects/skills for updating project skills.
+        /// </summary>
+        [HttpPut("skills/{id}")]
+        [Authorize]
+        public async Task<ActionResult> UpdateProjectProfile(int id, UpdateProjectSkillRequest skills)
+        {
+            var project = _context.Projects
+                .Include(project => project.Owner)
+                .Include(project => project.Skills)
+                .Where(project => project.ProjectId == id)
+                .FirstOrDefault();
+
+            if (project == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
+            if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized("You must be the owner"); }
+            var i = 0;
+            for (i = 0; i < Math.Min(skills.Skills.Count, 3); i++)
+            {
+                if (i >= project.Skills.Count)
+                {
+                    var newSkill = new ProjectSkill(skills.Skills[i].Name);
+                    project.Skills.Add(newSkill);
+                }
+                else
+                {
+                    project.Skills[i].Name = skills.Skills[i].Name;
+                }
+            }
+            var n = project.Skills.Count;
+            for (var j = i; j < n; j++)
+            {
+                project.Skills.RemoveAt(i);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         /// <summary>
@@ -338,6 +387,7 @@ namespace Buddies.API.Controllers
             var project = _context.Projects
                 .Include(project => project.Members)
                 .Include(project => project.InvitedUsers)
+                .Include(project => project.Skills)
                 .Include(project => project.MembersYetToRate)
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile)
@@ -391,6 +441,17 @@ namespace Buddies.API.Controllers
                 profileResponse.InvitedUsers.Add(userInfo);
             }
 
+            foreach (ProjectSkill skill in project.Skills)
+            {
+                var skillInfo = new SkillResponse()
+                {
+                    Id = skill.Id,
+                    Name = skill.Name,
+                    Delete = false
+                };
+                profileResponse.Skills.Add(skillInfo);
+            }
+            
             foreach (User invitedUser in project.MembersYetToRate)
             {
                 var userInfo = new UserInfoResponse();
@@ -727,6 +788,19 @@ namespace Buddies.API.Controllers
 
                 if (request.BuddyScores.TryGetValue(member.Id, out int score))
                 {
+                    
+                    var rating = await _context.Ratings
+                        .Where(s => s.RaterId == currentUser.Id && s.BeingRatedId == member.Id)
+                        .FirstOrDefaultAsync();
+                    if (rating == null)
+                    {
+                        var newRating = new UserRating(currentUser.Id, member.Id, score);
+                        await _context.Ratings.AddAsync(newRating);
+                    } else
+                    {
+                        rating.Score = ((rating.Score*rating.RatingCount) + score) / (rating.RatingCount+1);
+                        rating.RatingCount = rating.RatingCount + 1;
+                    }
                     var n = member.Profile.ProjectCount;
                     member.Profile.BuddyScore = (score + (member.Profile.BuddyScore * (n - 1))) / n;
                 }
@@ -744,5 +818,87 @@ namespace Buddies.API.Controllers
         }
 
 
+        /// <summary>
+        /// API route GET /api/v1/projects/:id for 
+        /// fetching project recommendations.
+        /// </summary>
+        [HttpGet("recs/{id}/{k}")]
+        public async Task<ActionResult> GetRecommendations(int id, int k)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var project = _context.Projects
+                .Include(project => project.Owner)
+                .Include(project => project.Skills)
+                .Include(project => project.Members)
+                .Where(project => project.ProjectId == id)
+                .FirstOrDefault();
+            if (project == null)
+            {
+                return NotFound("Project not found");
+            }
+
+            var profile = await _context.Profiles
+                .Include(profile => profile.Skills)
+                .Include(profile => profile.User)
+                .Where(profile => !project.Members.Contains(profile.User))
+                .ToListAsync();
+            
+
+            var recs = KnnService.KNearestUsers(project, profile, k, _predictionEnginePool);
+            var ret = new List<RecommendationResponse>();
+            foreach (var rec in recs)
+            {
+
+                var userSkills = await _context.Skills.Where(s => s.ProfileId == rec.Item1.UserId).ToListAsync();
+                var currUser = _userManager.FindByIdAsync(rec.Item1.UserId.ToString()).Result;
+                var profResponse = new RecommendationResponse()
+                {
+                    Email = currUser.Email,
+                    UserId = rec.Item1.UserId,
+                    BuddyScore = 0,
+                    Skills = new List<SkillResponse>(),
+                    Match = String.Format("{0:P2}.", rec.Item2)
+                };
+           
+                foreach (var skill in userSkills)
+                {
+                    var newSkill = new SkillResponse();
+                    newSkill.Id = skill.Id;
+                    newSkill.Name = skill.Name;
+                    newSkill.Delete = false;
+                    profResponse.Skills.Add(newSkill);
+                }
+                ret.Add(profResponse);
+            }
+            return Ok(ret);
+        }
+
+        /// <summary>
+        /// API route GET /api/v1/ratings/
+        /// fetching all user ratings.
+        /// </summary>
+        [HttpGet("ratings")]
+        public async Task<ActionResult> GetRatings()
+        {
+            var ratings = await _context.Ratings.ToListAsync();
+
+            var ret = new List<RatingsResponse>();
+            foreach (var rating in ratings)
+            {
+                var ratingResponse = new RatingsResponse()
+                {
+                    RaterId = rating.RaterId,
+                    BeingRatedId = rating.BeingRatedId,
+                    Score = rating.Score
+                };
+                ret.Add(ratingResponse);
+            }
+
+            return Ok(ret);
+        }
     }
 } 

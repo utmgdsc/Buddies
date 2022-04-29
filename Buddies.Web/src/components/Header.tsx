@@ -72,7 +72,9 @@ const Header = ({
         </Grid>
         <Grid container item xs={2} justifyContent="flex-end">
 
-          <CopyToClipboard text="www.testurl.com">
+          <CopyToClipboard
+            text={window.location.href}
+          >
             <Button
               startIcon={<FileCopyIcon />}
               color="inherit"

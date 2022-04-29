@@ -1,4 +1,4 @@
-import React, { UIEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
@@ -46,7 +46,7 @@ const Notifications = () => {
     currentPage += 1;
   };
 
-  const handleScroll = (e: UIEvent<HTMLDivElement>) => {
+  const handleScroll = (e: any) => {
     if (isBot) {
       return;
     }

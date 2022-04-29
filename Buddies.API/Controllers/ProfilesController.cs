@@ -41,11 +41,18 @@ namespace Buddies.API.Controllers
             }
             var userSkills = await _context.Skills.Where(s => s.ProfileId == profile.UserId).ToListAsync();
 
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("PROFILE NOT FOUND");
+            }
+
             var profileResponse = new UserProfileResponse();
             profileResponse.FirstName = profile.FirstName;
             profileResponse.LastName = profile.LastName;
             profileResponse.UserId = profile.UserId;
             profileResponse.AboutMe = profile.AboutMe;
+            profileResponse.Email = user.Email;
             profileResponse.Headline = profile.Headline;
             profileResponse.ProjectCount = profile.ProjectCount;
             profileResponse.BuddyScore = (float)Math.Round((decimal)profile.BuddyScore,1);
@@ -61,15 +68,12 @@ namespace Buddies.API.Controllers
             }
 
             var allProjects = await _context.Projects
+                .OrderByDescending(p => p.TimeCreated)
                 .Include(project => project.Members)
                 .Include(project => project.Owner)
                 .ThenInclude(owner => owner.Profile).ToListAsync();
 
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound("PROFILE NOT FOUND");
-            }
+            
             var userProjects = user.Projects;
             foreach (Project p in userProjects)
             {

@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { SkillResponse } from './skillResponse';
 import { UserInfoResponse } from './userInfoResponse';
 
 export interface ProjectProfileResponse {
@@ -21,6 +22,7 @@ export interface ProjectProfileResponse {
   maxMembers: number;
   invitedUsers: Array<UserInfoResponse>;
   members: Array<UserInfoResponse>;
+  skills: Array<SkillResponse>;
   membersYetToRate: Array<UserInfoResponse>;
   isFinished: boolean;
 }

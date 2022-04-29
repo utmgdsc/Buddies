@@ -8,6 +8,11 @@ import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
+import { Container } from '@mui/material';
+import CardActionArea from '@mui/material/CardActionArea';
+import type { RecommendedUser } from '../pages/projects/[pid]';
 import InviteDialog from './dialogs/InviteDialog';
 import { SearchFunc } from '../api';
 import { InviteUserRequest } from '../api/model/inviteUserRequest';
@@ -25,6 +30,7 @@ interface Props extends ProjectProfileResponse {
   submitInvite: (req: InviteUserRequest) => void;
   submitRemoval: (userId: number) => void;
   isFull: boolean;
+  recommendations: RecommendedUser[];
   submitRatings: (req: RateBuddiesRequest) => void;
 }
 
@@ -40,6 +46,7 @@ const ProjectBuddies: React.VFC<Props> = ({
   invitedUsers,
   submitRemoval,
   isFull,
+  recommendations,
   isFinished,
   membersYetToRate,
   submitRatings,
@@ -113,6 +120,94 @@ const ProjectBuddies: React.VFC<Props> = ({
             );
           })}
         </List>
+      </Card>
+      <Card elevation={10} sx={{ mt: 6, paddingBottom: 3 }}>
+        <CardContent>
+          <Stack direction="row">
+            <Typography variant="h5">
+              Top Recommended Users
+            </Typography>
+          </Stack>
+        </CardContent>
+        <Container>
+          <Grid container>
+            <Grid item xs={4}>
+              <Typography variant="h6">
+                Users
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography variant="h6">
+                Skills
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography variant="h6">
+                Recommendation Score
+              </Typography>
+            </Grid>
+          </Grid>
+        </Container>
+        {recommendations.map((user: RecommendedUser) => {
+          return (
+            <Container sx={{ margin: 1 }} key={user.userId}>
+              <CardActionArea href={`/Profiles/${user.userId}`}>
+                <Grid container>
+                  <Grid item xs={4}>
+                    <Grid container>
+                      <Avatar />
+                      <Typography variant="body1" sx={{ marginTop: 1, marginLeft: 1 }}>
+                        {user.email}
+                      </Typography>
+                      <Card
+                        style={{
+                          color: 'white',
+                          backgroundColor: 'green',
+                          maxWidth: '30px',
+                          maxHeight: '30px',
+                          minWidth: '30px',
+                          minHeight: '30px',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          display: 'flex',
+                          marginLeft: 5,
+                        }}
+                      >
+                        {user.buddyScore}
+                      </Card>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <div className="skills">
+                      {' '}
+                      {/* We have another list that is being rendered in the skilllist
+                          component. So to make the keys different for this list,
+                          we can just add one to each id.  */}
+
+                      <Typography variant="body1" noWrap gutterBottom sx={{ marginTop: 1 }}>
+                        {user.skills.map((skill, index) => {
+                          return (
+                            <>
+                              {skill.name}
+                              {user.skills.length - 1 !== index ? ',' : ''}
+                              {' '}
+                            </>
+                          );
+                        })}
+                      </Typography>
+
+                    </div>
+                  </Grid>
+                  <Grid item xs={1} />
+                  <Grid item xs={4} sx={{ color: 'green', marginTop: 1 }}>
+                    {user.match}
+                  </Grid>
+                </Grid>
+              </CardActionArea>
+            </Container>
+          );
+        })}
+
       </Card>
       <InviteDialog
         open={dialog === 'Invite'}

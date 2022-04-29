@@ -11,14 +11,9 @@ import Skills from '../../components/Skills';
 import Websites from '../../components/Websites';
 import { getProfile, updateProfile } from '../../api';
 import { authStore } from '../../stores/authStore';
+import { SkillResponse } from '../../api/model/skillResponse';
 
 let profileId: string | string[] | undefined = '';
-
-type Skillobject = {
-  'id': number,
-  'name': string,
-  'delete': boolean
-};
 
 type Projectobject = {
   'title': string,
@@ -38,8 +33,9 @@ type UpdateProf = {
   'userId': number,
   'headline': string,
   'aboutMe': string,
+  'email': string,
   'buddyScore': number,
-  'skills': Skillobject[],
+  'skills': SkillResponse[],
   'projects': Projectobject[]
 };
 
@@ -55,9 +51,10 @@ const Profile: React.VFC = () => {
     userId: -1,
     headline: 'n/a',
     aboutMe: 'n/a',
+    email: 'n/a@email.com',
     buddyScore: 0,
-    skills: [{ id: 1, name: 'Data Structures', delete: false },
-      { id: 2, name: 'C++', delete: false }, { id: 3, name: 'Python', delete: false }],
+    skills: [{ id: 1, name: 'Data Structures', _delete: false },
+      { id: 2, name: 'C++', _delete: false }, { id: 3, name: 'Python', _delete: false }],
     projects: [],
   }); // default user profile
     // it's used when someone tries to access a profile that does not exist
@@ -80,6 +77,7 @@ const Profile: React.VFC = () => {
     userId: userProfile.userId,
     headline: userProfile.headline,
     aboutMe: userProfile.aboutMe,
+    email: userProfile.email,
     buddyScore: userProfile.buddyScore,
     skills: userProfile.skills,
     projects: userProfile.projects,
@@ -135,7 +133,7 @@ const Profile: React.VFC = () => {
               logCheck={loggedin}
             />
             <br />
-            <Websites isViewingOwnProfile={loggedin} />
+            <Websites email={userProfile.email} />
           </Grid>
           <Grid item xs={12} sm={12} md={9} lg={9} xl={9}>
             <Aboutme
@@ -154,4 +152,4 @@ const Profile: React.VFC = () => {
 };
 
 export default Profile;
-export type { UpdateProf, Skillobject };
+export type { UpdateProf, Projectobject };

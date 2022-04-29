@@ -18,13 +18,12 @@ import { getLeaderboard } from '../api';
 import { UserInfoResponse } from '../api/model/userInfoResponse';
 
 let totalUsers: number = 0;
-
+let page = 0;
 /* Leaderboard page. Responsible for putting all the components that make up the
   page together. It also sends GET requests to get all the users with the top
   buddy score
 */
 const Leaderboard = () => {
-  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [leaderboard, setLeaderboard] = React.useState<UserInfoResponse[]>([]);
 
@@ -42,16 +41,16 @@ const Leaderboard = () => {
 
   useEffect(() => {
     getAndMakeLeaderboard();
-  }, [page]);
+  }, []);
 
   const handleChangePage = (e: unknown, newPage: number) => {
-    setPage(newPage);
+    page = newPage;
     getAndMakeLeaderboard();
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
-    setPage(0);
+    page = 0;
   };
 
   return (
@@ -85,7 +84,7 @@ const Leaderboard = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      <CardActionArea href={`/Profiles/${row.userId}`}>
+                      <CardActionArea href={`/profiles/${row.userId}`}>
                         <Grid container>
                           <Grid item>
 
@@ -124,8 +123,6 @@ const Leaderboard = () => {
                       <Grid container>
 
                         <Card
-                          disabled
-                          variant="contained"
                           style={{
                             color: 'white',
                             backgroundColor: 'green',

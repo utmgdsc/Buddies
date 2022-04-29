@@ -13,6 +13,7 @@ namespace Buddies.API.Entities
         {
             Members = new List<User>();
             InvitedUsers = new List<User>();
+            Skills = new List<ProjectSkill>();
         }
 
         /// <summary>
@@ -45,6 +46,11 @@ namespace Buddies.API.Entities
         public string Category { get; set; } = null!;
 
         /// <summary>
+        /// Required Skills
+        /// </summary>
+        public List<ProjectSkill> Skills { get; set; }
+
+        /// <summary>
         /// Group capacity
         /// </summary>
         public int MaxMembers { get; set; } = default!;
@@ -74,6 +80,11 @@ namespace Buddies.API.Entities
         /// Users that have yet to rate team members when the project has terminated
         /// </summary>
         public List<User> MembersYetToRate { get; set; }
+
+        /// <summary>
+        /// If the notification has been read
+        /// </summary>
+        public DateTime TimeCreated { get; set; } = DateTime.Now;
 
     }
 

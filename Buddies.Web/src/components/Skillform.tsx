@@ -3,13 +3,15 @@ import {
 } from 'react';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import type { UpdateProf, Skillobject } from '../pages/profiles/[pid]';
+import type { UpdateProf } from '../pages/profiles/[pid]';
 import SkillList from './SkillList';
+import { ProjectProfileResponse } from '../api/model/projectProfileResponse';
+import { SkillResponse } from '../api/model/skillResponse';
 
 /* Skill Form. Allows the user to update his skills */
-const Skillform = ({ submitFunc, profileData }: { submitFunc: VoidFunction,
-  profileData: UpdateProf }) => {
-  const [skills, setSkills] = useState<Skillobject[]>([]);
+const Skillform = ({ submitFunc, profileData, isProject }: { submitFunc: VoidFunction,
+  profileData: UpdateProf | ProjectProfileResponse, isProject: boolean }) => {
+  const [skills, setSkills] = useState<SkillResponse[]>([]);
   const skillNameRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const Skillform = ({ submitFunc, profileData }: { submitFunc: VoidFunction,
     const newSkills = [...skills];
     const skill = newSkills.find((skillCheck) => skillCheck.id === id);
     if (true && skill) { // checks if skill is undefined
-      skill.delete = !skill.delete;
+      skill._delete = !skill._delete; // eslint-disable-line
       setSkills(newSkills);
     }
   }, [skills]);
@@ -37,7 +39,7 @@ const Skillform = ({ submitFunc, profileData }: { submitFunc: VoidFunction,
       return;
     }
 
-    setSkills([...skills, { id: getRandomInt(0, 100000), name, delete: false }]);
+    setSkills([...skills, { id: getRandomInt(0, 100000), name, _delete: false }]);
 
     if (skillNameRef != null && skillNameRef.current != null
       && skillNameRef.current.value != null) { // to fix typescript errors
@@ -46,7 +48,7 @@ const Skillform = ({ submitFunc, profileData }: { submitFunc: VoidFunction,
   }, [skills]);
 
   const handleClearSkills = useCallback(() => {
-    const newSkills = skills.filter((skill) => !skill.delete);
+    const newSkills = skills.filter((skill) => !skill._delete); // eslint-disable-line
     setSkills(newSkills);
   }, [skills]);
 
@@ -57,6 +59,8 @@ const Skillform = ({ submitFunc, profileData }: { submitFunc: VoidFunction,
     profileData.skills = skills; // eslint-disable-line no-param-reassign
     submitFunc();
   }, [skills]);
+
+  const canAdd: boolean = isProject ? (skills.length < 3) : true;
   return (
     <>
       <SkillList skills={skills} toggleSkill={toggleSkill} />
@@ -64,9 +68,12 @@ const Skillform = ({ submitFunc, profileData }: { submitFunc: VoidFunction,
       <input ref={skillNameRef} type="text" style={{ width: '100%', padding: 20, marginBottom: 3 }} />
       <br />
       <Grid container spacing={1} direction="row" alignItems="center" justifyContent="center">
+        {canAdd
+        && (
         <Grid item>
           <Button variant="contained" onClick={handleAddSkill} style={{ backgroundColor: 'black', color: 'white' }}> Add Skill</Button>
         </Grid>
+        )}
         <Grid item>
           <Button variant="contained" onClick={handleClearSkills} style={{ backgroundColor: 'black', color: 'white' }}>Clear Skills</Button>
         </Grid>
