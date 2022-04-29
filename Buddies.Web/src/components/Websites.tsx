@@ -5,8 +5,8 @@ import Typography from '@mui/material/Typography';
 
 interface Props {
   /**
-   * variable to track whether a user is logged in
-   * and viewing his profile
+   * variable to store email of
+   * profile
    */
   email: string
 }

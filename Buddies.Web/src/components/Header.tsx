@@ -12,11 +12,10 @@ import type { UpdateProf } from '../pages/profiles/[pid]';
 
 /* Header component of the profile page. Includes the profile pic, name and headline */
 const Header = ({
-  updateFunc, newProfile, logCheck, fName, lName, hline, pageId,
+  updateFunc, newProfile, logCheck, fName, lName, hline,
 }: { updateFunc: VoidFunction,
   newProfile: UpdateProf, logCheck:boolean | null, fName:string,
-  lName:string, hline:string,
-  pageId: string | string[] | undefined }) => {
+  lName:string, hline:string }) => {
   return (
     <Card sx={{
       padding: 2,
@@ -74,7 +73,7 @@ const Header = ({
         <Grid container item xs={2} justifyContent="flex-end">
 
           <CopyToClipboard
-            text={`http://buddy-alb-1653424214.us-east-1.elb.amazonaws.com/profiles/${pageId}`}
+            text={window.location.href}
           >
             <Button
               startIcon={<FileCopyIcon />}

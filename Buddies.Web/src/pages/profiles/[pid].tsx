@@ -123,7 +123,6 @@ const Profile: React.VFC = () => {
             fName={userProfile.firstName}
             lName={userProfile.lastName}
             hline={userProfile.headline}
-            pageId={profileId}
           />
           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
             <BScore score={userProfile.buddyScore} />
