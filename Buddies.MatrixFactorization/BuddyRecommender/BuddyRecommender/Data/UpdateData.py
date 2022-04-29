@@ -4,7 +4,7 @@ import requests
 endpoint = "http://buddy-alb-1653424214.us-east-1.elb.amazonaws.com/api/v1/projects/ratings"
 def update():
     df = pd.read_csv('out-train.csv')
-    r = requests.get("http://buddy-alb-1653424214.us-east-1.elb.amazonaws.com/api/v1/projects/ratings")
+    r = requests.get(endpoint)
     y = r.json()
     x, j = [], 0
     for i in y:
