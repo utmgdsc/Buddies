@@ -44,7 +44,6 @@ const Project: React.VFC = () => {
   */
   function getAndMakeProject() {
     if (!(typeof projectId === 'string')) {
-      console.log('hdasdsahj');
       alert('Uh oh, something went wrong...');
       return;
     }

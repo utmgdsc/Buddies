@@ -194,7 +194,7 @@ namespace Buddies.API.Controllers
 
             if (project.Owner != _userManager.GetUserAsync(User).Result) { return Unauthorized("You must be the owner"); }
             var i = 0;
-            for (i = 0; i < skills.Skills.Count; i++)
+            for (i = 0; i < Math.Min(skills.Skills.Count, 3); i++)
             {
                 if (i >= project.Skills.Count)
                 {
@@ -204,11 +204,6 @@ namespace Buddies.API.Controllers
                 else
                 {
                     project.Skills[i].Name = skills.Skills[i].Name;
-                }
-                if (i == 2)
-                {
-                    i++;
-                    break;
                 }
             }
             var n = project.Skills.Count;

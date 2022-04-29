@@ -7,9 +7,6 @@ using Microsoft.ML.Data;
 
 namespace BuddyRecommender
 {
-//    internal class BuddyRatingData
-//    {
- //   }
     public class BuddyRating
     {
         [LoadColumn(0)]
