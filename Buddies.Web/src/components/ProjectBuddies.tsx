@@ -151,7 +151,7 @@ const ProjectBuddies: React.VFC<Props> = ({
         {recommendations.map((user: RecommendedUser) => {
           return (
             <Container sx={{ margin: 1 }} key={user.userId}>
-              <CardActionArea href={`/Profiles/${user.userId}`}>
+              <CardActionArea href={`/profiles/${user.userId}`}>
                 <Grid container>
                   <Grid item xs={4}>
                     <Grid container>
